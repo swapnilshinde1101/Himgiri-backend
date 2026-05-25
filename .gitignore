@@ -1,4 +1,26 @@
+# Build outputs
 bin/
 obj/
 .vs/
+
+# Environment & secrets — NEVER commit these
 .env
+appsettings.Production.json
+appsettings.*.local.json
+
+# Logs — you already have a log file that will get committed
+Logs/
+*.txt
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# OS files
+.DS_Store
+Thumbs.db
