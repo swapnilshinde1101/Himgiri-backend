@@ -1,0 +1,1203 @@
+2026-05-19 22:34:28.692 +05:30 [INF] Executed DbCommand (261ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:34:28.961 +05:30 [INF] Executed DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:34:29.013 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:34:29.074 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:34:29.083 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:34:29.122 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 22:34:29.905 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 22:34:29.956 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 22:34:30.400 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 22:34:30.917 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 22:34:30.919 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 22:34:30.996 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 22:34:30.998 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 22:34:31.000 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 22:34:31.002 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 22:34:31.003 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 22:34:31.005 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 22:34:31.041 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 22:34:31.043 +05:30 [INF] Hosting environment: Development
+2026-05-19 22:34:31.053 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 22:34:31.520 +05:30 [INF] Server desktop-4pnf28j:32688:75d5e6c0 successfully announced in 464.5444 ms
+2026-05-19 22:34:31.538 +05:30 [INF] Server desktop-4pnf28j:32688:75d5e6c0 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 22:34:31.573 +05:30 [INF] 1 servers were removed due to timeout
+2026-05-19 22:34:31.753 +05:30 [INF] Server desktop-4pnf28j:32688:75d5e6c0 all the dispatchers started
+2026-05-19 22:34:33.197 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 22:34:39.412 +05:30 [INF] HTTP GET / responded 404 in 5364.9699 ms
+2026-05-19 22:34:39.492 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 6305.8837ms
+2026-05-19 22:34:39.522 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 22:35:20.421 +05:30 [INF] Executed DbCommand (70ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:35:20.490 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:35:20.513 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:35:20.526 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:35:20.531 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:35:20.548 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 22:35:20.604 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 22:35:20.633 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 22:35:20.816 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 22:35:21.082 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 22:35:21.083 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 22:35:21.160 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 22:35:21.161 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 22:35:21.162 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 22:35:21.164 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 22:35:21.165 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 22:35:21.166 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 22:35:21.230 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 22:35:21.236 +05:30 [INF] Hosting environment: Development
+2026-05-19 22:35:21.237 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 22:35:21.534 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 successfully announced in 298.9844 ms
+2026-05-19 22:35:21.553 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 22:35:21.808 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 all the dispatchers started
+2026-05-19 22:35:22.328 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 22:35:22.636 +05:30 [INF] HTTP GET / responded 404 in 88.4263 ms
+2026-05-19 22:35:22.654 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 346.1439ms
+2026-05-19 22:35:22.664 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 22:35:46.219 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger - null null
+2026-05-19 22:35:46.261 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger - 301 null null 53.1519ms
+2026-05-19 22:35:46.267 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:35:46.509 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/swagger-ui.css - null null
+2026-05-19 22:35:46.600 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 330.4922ms
+2026-05-19 22:35:46.561 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/swagger-ui-standalone-preset.js - null null
+2026-05-19 22:35:46.509 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/swagger-ui-bundle.js - null null
+2026-05-19 22:35:46.566 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:35:46.665 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:35:46.802 +05:30 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-05-19 22:35:46.802 +05:30 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-05-19 22:35:46.835 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/swagger-ui.css - 200 144929 text/css 325.9743ms
+2026-05-19 22:35:46.868 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/swagger-ui-standalone-preset.js - 200 312163 text/javascript 342.3109ms
+2026-05-19 22:35:46.890 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 242.2293ms
+2026-05-19 22:35:46.942 +05:30 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-05-19 22:35:47.065 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/swagger-ui-bundle.js - 200 1061536 text/javascript 555.4885ms
+2026-05-19 22:35:47.147 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 586.2742ms
+2026-05-19 22:35:47.467 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-19 22:35:47.521 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/favicon-32x32.png - null null
+2026-05-19 22:35:47.569 +05:30 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-05-19 22:35:47.594 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 127.6764ms
+2026-05-19 22:35:47.620 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/favicon-32x32.png - 200 628 image/png 98.8736ms
+2026-05-19 22:37:08.668 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/auth/login - null null
+2026-05-19 22:37:08.734 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:37:08.759 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 27.4566 ms
+2026-05-19 22:37:08.769 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/auth/login - 204 null null 100.7108ms
+2026-05-19 22:37:08.776 +05:30 [INF] Request starting HTTP/2 POST https://localhost:62313/api/auth/login - application/json 62
+2026-05-19 22:37:08.802 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:37:08.818 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 22:37:08.910 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Himgiri.Core.DTOs.LoginRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.AuthController (Himgiri.API).
+2026-05-19 22:37:10.532 +05:30 [INF] Executed DbCommand (61ms) [Parameters=[@__email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."CreatedAt", a."CreatedBy", a."DeletedAt", a."DeletedBy", a."Email", a."IsActive", a."IsDeleted", a."LastLoginAt", a."LockoutEnd", a."ModifiedBy", a."Name", a."PasswordHash", a."Role", a."UpdatedAt"
+FROM "AdminUsers" AS a
+WHERE lower(a."Email") = @__email_0 AND NOT (a."IsDeleted")
+LIMIT 1
+2026-05-19 22:37:11.758 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[@p2='?' (DbType = Guid), @p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "LastLoginAt" = @p0, "UpdatedAt" = @p1
+WHERE "Id" = @p2;
+2026-05-19 22:37:11.984 +05:30 [INF] Executing OkObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[Himgiri.Core.DTOs.LoginResponse, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-19 22:37:12.049 +05:30 [INF] Executed action Himgiri.API.Controllers.AuthController.Login (Himgiri.API) in 3097.8109ms
+2026-05-19 22:37:12.058 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 22:37:12.063 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 3262.9113 ms
+2026-05-19 22:37:12.078 +05:30 [INF] Request finished HTTP/2 POST https://localhost:62313/api/auth/login - 200 null application/json; charset=utf-8 3302.7058ms
+2026-05-19 22:37:18.119 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 22:37:18.124 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:37:18.126 +05:30 [INF] HTTP OPTIONS /api/items responded 204 in 1.9056 ms
+2026-05-19 22:37:18.129 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 204 null null 10.4832ms
+2026-05-19 22:37:18.219 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 22:37:18.230 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:37:18.522 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 22:37:18.606 +05:30 [INF] Route matched with {action = "GetItems", controller = "Items"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetItems(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.ItemsController (Himgiri.API).
+2026-05-19 22:37:19.055 +05:30 [INF] Executed DbCommand (42ms) [Parameters=[p_SearchTerm='?' (DbType = Object), p_SortColumn='?', p_SortDirection='?', p_PageNumber='?' (DbType = Int32), p_PageSize='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetItemsPaged(@p_SearchTerm, @p_SortColumn, @p_SortDirection, @p_PageNumber, @p_PageSize)
+2026-05-19 22:37:19.692 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.ItemDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 22:37:19.808 +05:30 [INF] Executed action Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API) in 1195.0712ms
+2026-05-19 22:37:19.814 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 22:37:19.819 +05:30 [INF] HTTP GET /api/items responded 200 in 1589.0849 ms
+2026-05-19 22:37:19.827 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 200 null application/json; charset=utf-8 1611.0651ms
+2026-05-19 22:37:51.198 +05:30 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2026-05-19 22:37:51.302 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 caught stopping signal...
+2026-05-19 22:37:51.378 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 caught stopped signal...
+2026-05-19 22:37:51.427 +05:30 [WRN] Server desktop-4pnf28j:23664:0cdaae45 caught shutdown signal...
+2026-05-19 22:37:51.461 +05:30 [WRN] Server desktop-4pnf28j:23664:0cdaae45 stopped non-gracefully due to ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2026-05-19 22:37:51.896 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 successfully reported itself as stopped in 362.2469 ms
+2026-05-19 22:37:51.910 +05:30 [INF] Server desktop-4pnf28j:23664:0cdaae45 has been stopped in total 532.4196 ms
+2026-05-19 22:40:33.860 +05:30 [INF] Executed DbCommand (173ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:40:34.022 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:40:34.063 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:40:34.081 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:40:34.087 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:40:34.110 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 22:40:34.212 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 22:40:34.288 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 22:40:34.640 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 22:40:35.019 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 22:40:35.022 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 22:40:35.193 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 22:40:35.196 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 22:40:35.202 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 22:40:35.207 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 22:40:35.210 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 22:40:35.214 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 22:40:35.285 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 22:40:35.289 +05:30 [INF] Hosting environment: Development
+2026-05-19 22:40:35.293 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 22:40:35.867 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 successfully announced in 578.6458 ms
+2026-05-19 22:40:35.927 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 22:40:35.985 +05:30 [INF] 1 servers were removed due to timeout
+2026-05-19 22:40:36.613 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 all the dispatchers started
+2026-05-19 22:40:37.054 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 22:40:37.465 +05:30 [INF] HTTP GET / responded 404 in 134.9418 ms
+2026-05-19 22:40:37.492 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 446.6283ms
+2026-05-19 22:40:37.529 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 22:40:55.460 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:40:55.577 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 117.619ms
+2026-05-19 22:40:56.269 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:40:56.281 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 13.3638ms
+2026-05-19 22:40:56.323 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:40:56.391 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 68.776ms
+2026-05-19 22:40:56.493 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:40:56.528 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 35.6492ms
+2026-05-19 22:40:56.635 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:40:56.666 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 31.4398ms
+2026-05-19 22:40:56.673 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:40:56.735 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 62.7595ms
+2026-05-19 22:40:57.362 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-19 22:40:57.424 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 62.7006ms
+2026-05-19 22:41:02.448 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/auth/login - null null
+2026-05-19 22:41:02.460 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:02.463 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 5.2369 ms
+2026-05-19 22:41:02.467 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/auth/login - 204 null null 18.33ms
+2026-05-19 22:41:02.472 +05:30 [INF] Request starting HTTP/2 POST https://localhost:62313/api/auth/login - application/json 62
+2026-05-19 22:41:02.483 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:02.491 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 22:41:02.528 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Himgiri.Core.DTOs.LoginRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.AuthController (Himgiri.API).
+2026-05-19 22:41:03.531 +05:30 [INF] Executed DbCommand (25ms) [Parameters=[@__email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."CreatedAt", a."CreatedBy", a."DeletedAt", a."DeletedBy", a."Email", a."IsActive", a."IsDeleted", a."LastLoginAt", a."LockoutEnd", a."ModifiedBy", a."Name", a."PasswordHash", a."Role", a."UpdatedAt"
+FROM "AdminUsers" AS a
+WHERE lower(a."Email") = @__email_0 AND NOT (a."IsDeleted")
+LIMIT 1
+2026-05-19 22:41:04.987 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[@p2='?' (DbType = Guid), @p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "LastLoginAt" = @p0, "UpdatedAt" = @p1
+WHERE "Id" = @p2;
+2026-05-19 22:41:05.123 +05:30 [INF] Executing OkObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[Himgiri.Core.DTOs.LoginResponse, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-19 22:41:05.177 +05:30 [INF] Executed action Himgiri.API.Controllers.AuthController.Login (Himgiri.API) in 2637.819ms
+2026-05-19 22:41:05.182 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 22:41:05.186 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 2703.3047 ms
+2026-05-19 22:41:05.199 +05:30 [INF] Request finished HTTP/2 POST https://localhost:62313/api/auth/login - 200 null application/json; charset=utf-8 2726.316ms
+2026-05-19 22:41:14.945 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 22:41:14.952 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:14.954 +05:30 [INF] HTTP OPTIONS /api/items responded 204 in 1.6158 ms
+2026-05-19 22:41:14.957 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 204 null null 11.6132ms
+2026-05-19 22:41:14.960 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 22:41:14.974 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:15.066 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 22:41:15.118 +05:30 [INF] Route matched with {action = "GetItems", controller = "Items"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetItems(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.ItemsController (Himgiri.API).
+2026-05-19 22:41:15.530 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[p_SearchTerm='?' (DbType = Object), p_SortColumn='?', p_SortDirection='?', p_PageNumber='?' (DbType = Int32), p_PageSize='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetItemsPaged(@p_SearchTerm, @p_SortColumn, @p_SortDirection, @p_PageNumber, @p_PageSize)
+2026-05-19 22:41:15.830 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.ItemDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 22:41:15.870 +05:30 [INF] Executed action Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API) in 743.8786ms
+2026-05-19 22:41:15.875 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 22:41:15.878 +05:30 [INF] HTTP GET /api/items responded 200 in 904.8770 ms
+2026-05-19 22:41:15.885 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 200 null application/json; charset=utf-8 926.0213ms
+2026-05-19 22:41:17.135 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 22:41:17.159 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:17.163 +05:30 [INF] HTTP OPTIONS /api/categories responded 204 in 3.7186 ms
+2026-05-19 22:41:17.172 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - 204 null null 36.7012ms
+2026-05-19 22:41:17.176 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 22:41:17.189 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:41:17.196 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 22:41:17.209 +05:30 [INF] Route matched with {action = "GetAll", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.CategoriesController (Himgiri.API).
+2026-05-19 22:41:17.241 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[p0='?' (DbType = Object), p1='?' (DbType = Int32), p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetCategoriesPaged(@p0, @p1, @p2)
+2026-05-19 22:41:17.256 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.CategoryDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 22:41:17.267 +05:30 [INF] Executed action Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API) in 52.5937ms
+2026-05-19 22:41:17.270 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 22:41:17.271 +05:30 [INF] HTTP GET /api/categories responded 200 in 82.6073 ms
+2026-05-19 22:41:17.275 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - 200 null application/json; charset=utf-8 99.2746ms
+2026-05-19 22:44:01.471 +05:30 [WRN] Stopping the server due to DomainUnload or ProcessExit event...
+2026-05-19 22:44:01.491 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 caught stopping signal...
+2026-05-19 22:44:01.498 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 caught stopped signal...
+2026-05-19 22:44:01.502 +05:30 [WRN] Server desktop-4pnf28j:31524:bb337055 caught shutdown signal...
+2026-05-19 22:44:01.518 +05:30 [WRN] Server desktop-4pnf28j:31524:bb337055 stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2026-05-19 22:44:01.600 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 successfully reported itself as stopped in 60.1085 ms
+2026-05-19 22:44:01.603 +05:30 [INF] Server desktop-4pnf28j:31524:bb337055 has been stopped in total 106.4578 ms
+2026-05-19 22:44:26.009 +05:30 [INF] Executed DbCommand (131ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:44:26.148 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:44:26.176 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:44:26.191 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:44:26.196 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:44:26.222 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 22:44:26.324 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 22:44:26.371 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 22:44:26.648 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 22:44:27.145 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 22:44:27.148 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 22:44:27.337 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 22:44:27.340 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 22:44:27.343 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 22:44:27.345 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 22:44:27.348 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 22:44:27.350 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 22:44:27.373 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:44:27.416 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 22:44:27.420 +05:30 [INF] Hosting environment: Development
+2026-05-19 22:44:27.424 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 22:44:27.661 +05:30 [INF] Server desktop-4pnf28j:25124:8f29ca4b successfully announced in 240.0556 ms
+2026-05-19 22:44:27.701 +05:30 [INF] Server desktop-4pnf28j:25124:8f29ca4b is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 22:44:27.957 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 22:44:28.259 +05:30 [INF] Server desktop-4pnf28j:25124:8f29ca4b all the dispatchers started
+2026-05-19 22:44:28.690 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 1327.1852ms
+2026-05-19 22:44:28.745 +05:30 [INF] HTTP GET / responded 404 in 284.9959 ms
+2026-05-19 22:44:28.762 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:44:28.762 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:44:28.807 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 44.8016ms
+2026-05-19 22:44:28.939 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 176.4455ms
+2026-05-19 22:44:29.499 +05:30 [INF] Executed DbCommand (101ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?' (DbType = Guid), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?' (DbType = Boolean), @p9='?' (DbType = Guid), @p10='?', @p11='?', @p12='?', @p13='?', @p14='?' (DbType = Int32), @p15='?', @p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?', @p20='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ApiErrorLogs" ("Id", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "ExceptionMessage", "IpAddress", "IsActive", "IsDeleted", "ModifiedBy", "Payload", "QueryParams", "RequestType", "Response", "ResponseCode", "StackTrace", "UpdatedAt", "Url", "UserAgent", "UserEmail", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20);
+2026-05-19 22:44:29.544 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 1589.9306ms
+2026-05-19 22:44:29.556 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 22:44:29.732 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-19 22:44:29.757 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 24.5591ms
+2026-05-19 22:44:41.901 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:44:42.096 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 196.1751ms
+2026-05-19 22:44:42.129 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:44:42.130 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:44:42.153 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 23.6882ms
+2026-05-19 22:44:42.216 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 87.0283ms
+2026-05-19 22:44:42.344 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-19 22:44:42.489 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 146.2093ms
+2026-05-19 22:45:06.542 +05:30 [INF] Executed DbCommand (56ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:45:06.598 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:45:06.627 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:45:06.642 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 22:45:06.645 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 22:45:06.659 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 22:45:06.686 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 22:45:06.713 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 22:45:06.793 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 22:45:06.909 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 22:45:06.911 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 22:45:06.960 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 22:45:06.961 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 22:45:06.963 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 22:45:06.964 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 22:45:06.965 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 22:45:06.966 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 22:45:06.981 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 22:45:06.982 +05:30 [INF] Hosting environment: Development
+2026-05-19 22:45:06.983 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 22:45:07.158 +05:30 [INF] Server desktop-4pnf28j:23792:dba2bea3 successfully announced in 175.3126 ms
+2026-05-19 22:45:07.168 +05:30 [INF] Server desktop-4pnf28j:23792:dba2bea3 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 22:45:07.244 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 22:45:07.334 +05:30 [INF] Server desktop-4pnf28j:23792:dba2bea3 all the dispatchers started
+2026-05-19 22:45:07.528 +05:30 [INF] HTTP GET / responded 404 in 23.3917 ms
+2026-05-19 22:45:07.539 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 294.9639ms
+2026-05-19 22:45:07.553 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 22:45:14.074 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-19 22:45:14.220 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 145.8313ms
+2026-05-19 22:45:14.321 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-19 22:45:14.321 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-19 22:45:14.334 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 13.4308ms
+2026-05-19 22:45:14.378 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 56.3849ms
+2026-05-19 22:45:15.235 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-19 22:45:15.251 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 14.7426ms
+2026-05-19 22:45:22.471 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/grades?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 22:45:22.487 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:45:22.492 +05:30 [INF] HTTP OPTIONS /api/grades responded 204 in 8.7843 ms
+2026-05-19 22:45:22.495 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/grades?pageNumber=1&pageSize=10&searchTerm= - 204 null null 24.2262ms
+2026-05-19 22:45:22.571 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/grades?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 22:45:22.584 +05:30 [INF] CORS policy execution successful.
+2026-05-19 22:45:22.668 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.GradesController.GetAll (Himgiri.API)'
+2026-05-19 22:45:22.691 +05:30 [INF] Route matched with {action = "GetAll", controller = "Grades"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.GradesController (Himgiri.API).
+2026-05-19 22:45:23.439 +05:30 [INF] Executed DbCommand (68ms) [Parameters=[p0='?' (DbType = Object), p1='?' (DbType = Int32), p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetGradesPaged(@p0, @p1, @p2)
+2026-05-19 22:45:23.620 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.GradeDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 22:45:23.651 +05:30 [INF] Executed action Himgiri.API.Controllers.GradesController.GetAll (Himgiri.API) in 947.7405ms
+2026-05-19 22:45:23.657 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.GradesController.GetAll (Himgiri.API)'
+2026-05-19 22:45:23.662 +05:30 [INF] HTTP GET /api/grades responded 200 in 1079.6896 ms
+2026-05-19 22:45:23.674 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/grades?pageNumber=1&pageSize=10&searchTerm= - 200 null application/json; charset=utf-8 1102.5183ms
+2026-05-19 22:50:07.294 +05:30 [INF] 1 servers were removed due to timeout
+2026-05-19 23:01:22.987 +05:30 [INF] Executed DbCommand (48ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:01:23.049 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:01:23.071 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:01:23.083 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:01:23.087 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:01:23.099 +05:30 [INF] Applying migration '20260519173020_UpdateCategorySchema'.
+2026-05-19 23:01:23.268 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "Description" text;
+2026-05-19 23:01:23.294 +05:30 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:01:23.298 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "IsTaxable" boolean NOT NULL DEFAULT FALSE;
+2026-05-19 23:01:23.305 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "ParentCategoryId" uuid;
+2026-05-19 23:01:23.309 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "ParentCategoryName" text;
+2026-05-19 23:01:23.316 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "Description" text;
+2026-05-19 23:01:23.319 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:01:23.322 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "ParentCategoryId" uuid;
+2026-05-19 23:01:23.325 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000001';
+2026-05-19 23:01:23.328 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000002';
+2026-05-19 23:01:23.330 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000003';
+2026-05-19 23:01:23.333 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332937Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000004';
+2026-05-19 23:01:23.335 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332937Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000005';
+2026-05-19 23:01:23.381 +05:30 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332965Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000001';
+2026-05-19 23:01:23.393 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332966Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000002';
+2026-05-19 23:01:23.395 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332966Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000003';
+2026-05-19 23:01:23.411 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332969Z', "Description" = NULL, "DisplayOrder" = 1, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000001';
+2026-05-19 23:01:23.414 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 2, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000002';
+2026-05-19 23:01:23.417 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 3, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000003';
+2026-05-19 23:01:23.419 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 4, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000004';
+2026-05-19 23:01:23.421 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 5, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000005';
+2026-05-19 23:01:23.430 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332978Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000001';
+2026-05-19 23:01:23.434 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332979Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000002';
+2026-05-19 23:01:23.437 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332979Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000003';
+2026-05-19 23:01:23.439 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332985Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000004';
+2026-05-19 23:01:23.442 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332986Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000005';
+2026-05-19 23:01:23.471 +05:30 [INF] Executed DbCommand (27ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "VendorSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332975Z'
+WHERE "Id" = '00000000-0000-0000-0003-000000000001';
+2026-05-19 23:01:23.477 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ItemCategories_ParentCategoryId" ON "ItemCategories" ("ParentCategoryId");
+2026-05-19 23:01:23.485 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD CONSTRAINT "FK_ItemCategories_ItemCategories_ParentCategoryId" FOREIGN KEY ("ParentCategoryId") REFERENCES "ItemCategories" ("Id");
+2026-05-19 23:01:23.493 +05:30 [ERR] Failed executing DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                CREATE OR REPLACE FUNCTION usp_GetCategoriesPaged(
+                    p_SearchTerm VARCHAR,
+                    p_PageNumber INT,
+                    p_PageSize INT
+                )
+                RETURNS TABLE (
+                    "Id" UUID,
+                    "Name" VARCHAR,
+                    "Description" TEXT,
+                    "IsActive" BOOLEAN,
+                    "DisplayOrder" INT,
+                    "ParentCategoryId" UUID,
+                    "ParentCategoryName" VARCHAR,
+                    "HsnCode" VARCHAR,
+                    "GstPercent" DECIMAL,
+                    "CgstPercent" DECIMAL,
+                    "SgstPercent" DECIMAL,
+                    "IsTaxable" BOOLEAN,
+                    "TotalCount" INT
+                ) AS $$
+                BEGIN
+                    RETURN QUERY
+                    WITH FilteredCats AS (
+                        SELECT 
+                            c."Id", c."Name", c."Description", c."IsActive", c."DisplayOrder", 
+                            c."ParentCategoryId", p."Name" as "ParentCategoryName",
+                            c."HsnCode", c."GstPercent", c."CgstPercent", c."SgstPercent", c."IsTaxable",
+                            COUNT(*) OVER()::INT as "TotalCount"
+                        FROM "ItemCategories" c
+                        LEFT JOIN "ItemCategories" p ON c."ParentCategoryId" = p."Id"
+                        WHERE c."IsDeleted" = FALSE
+                          AND (p_SearchTerm IS NULL OR p_SearchTerm = '' 
+                               OR c."Name" ILIKE '%' || p_SearchTerm || '%' 
+                               OR c."HsnCode" ILIKE '%' || p_SearchTerm || '%')
+                    )
+                    SELECT * FROM FilteredCats
+                    ORDER BY "DisplayOrder" ASC, "Name" ASC
+                    OFFSET (p_PageNumber - 1) * p_PageSize
+                    LIMIT p_PageSize;
+                END;
+                $$ LANGUAGE plpgsql;
+2026-05-19 23:02:20.375 +05:30 [INF] Executed DbCommand (53ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:02:20.430 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:02:20.453 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:02:20.469 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:02:20.472 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:02:20.485 +05:30 [INF] Applying migration '20260519173020_UpdateCategorySchema'.
+2026-05-19 23:02:20.562 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "Description" text;
+2026-05-19 23:02:20.566 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:02:20.569 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "IsTaxable" boolean NOT NULL DEFAULT FALSE;
+2026-05-19 23:02:20.572 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "ParentCategoryId" uuid;
+2026-05-19 23:02:20.574 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "ParentCategoryName" text;
+2026-05-19 23:02:20.578 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "Description" text;
+2026-05-19 23:02:20.582 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:02:20.585 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "ParentCategoryId" uuid;
+2026-05-19 23:02:20.588 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000001';
+2026-05-19 23:02:20.592 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000002';
+2026-05-19 23:02:20.595 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332936Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000003';
+2026-05-19 23:02:20.598 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332937Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000004';
+2026-05-19 23:02:20.601 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332937Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000005';
+2026-05-19 23:02:20.604 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332965Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000001';
+2026-05-19 23:02:20.607 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332966Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000002';
+2026-05-19 23:02:20.610 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332966Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000003';
+2026-05-19 23:02:20.613 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332969Z', "Description" = NULL, "DisplayOrder" = 1, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000001';
+2026-05-19 23:02:20.616 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 2, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000002';
+2026-05-19 23:02:20.618 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 3, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000003';
+2026-05-19 23:02:20.621 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 4, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000004';
+2026-05-19 23:02:20.623 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.33297Z', "Description" = NULL, "DisplayOrder" = 5, "ParentCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0006-000000000005';
+2026-05-19 23:02:20.626 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332978Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000001';
+2026-05-19 23:02:20.629 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332979Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000002';
+2026-05-19 23:02:20.632 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332979Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000003';
+2026-05-19 23:02:20.635 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332985Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000004';
+2026-05-19 23:02:20.637 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332986Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000005';
+2026-05-19 23:02:20.640 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "VendorSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:30:13.332975Z'
+WHERE "Id" = '00000000-0000-0000-0003-000000000001';
+2026-05-19 23:02:20.643 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ItemCategories_ParentCategoryId" ON "ItemCategories" ("ParentCategoryId");
+2026-05-19 23:02:20.647 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD CONSTRAINT "FK_ItemCategories_ItemCategories_ParentCategoryId" FOREIGN KEY ("ParentCategoryId") REFERENCES "ItemCategories" ("Id");
+2026-05-19 23:02:20.685 +05:30 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DROP FUNCTION IF EXISTS usp_GetCategoriesPaged(VARCHAR, INT, INT);
+2026-05-19 23:02:20.691 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                CREATE OR REPLACE FUNCTION usp_GetCategoriesPaged(
+                    p_SearchTerm VARCHAR,
+                    p_PageNumber INT,
+                    p_PageSize INT
+                )
+                RETURNS TABLE (
+                    "Id" UUID,
+                    "Name" VARCHAR,
+                    "Description" TEXT,
+                    "IsActive" BOOLEAN,
+                    "DisplayOrder" INT,
+                    "ParentCategoryId" UUID,
+                    "ParentCategoryName" VARCHAR,
+                    "HsnCode" VARCHAR,
+                    "GstPercent" DECIMAL,
+                    "CgstPercent" DECIMAL,
+                    "SgstPercent" DECIMAL,
+                    "IsTaxable" BOOLEAN,
+                    "TotalCount" INT
+                ) AS $$
+                BEGIN
+                    RETURN QUERY
+                    WITH FilteredCats AS (
+                        SELECT 
+                            c."Id", c."Name", c."Description", c."IsActive", c."DisplayOrder", 
+                            c."ParentCategoryId", p."Name" as "ParentCategoryName",
+                            c."HsnCode", c."GstPercent", c."CgstPercent", c."SgstPercent", c."IsTaxable",
+                            COUNT(*) OVER()::INT as "TotalCount"
+                        FROM "ItemCategories" c
+                        LEFT JOIN "ItemCategories" p ON c."ParentCategoryId" = p."Id"
+                        WHERE c."IsDeleted" = FALSE
+                          AND (p_SearchTerm IS NULL OR p_SearchTerm = '' 
+                               OR c."Name" ILIKE '%' || p_SearchTerm || '%' 
+                               OR c."HsnCode" ILIKE '%' || p_SearchTerm || '%')
+                    )
+                    SELECT * FROM FilteredCats
+                    ORDER BY "DisplayOrder" ASC, "Name" ASC
+                    OFFSET (p_PageNumber - 1) * p_PageSize
+                    LIMIT p_PageSize;
+                END;
+                $$ LANGUAGE plpgsql;
+2026-05-19 23:02:20.696 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260519173020_UpdateCategorySchema', '8.0.11');
+2026-05-19 23:04:02.931 +05:30 [INF] Executed DbCommand (132ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:04:03.059 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:04:03.101 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:04:03.119 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:04:03.123 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:04:03.152 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-19 23:04:03.282 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-19 23:04:03.352 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-19 23:04:03.675 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-19 23:04:04.112 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-19 23:04:04.114 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-19 23:04:04.268 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-19 23:04:04.270 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-19 23:04:04.272 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-19 23:04:04.273 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-19 23:04:04.276 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-19 23:04:04.279 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-19 23:04:04.328 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-19 23:04:04.329 +05:30 [INF] Hosting environment: Development
+2026-05-19 23:04:04.331 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-19 23:04:04.621 +05:30 [INF] Server desktop-4pnf28j:30960:82469bb9 successfully announced in 291.0504 ms
+2026-05-19 23:04:04.638 +05:30 [INF] Server desktop-4pnf28j:30960:82469bb9 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-19 23:04:04.709 +05:30 [INF] 1 servers were removed due to timeout
+2026-05-19 23:04:04.982 +05:30 [INF] Server desktop-4pnf28j:30960:82469bb9 all the dispatchers started
+2026-05-19 23:04:05.033 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-19 23:04:05.033 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/auth/login - null null
+2026-05-19 23:04:05.260 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:05.284 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 14.1630 ms
+2026-05-19 23:04:05.304 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/auth/login - 204 null null 300.827ms
+2026-05-19 23:04:05.313 +05:30 [INF] Request starting HTTP/2 POST https://localhost:62313/api/auth/login - application/json 62
+2026-05-19 23:04:05.329 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:05.447 +05:30 [INF] HTTP GET / responded 404 in 115.9622 ms
+2026-05-19 23:04:05.450 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 23:04:05.458 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 455.8605ms
+2026-05-19 23:04:05.466 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-19 23:04:05.488 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Himgiri.Core.DTOs.LoginRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.AuthController (Himgiri.API).
+2026-05-19 23:04:06.389 +05:30 [INF] Executed DbCommand (34ms) [Parameters=[@__email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."CreatedAt", a."CreatedBy", a."DeletedAt", a."DeletedBy", a."Email", a."IsActive", a."IsDeleted", a."LastLoginAt", a."LockoutEnd", a."ModifiedBy", a."Name", a."PasswordHash", a."Role", a."UpdatedAt"
+FROM "AdminUsers" AS a
+WHERE lower(a."Email") = @__email_0 AND NOT (a."IsDeleted")
+LIMIT 1
+2026-05-19 23:04:07.724 +05:30 [INF] Executed DbCommand (112ms) [Parameters=[@p2='?' (DbType = Guid), @p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "LastLoginAt" = @p0, "UpdatedAt" = @p1
+WHERE "Id" = @p2;
+2026-05-19 23:04:07.981 +05:30 [INF] Executing OkObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[Himgiri.Core.DTOs.LoginResponse, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-19 23:04:08.100 +05:30 [INF] Executed action Himgiri.API.Controllers.AuthController.Login (Himgiri.API) in 2590.9221ms
+2026-05-19 23:04:08.115 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.AuthController.Login (Himgiri.API)'
+2026-05-19 23:04:08.129 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 2800.5277 ms
+2026-05-19 23:04:08.156 +05:30 [INF] Request finished HTTP/2 POST https://localhost:62313/api/auth/login - 200 null application/json; charset=utf-8 2843.4582ms
+2026-05-19 23:04:12.706 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 23:04:12.722 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:12.724 +05:30 [INF] HTTP OPTIONS /api/items responded 204 in 2.8364 ms
+2026-05-19 23:04:12.729 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 204 null null 23.9097ms
+2026-05-19 23:04:12.734 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - null null
+2026-05-19 23:04:12.744 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:12.866 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 23:04:12.951 +05:30 [INF] Route matched with {action = "GetItems", controller = "Items"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetItems(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.ItemsController (Himgiri.API).
+2026-05-19 23:04:13.306 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[p_SearchTerm='?' (DbType = Object), p_SortColumn='?', p_SortDirection='?', p_PageNumber='?' (DbType = Int32), p_PageSize='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetItemsPaged(@p_SearchTerm, @p_SortColumn, @p_SortDirection, @p_PageNumber, @p_PageSize)
+2026-05-19 23:04:13.601 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.ItemDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 23:04:13.641 +05:30 [INF] Executed action Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API) in 681.8553ms
+2026-05-19 23:04:13.644 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.ItemsController.GetItems (Himgiri.API)'
+2026-05-19 23:04:13.647 +05:30 [INF] HTTP GET /api/items responded 200 in 902.5765 ms
+2026-05-19 23:04:13.651 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/items?pageNumber=1&pageSize=10&searchTerm=&sortColumn=CreatedAt&sortDirection=DESC - 200 null application/json; charset=utf-8 918.2783ms
+2026-05-19 23:04:14.569 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 23:04:14.578 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:14.582 +05:30 [INF] HTTP OPTIONS /api/categories responded 204 in 3.5315 ms
+2026-05-19 23:04:14.592 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - 204 null null 23.4293ms
+2026-05-19 23:04:14.599 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - null null
+2026-05-19 23:04:14.616 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:14.630 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 23:04:14.641 +05:30 [INF] Route matched with {action = "GetAll", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.CategoriesController (Himgiri.API).
+2026-05-19 23:04:14.676 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[p0='?' (DbType = Object), p1='?' (DbType = Int32), p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetCategoriesPaged(@p0, @p1, @p2)
+2026-05-19 23:04:14.686 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.CategoryDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 23:04:14.700 +05:30 [INF] Executed action Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API) in 55.0321ms
+2026-05-19 23:04:14.703 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 23:04:14.706 +05:30 [INF] HTTP GET /api/categories responded 200 in 90.0782 ms
+2026-05-19 23:04:14.709 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/categories?pageNumber=1&pageSize=10&searchTerm= - 200 null application/json; charset=utf-8 112.2709ms
+2026-05-19 23:04:25.985 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:62313/api/categories - null null
+2026-05-19 23:04:25.995 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:25.997 +05:30 [INF] HTTP OPTIONS /api/categories responded 204 in 2.3780 ms
+2026-05-19 23:04:26.002 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:62313/api/categories - 204 null null 16.979ms
+2026-05-19 23:04:26.008 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/api/categories - null null
+2026-05-19 23:04:26.017 +05:30 [INF] CORS policy execution successful.
+2026-05-19 23:04:26.049 +05:30 [INF] Executing endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 23:04:26.052 +05:30 [INF] Route matched with {action = "GetAll", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(Himgiri.Core.Models.BaseRequest, System.Threading.CancellationToken) on controller Himgiri.API.Controllers.CategoriesController (Himgiri.API).
+2026-05-19 23:04:26.075 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[p0='?' (DbType = Object), p1='?' (DbType = Int32), p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT * FROM usp_GetCategoriesPaged(@p0, @p1, @p2)
+2026-05-19 23:04:26.086 +05:30 [INF] Executing ObjectResult, writing value of type 'Himgiri.Core.Models.JsonModel`1[[System.Collections.Generic.List`1[[Himgiri.Core.DTOs.CategoryDto, Himgiri.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-19 23:04:26.089 +05:30 [INF] Executed action Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API) in 33.2882ms
+2026-05-19 23:04:26.093 +05:30 [INF] Executed endpoint 'Himgiri.API.Controllers.CategoriesController.GetAll (Himgiri.API)'
+2026-05-19 23:04:26.098 +05:30 [INF] HTTP GET /api/categories responded 200 in 81.5368 ms
+2026-05-19 23:04:26.106 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/api/categories - 200 null application/json; charset=utf-8 99.379ms
+2026-05-19 23:16:16.630 +05:30 [INF] Executed DbCommand (68ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:16:16.694 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:16:41.839 +05:30 [INF] Executed DbCommand (56ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:16:41.912 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:17:10.745 +05:30 [INF] Executed DbCommand (51ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:10.805 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:17:10.826 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:10.839 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:10.843 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:17:32.931 +05:30 [INF] Executed DbCommand (52ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:33.006 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:17:33.034 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:33.049 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:17:33.052 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:17:33.071 +05:30 [INF] Reverting migration '20260519173020_UpdateCategorySchema'.
+2026-05-19 23:17:33.145 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" DROP CONSTRAINT "FK_ItemCategories_ItemCategories_ParentCategoryId";
+2026-05-19 23:17:33.226 +05:30 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DROP INDEX "IX_ItemCategories_ParentCategoryId";
+2026-05-19 23:17:33.233 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" DROP COLUMN "Description";
+2026-05-19 23:17:33.239 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" DROP COLUMN "DisplayOrder";
+2026-05-19 23:17:33.245 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" DROP COLUMN "IsTaxable";
+2026-05-19 23:17:33.250 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" DROP COLUMN "ParentCategoryId";
+2026-05-19 23:17:33.256 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" DROP COLUMN "ParentCategoryName";
+2026-05-19 23:17:33.261 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" DROP COLUMN "Description";
+2026-05-19 23:17:33.267 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" DROP COLUMN "DisplayOrder";
+2026-05-19 23:17:33.273 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" DROP COLUMN "ParentCategoryId";
+2026-05-19 23:17:33.278 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.74162Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000001';
+2026-05-19 23:17:33.283 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741621Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000002';
+2026-05-19 23:17:33.287 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741622Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000003';
+2026-05-19 23:17:33.291 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741623Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000004';
+2026-05-19 23:17:33.294 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741624Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000005';
+2026-05-19 23:17:33.298 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741752Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000001';
+2026-05-19 23:17:33.301 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741753Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000002';
+2026-05-19 23:17:33.303 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741756Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000003';
+2026-05-19 23:17:33.306 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741765Z'
+WHERE "Id" = '00000000-0000-0000-0006-000000000001';
+2026-05-19 23:17:33.308 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741767Z'
+WHERE "Id" = '00000000-0000-0000-0006-000000000002';
+2026-05-19 23:17:33.311 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741768Z'
+WHERE "Id" = '00000000-0000-0000-0006-000000000003';
+2026-05-19 23:17:33.314 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741768Z'
+WHERE "Id" = '00000000-0000-0000-0006-000000000004';
+2026-05-19 23:17:33.318 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741768Z'
+WHERE "Id" = '00000000-0000-0000-0006-000000000005';
+2026-05-19 23:17:33.322 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741788Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000001';
+2026-05-19 23:17:33.327 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741789Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000002';
+2026-05-19 23:17:33.331 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741791Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000003';
+2026-05-19 23:17:33.334 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741791Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000004';
+2026-05-19 23:17:33.337 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741792Z'
+WHERE "Id" = '00000000-0000-0000-0004-000000000005';
+2026-05-19 23:17:33.341 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "VendorSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-17T12:34:12.741779Z'
+WHERE "Id" = '00000000-0000-0000-0003-000000000001';
+2026-05-19 23:17:33.346 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "__EFMigrationsHistory"
+WHERE "MigrationId" = '20260519173020_UpdateCategorySchema';
+2026-05-19 23:18:15.183 +05:30 [INF] Executed DbCommand (55ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:18:15.252 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:19:47.982 +05:30 [INF] Executed DbCommand (51ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:19:48.045 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:19:48.068 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:19:48.084 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-19 23:19:48.088 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-19 23:19:48.104 +05:30 [INF] Applying migration '20260519174902_SimplifyCategorySchema'.
+2026-05-19 23:19:48.237 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "Description" text;
+2026-05-19 23:19:48.243 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:19:48.251 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "SpGetCategoriesPagedResults" ADD "IsTaxable" boolean NOT NULL DEFAULT FALSE;
+2026-05-19 23:19:48.291 +05:30 [INF] Executed DbCommand (36ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "ItemCategoryId" uuid;
+2026-05-19 23:19:48.294 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "Description" text NOT NULL DEFAULT '';
+2026-05-19 23:19:48.298 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "ItemCategories" ADD "DisplayOrder" integer NOT NULL DEFAULT 0;
+2026-05-19 23:19:48.301 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924282Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000001';
+2026-05-19 23:19:48.304 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924282Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000002';
+2026-05-19 23:19:48.308 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924283Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000003';
+2026-05-19 23:19:48.311 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924283Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000004';
+2026-05-19 23:19:48.314 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924283Z'
+WHERE "Id" = '00000000-0000-0000-0001-000000000005';
+2026-05-19 23:19:48.317 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924306Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000001';
+2026-05-19 23:19:48.320 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924306Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000002';
+2026-05-19 23:19:48.324 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Grades" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924306Z'
+WHERE "Id" = '00000000-0000-0000-0005-000000000003';
+2026-05-19 23:19:48.327 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.92431Z', "Description" = 'School Textbooks', "DisplayOrder" = 1, "IsTaxable" = FALSE
+WHERE "Id" = '00000000-0000-0000-0006-000000000001';
+2026-05-19 23:19:48.330 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.92431Z', "Description" = 'School Stationery', "DisplayOrder" = 2
+WHERE "Id" = '00000000-0000-0000-0006-000000000002';
+2026-05-19 23:19:48.332 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924311Z', "Description" = 'School Journals', "DisplayOrder" = 3
+WHERE "Id" = '00000000-0000-0000-0006-000000000003';
+2026-05-19 23:19:48.335 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924311Z', "Description" = 'School Bags', "DisplayOrder" = 4
+WHERE "Id" = '00000000-0000-0000-0006-000000000004';
+2026-05-19 23:19:48.337 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "ItemCategories" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924311Z', "Description" = 'Delivery Charges', "DisplayOrder" = 5
+WHERE "Id" = '00000000-0000-0000-0006-000000000005';
+2026-05-19 23:19:48.342 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924323Z', "ItemCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000001';
+2026-05-19 23:19:48.345 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924324Z', "ItemCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000002';
+2026-05-19 23:19:48.348 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924324Z', "ItemCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000003';
+2026-05-19 23:19:48.351 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924325Z', "ItemCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000004';
+2026-05-19 23:19:48.354 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.924326Z', "ItemCategoryId" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000005';
+2026-05-19 23:19:48.359 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "VendorSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-19T17:49:01.92432Z'
+WHERE "Id" = '00000000-0000-0000-0003-000000000001';
+2026-05-19 23:19:48.398 +05:30 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Items_ItemCategoryId" ON "Items" ("ItemCategoryId");
+2026-05-19 23:19:48.402 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD CONSTRAINT "FK_Items_ItemCategories_ItemCategoryId" FOREIGN KEY ("ItemCategoryId") REFERENCES "ItemCategories" ("Id");
+2026-05-19 23:19:48.406 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DROP FUNCTION IF EXISTS usp_GetCategoriesPaged(VARCHAR, INT, INT);
+2026-05-19 23:19:48.411 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                CREATE OR REPLACE FUNCTION usp_GetCategoriesPaged(
+                    p_SearchTerm VARCHAR,
+                    p_PageNumber INT,
+                    p_PageSize INT
+                )
+                RETURNS TABLE (
+                    "Id" UUID,
+                    "Name" VARCHAR,
+                    "Description" TEXT,
+                    "IsActive" BOOLEAN,
+                    "DisplayOrder" INT,
+                    "HsnCode" VARCHAR,
+                    "GstPercent" DECIMAL,
+                    "CgstPercent" DECIMAL,
+                    "SgstPercent" DECIMAL,
+                    "IsTaxable" BOOLEAN,
+                    "TotalCount" INT
+                ) AS $$
+                BEGIN
+                    RETURN QUERY
+                    WITH FilteredCats AS (
+                        SELECT 
+                            c."Id", c."Name", c."Description", c."IsActive", c."DisplayOrder", 
+                            c."HsnCode", c."GstPercent", c."CgstPercent", c."SgstPercent", c."IsTaxable",
+                            COUNT(*) OVER()::INT as "TotalCount"
+                        FROM "ItemCategories" c
+                        WHERE c."IsDeleted" = FALSE
+                          AND (p_SearchTerm IS NULL OR p_SearchTerm = '' 
+                               OR c."Name" ILIKE '%' || p_SearchTerm || '%' 
+                               OR c."HsnCode" ILIKE '%' || p_SearchTerm || '%')
+                    )
+                    SELECT * FROM FilteredCats
+                    ORDER BY "DisplayOrder" ASC, "Name" ASC
+                    OFFSET (p_PageNumber - 1) * p_PageSize
+                    LIMIT p_PageSize;
+                END;
+                $$ LANGUAGE plpgsql;
+2026-05-19 23:19:48.415 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260519174902_SimplifyCategorySchema', '8.0.11');

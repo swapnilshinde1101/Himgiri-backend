@@ -1,0 +1,63 @@
+using Himgiri.Core.DTOs;
+using Himgiri.Core.Interfaces.Services;
+using Himgiri.Core.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Himgiri.API.Controllers;
+
+[Authorize]
+public class ItemsController : BaseController
+{
+    private readonly IItemService _itemService;
+
+    public ItemsController(IItemService itemService)
+    {
+        _itemService = itemService;
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetItem(Guid id, CancellationToken ct)
+    {
+        var result = await _itemService.GetItemAsync(id, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetItems([FromQuery] BaseRequest request, CancellationToken ct)
+    {
+        var result = await _itemService.GetItemsAsync(request, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "InventoryOrAdmin")]
+    public async Task<IActionResult> CreateItem([FromBody] CreateItemRequest request, CancellationToken ct)
+    {
+        var result = await _itemService.CreateItemAsync(request, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Policy = "InventoryOrAdmin")]
+    public async Task<IActionResult> UpdateItem(Guid id, [FromBody] CreateItemRequest request, CancellationToken ct)
+    {
+        var result = await _itemService.UpdateItemAsync(id, request, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "SuperAdmin")]
+    public async Task<IActionResult> DeleteItem(Guid id, CancellationToken ct)
+    {
+        var result = await _itemService.DeleteItemAsync(id, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpGet("suggestions")]
+    public async Task<IActionResult> GetSuggestions([FromQuery] string term, CancellationToken ct)
+    {
+        var result = await _itemService.GetSuggestionsAsync(term, ct);
+        return OkResponse(result.Data, result.Message);
+    }
+}

@@ -1,0 +1,370 @@
+2026-05-16 18:22:21.403 +05:30 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:22:21.477 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:22:21.500 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:22:21.518 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:22:21.521 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:22:21.531 +05:30 [INF] Applying migration '20260516125125_AddProfessionalInfrastructure'.
+2026-05-16 18:22:21.643 +05:30 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.648 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.650 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.652 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.665 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.668 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.670 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "VendorSettings" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.673 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.676 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.679 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.681 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.695 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.698 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.700 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Suppliers" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.704 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.707 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.710 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.712 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.715 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.717 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.719 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "StockLogs" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.725 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.728 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.732 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.735 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.739 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.742 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.745 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrders" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.749 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.752 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.755 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.760 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.763 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.766 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.770 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "PurchaseOrderItems" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.776 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.780 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.783 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.786 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.788 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.794 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.796 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Orders" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.799 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.803 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.807 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.810 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.814 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "IsActive" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.817 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.820 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "OrderItems" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.824 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.828 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.830 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.833 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.837 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.841 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Items" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.844 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.847 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.865 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.869 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.873 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.877 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "GstSettings" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.884 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ALTER COLUMN "UpdatedAt" DROP NOT NULL;
+2026-05-16 18:22:21.889 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "AccessFailedCount" integer NOT NULL DEFAULT 0;
+2026-05-16 18:22:21.892 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "CreatedBy" uuid;
+2026-05-16 18:22:21.896 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "DeletedAt" timestamp with time zone;
+2026-05-16 18:22:21.898 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "DeletedBy" uuid;
+2026-05-16 18:22:21.901 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "IsDeleted" boolean NOT NULL DEFAULT FALSE;
+2026-05-16 18:22:21.904 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "LockoutEnd" timestamp with time zone;
+2026-05-16 18:22:21.909 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "AdminUsers" ADD "ModifiedBy" uuid;
+2026-05-16 18:22:21.922 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ApiErrorLogs" (
+    "Id" uuid NOT NULL,
+    "RequestType" text NOT NULL,
+    "Url" character varying(2000) NOT NULL,
+    "Payload" text,
+    "QueryParams" text,
+    "Response" text,
+    "ResponseCode" integer NOT NULL,
+    "IpAddress" text,
+    "UserAgent" text,
+    "UserId" uuid,
+    "UserEmail" text,
+    "ExceptionMessage" text,
+    "StackTrace" text,
+    "IsActive" boolean NOT NULL,
+    "IsDeleted" boolean NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    "UpdatedAt" timestamp with time zone,
+    "DeletedAt" timestamp with time zone,
+    "CreatedBy" uuid,
+    "ModifiedBy" uuid,
+    "DeletedBy" uuid,
+    CONSTRAINT "PK_ApiErrorLogs" PRIMARY KEY ("Id")
+);
+2026-05-16 18:22:21.935 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "AccessFailedCount" = 0, "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384335Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "LockoutEnd" = NULL, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0001-000000000001';
+2026-05-16 18:22:21.938 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "AccessFailedCount" = 0, "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384336Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "LockoutEnd" = NULL, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0001-000000000002';
+2026-05-16 18:22:21.942 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "AccessFailedCount" = 0, "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384336Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "LockoutEnd" = NULL, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0001-000000000003';
+2026-05-16 18:22:21.945 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "AccessFailedCount" = 0, "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384336Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "LockoutEnd" = NULL, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0001-000000000004';
+2026-05-16 18:22:21.948 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AdminUsers" SET "AccessFailedCount" = 0, "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384337Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "LockoutEnd" = NULL, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0001-000000000005';
+2026-05-16 18:22:21.951 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "GstSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384355Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "EffectiveFrom" = TIMESTAMPTZ '2026-05-16T12:51:23.384354Z', "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0002-000000000001';
+2026-05-16 18:22:21.954 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "GstSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384356Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "EffectiveFrom" = TIMESTAMPTZ '2026-05-16T12:51:23.384356Z', "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0002-000000000002';
+2026-05-16 18:22:21.958 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "GstSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384356Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "EffectiveFrom" = TIMESTAMPTZ '2026-05-16T12:51:23.384356Z', "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0002-000000000003';
+2026-05-16 18:22:21.961 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "GstSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384357Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "EffectiveFrom" = TIMESTAMPTZ '2026-05-16T12:51:23.384357Z', "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0002-000000000004';
+2026-05-16 18:22:21.964 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "GstSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384357Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "EffectiveFrom" = TIMESTAMPTZ '2026-05-16T12:51:23.384357Z', "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0002-000000000005';
+2026-05-16 18:22:21.971 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384364Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000001';
+2026-05-16 18:22:21.974 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384364Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000002';
+2026-05-16 18:22:21.977 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384365Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000003';
+2026-05-16 18:22:21.980 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384365Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000004';
+2026-05-16 18:22:21.983 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Items" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384366Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0004-000000000005';
+2026-05-16 18:22:21.988 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+UPDATE "VendorSettings" SET "CreatedAt" = TIMESTAMPTZ '2026-05-16T12:51:23.384361Z', "CreatedBy" = NULL, "DeletedAt" = NULL, "DeletedBy" = NULL, "IsActive" = TRUE, "IsDeleted" = FALSE, "ModifiedBy" = NULL, "UpdatedAt" = NULL
+WHERE "Id" = '00000000-0000-0000-0003-000000000001';
+2026-05-16 18:22:21.996 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260516125125_AddProfessionalInfrastructure', '8.0.11');
+2026-05-16 18:26:16.317 +05:30 [INF] Executed DbCommand (49ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:26:16.368 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:26:16.394 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:26:16.407 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:26:16.410 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:26:16.420 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-16 18:26:16.745 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-16 18:26:17.241 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-16 18:26:17.322 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-16 18:26:17.561 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-16 18:26:17.562 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-16 18:26:17.608 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-16 18:26:17.610 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-16 18:26:17.612 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-16 18:26:17.613 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-16 18:26:17.614 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-16 18:26:17.615 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-16 18:26:17.636 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-16 18:26:17.637 +05:30 [INF] Hosting environment: Development
+2026-05-16 18:26:17.639 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-16 18:26:17.849 +05:30 [INF] Server desktop-4pnf28j:19604:786759f1 successfully announced in 211.9574 ms
+2026-05-16 18:26:17.869 +05:30 [INF] Server desktop-4pnf28j:19604:786759f1 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-16 18:26:17.992 +05:30 [INF] Server desktop-4pnf28j:19604:786759f1 all the dispatchers started
+2026-05-16 18:26:17.998 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-16 18:26:20.545 +05:30 [INF] HTTP GET / responded 404 in 2083.5885 ms
+2026-05-16 18:26:20.559 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 2567.707ms
+2026-05-16 18:26:20.566 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-16 18:26:24.924 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-16 18:26:25.008 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 83.8223ms
+2026-05-16 18:26:25.059 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-16 18:26:25.068 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 8.2198ms
+2026-05-16 18:26:25.284 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-16 18:26:25.318 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 34.1562ms
+2026-05-16 18:26:25.823 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-16 18:26:25.833 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 9.8219ms
+2026-05-16 18:34:46.960 +05:30 [INF] Executed DbCommand (80ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:34:47.036 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:34:47.060 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:34:47.073 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2026-05-16 18:34:47.076 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-16 18:34:47.088 +05:30 [INF] No migrations were applied. The database is already up to date.
+2026-05-16 18:34:47.149 +05:30 [INF] Start installing Hangfire SQL objects...
+2026-05-16 18:34:47.195 +05:30 [INF] Hangfire SQL objects installed.
+2026-05-16 18:34:47.424 +05:30 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-16 18:34:47.683 +05:30 [INF] Now listening on: https://localhost:62313
+2026-05-16 18:34:47.685 +05:30 [INF] Now listening on: http://localhost:62314
+2026-05-16 18:34:47.767 +05:30 [INF] Starting Hangfire Server using job storage: 'PostgreSQL Server: Host: localhost, DB: Himgiri, Schema: hangfire'
+2026-05-16 18:34:47.769 +05:30 [INF] Using the following options for PostgreSQL job storage:
+2026-05-16 18:34:47.771 +05:30 [INF]     Queue poll interval: 00:00:15.
+2026-05-16 18:34:47.772 +05:30 [INF]     Invisibility timeout: 00:30:00.
+2026-05-16 18:34:47.773 +05:30 [INF]     Use sliding invisibility timeout: False.
+2026-05-16 18:34:47.776 +05:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2026-05-16 18:34:48.159 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-16 18:34:48.164 +05:30 [INF] Hosting environment: Development
+2026-05-16 18:34:48.167 +05:30 [INF] Content root path: D:\himgiri\backend\Himgiri.API
+2026-05-16 18:34:48.416 +05:30 [INF] Server desktop-4pnf28j:31068:3aa2fadf successfully announced in 249.6925 ms
+2026-05-16 18:34:48.434 +05:30 [INF] Server desktop-4pnf28j:31068:3aa2fadf is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2026-05-16 18:34:48.749 +05:30 [INF] Server desktop-4pnf28j:31068:3aa2fadf all the dispatchers started
+2026-05-16 18:34:48.899 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/ - null null
+2026-05-16 18:34:49.171 +05:30 [INF] HTTP GET / responded 404 in 96.3599 ms
+2026-05-16 18:34:49.186 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/ - 404 null null 310.214ms
+2026-05-16 18:34:49.193 +05:30 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:62313/, Response status code: 404
+2026-05-16 18:34:57.441 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/index.html - null null
+2026-05-16 18:34:57.563 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/index.html - 200 null text/html;charset=utf-8 122.8587ms
+2026-05-16 18:34:57.679 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_vs/browserLink - null null
+2026-05-16 18:34:57.680 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-16 18:34:57.718 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_framework/aspnetcore-browser-refresh.js - 200 14927 application/javascript; charset=utf-8 38.4677ms
+2026-05-16 18:34:57.776 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/_vs/browserLink - 200 null text/javascript; charset=UTF-8 95.3565ms
+2026-05-16 18:34:58.312 +05:30 [INF] Request starting HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - null null
+2026-05-16 18:34:58.328 +05:30 [INF] Request finished HTTP/2 GET https://localhost:62313/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 16.1485ms

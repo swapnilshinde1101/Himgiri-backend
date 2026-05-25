@@ -1,0 +1,32 @@
+namespace Himgiri.Core.Enums;
+
+public enum StorageStatus
+{
+    InStock,    // Available for home delivery immediately
+    PreOrder    // Under printing — delivered to classroom in June 2026
+}
+
+public enum OrderStatus
+{
+    Pending,
+    Confirmed,
+    Packed,
+    Dispatched,
+    Delivered,
+    Refunded,
+    StockOut
+}
+
+public enum PaymentStatus
+{
+    Pending,
+    Success,
+    Failed
+}
+
+public enum AdminRole
+{
+    SuperAdmin,         // Full access — all modules
+    InventoryManager,   // Items + Stock only
+    OrderManager        // Orders only
+}
