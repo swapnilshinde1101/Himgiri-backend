@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Himgiri.Core\Himgiri.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Database\Scripts\**\*.sql" />
+  </ItemGroup>
 </Project>
