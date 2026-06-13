@@ -51,6 +51,9 @@ public class GradeRepository : IGradeRepository
             .Select(g => g.Name)
             .Distinct().Take(10).ToListAsync(ct);
     }
+
+    public async Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default)
+        => await _db.ItemGrades.AnyAsync(ig => ig.GradeId == id && !ig.Item.IsDeleted, ct);
 }
 
 public class CategoryRepository : ICategoryRepository
@@ -107,4 +110,7 @@ public class CategoryRepository : ICategoryRepository
             .Select(c => c.Name)
             .Distinct().Take(10).ToListAsync(ct);
     }
+
+    public async Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default)
+        => await _db.Items.AnyAsync(i => i.CategoryId == id && !i.IsDeleted, ct);
 }

@@ -20,13 +20,20 @@ public record ItemDto(
     string? Description,
     string? ImageUrl,
     decimal Price,
+    decimal? PurchasePrice,
+    decimal Mrp,
     StorageStatus StorageStatus,
     int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
     string CategoryName,
     Guid CategoryId,
-    string GradeName,
-    Guid GradeId,
-    bool IsActive
+    System.Collections.Generic.List<Guid> GradeIds,
+    string GradeNames,
+    bool IsActive,
+    DateTime CreatedAt,
+    DateTime? CompletedAt
 );
 
 public record CreateItemRequest(
@@ -34,14 +41,80 @@ public record CreateItemRequest(
     string? Description,
     string? ImageUrl,
     decimal Price,
+    decimal? PurchasePrice,
+    decimal Mrp,
     StorageStatus StorageStatus,
     int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
     Guid CategoryId,
-    Guid GradeId,
+    System.Collections.Generic.List<Guid> GradeIds,
     bool IsActive
 );
 
-public record UpdateStockRequest(int NewQty, string Reason);
+public record CatalogItemDto(
+    Guid Id,
+    string Name,
+    string? Description,
+    string? ImageUrl,
+    decimal Price,
+    decimal Mrp,
+    StorageStatus StorageStatus,
+    int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
+    string CategoryName,
+    Guid CategoryId,
+    System.Collections.Generic.List<Guid> GradeIds,
+    string GradeNames,
+    bool IsActive,
+    DateTime CreatedAt,
+    DateTime? CompletedAt
+);
+
+public record PriceAuditLogDto(
+    Guid Id,
+    Guid ItemId,
+    string ItemName,
+    decimal OldPrice,
+    decimal NewPrice,
+    decimal OldMrp,
+    decimal NewMrp,
+    string ChangedBy,
+    string Reason,
+    DateTime CreatedAt
+);
+
+public record CompletedStatsDto(
+    int TotalCompletedCount,
+    decimal TotalPurchaseValue,
+    decimal TotalRetailValue,
+    string MostCompletedCategory
+);
+
+public record DashboardStatsDto(
+    int TotalItems,
+    int LowStockCount,
+    int OutOfStockCount,
+    int TotalOrders,
+    decimal RevenueToday,
+    int PendingOrders
+);
+
+public record UpdateStockRequest(int AdjustmentQty, string Reason, int? LastSeenStockQty = null);
+
+public record StockLogDto(
+    Guid Id,
+    Guid ItemId,
+    string ItemName,
+    int OldQty,
+    int NewQty,
+    string ChangedBy,
+    string Reason,
+    DateTime CreatedAt
+);
 
 // ── Support Entities DTOs ──
 public record GradeDto(
@@ -127,3 +200,22 @@ public record OrderItemDto(
     decimal LineTotal
 );
 
+public record BulkInwardRequest(
+    System.Collections.Generic.List<BulkInwardItemDto> Items,
+    string Reason
+);
+
+public record BulkInwardItemDto(
+    System.Guid ItemId,
+    int QuantityToAdd
+);
+
+public record BulkStatusRequest(
+    System.Collections.Generic.List<System.Guid> ItemIds,
+    bool IsActive
+);
+
+public record BulkCategoryRequest(
+    System.Collections.Generic.List<System.Guid> ItemIds,
+    System.Guid CategoryId
+);

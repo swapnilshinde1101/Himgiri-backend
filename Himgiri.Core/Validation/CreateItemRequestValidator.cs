@@ -23,11 +23,14 @@ public class CreateItemRequestValidator : AbstractValidator<CreateItemRequest>
         RuleFor(x => x.CategoryId)
             .NotEmpty().WithMessage("Category is required.");
 
-        RuleFor(x => x.GradeId)
-            .NotEmpty().WithMessage("Grade is required.");
+        RuleFor(x => x.GradeIds)
+            .NotEmpty().WithMessage("At least one Grade is required.");
 
         RuleFor(x => x.StockQty)
             .GreaterThanOrEqualTo(0).WithMessage("Stock Quantity cannot be negative.");
+
+        RuleFor(x => x.TargetQty)
+            .GreaterThan(0).WithMessage("Target Quantity must be greater than 0.");
 
         RuleFor(x => x.StorageStatus)
             .IsInEnum().WithMessage("Invalid Storage Status.");

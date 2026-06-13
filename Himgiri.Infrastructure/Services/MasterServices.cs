@@ -116,6 +116,11 @@ public class GradeService : IGradeService
         var grade = await _repo.GetByIdAsync(id, ct);
         if (grade == null) return JsonModel<bool>.Error("Grade not found", 404);
 
+        if (await _repo.HasLinkedItemsAsync(id, ct))
+        {
+            return JsonModel<bool>.Error("Cannot delete this Grade because it is assigned to one or more active catalog items. Reassign those items first.", 400);
+        }
+
         _repo.Delete(grade);
         var success = await _uow.CommitAsync(ct);
         return JsonModel<bool>.Success(success, "Grade deleted");
@@ -264,6 +269,11 @@ public class CategoryService : ICategoryService
     {
         var category = await _repo.GetByIdAsync(id, ct);
         if (category == null) return JsonModel<bool>.Error("Category not found", 404);
+
+        if (await _repo.HasLinkedItemsAsync(id, ct))
+        {
+            return JsonModel<bool>.Error("Cannot delete this Category because it is assigned to one or more active catalog items. Reassign those items first.", 400);
+        }
 
         _repo.Delete(category);
         var success = await _uow.CommitAsync(ct);

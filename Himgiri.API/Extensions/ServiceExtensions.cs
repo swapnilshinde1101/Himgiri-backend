@@ -133,6 +133,7 @@ public static class ServiceExtensions
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IStockService, StockService>();
         
         // Phase 2+ services registered here as built
         return services;

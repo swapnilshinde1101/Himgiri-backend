@@ -12,6 +12,7 @@ public interface IGradeRepository
     void Update(Grade grade);
     void Delete(Grade grade);
     Task<List<string>> GetSuggestionsAsync(string term, CancellationToken ct = default);
+    Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default);
 }
 
 public interface ICategoryRepository
@@ -23,4 +24,5 @@ public interface ICategoryRepository
     void Update(ItemCategory category);
     void Delete(ItemCategory category);
     Task<List<string>> GetSuggestionsAsync(string term, CancellationToken ct = default);
+    Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default);
 }
