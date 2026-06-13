@@ -159,6 +159,11 @@ public class CategoryService : ICategoryService
 
     public async Task<JsonModel<CategoryDto>> CreateAsync(CategoryDto request, CancellationToken ct = default)
     {
+        if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
+        {
+            return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
+        }
+
         // ── Smart Re-ordering Logic ──
         var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.DisplayOrder == request.DisplayOrder))
@@ -193,6 +198,11 @@ public class CategoryService : ICategoryService
     {
         var category = await _repo.GetByIdAsync(id, ct);
         if (category == null) return JsonModel<CategoryDto>.Error("Category not found", 404);
+
+        if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
+        {
+            return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
+        }
 
         // If DisplayOrder is changing, handle the shift
         if (category.DisplayOrder != request.DisplayOrder)

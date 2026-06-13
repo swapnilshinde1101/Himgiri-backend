@@ -10,11 +10,13 @@ namespace Himgiri.Infrastructure.Services;
 public class ItemService : IItemService
 {
     private readonly IItemRepository _itemRepo;
+    private readonly ICategoryRepository _categoryRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ItemService(IItemRepository itemRepo, IUnitOfWork unitOfWork)
+    public ItemService(IItemRepository itemRepo, ICategoryRepository categoryRepo, IUnitOfWork unitOfWork)
     {
         _itemRepo = itemRepo;
+        _categoryRepo = categoryRepo;
         _unitOfWork = unitOfWork;
     }
 
@@ -81,6 +83,17 @@ public class ItemService : IItemService
         if (await _itemRepo.ExistsByNameAsync(request.Name, null, ct))
             return JsonModel<ItemDto>.Error("An item with this name already exists.");
 
+        var category = await _categoryRepo.GetByIdAsync(request.CategoryId, ct);
+        if (category == null)
+            return JsonModel<ItemDto>.Error("Category not found.");
+
+        var gstPercent = category.IsTaxable ? category.GstPercent : 0m;
+        var sellingPriceWithGst = request.Price * (1 + gstPercent / 100m);
+        if (sellingPriceWithGst > request.Mrp)
+        {
+            return JsonModel<ItemDto>.Error($"Selling Price inclusive of GST (₹{sellingPriceWithGst:F2}) cannot exceed MRP (₹{request.Mrp:F2}).");
+        }
+
         var item = new Item
         {
             Name = request.Name,
@@ -136,6 +149,17 @@ public class ItemService : IItemService
 
         if (await _itemRepo.ExistsByNameAsync(request.Name, id, ct))
             return JsonModel<ItemDto>.Error("An item with this name already exists.");
+
+        var category = await _categoryRepo.GetByIdAsync(request.CategoryId, ct);
+        if (category == null)
+            return JsonModel<ItemDto>.Error("Category not found.");
+
+        var gstPercent = category.IsTaxable ? category.GstPercent : 0m;
+        var sellingPriceWithGst = request.Price * (1 + gstPercent / 100m);
+        if (sellingPriceWithGst > request.Mrp)
+        {
+            return JsonModel<ItemDto>.Error($"Selling Price inclusive of GST (₹{sellingPriceWithGst:F2}) cannot exceed MRP (₹{request.Mrp:F2}).");
+        }
 
         var wasInitialized = item.IsStockInitialized;
         
