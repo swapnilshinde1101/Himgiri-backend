@@ -148,7 +148,8 @@ public record CreateOrderRequest(
     string City,
     string Pincode,
     Guid GradeId,
-    List<OrderItemRequest> Items
+    List<OrderItemRequest> Items,
+    bool IncludeDelivery
 );
 
 public record OrderItemRequest(Guid ItemId, int Quantity);
@@ -218,4 +219,14 @@ public record BulkStatusRequest(
 public record BulkCategoryRequest(
     System.Collections.Generic.List<System.Guid> ItemIds,
     System.Guid CategoryId
+);
+
+public record CustomerSummaryDto(
+    string CustomerName,
+    string Mobile,
+    string Email,
+    string GradeName,
+    int TotalOrders,
+    decimal TotalSpent,
+    System.DateTime LastOrderDate
 );

@@ -22,6 +22,7 @@ public class HimgiriDbContext : DbContext
     public DbSet<ApiErrorLog> ApiErrorLogs => Set<ApiErrorLog>();
     public DbSet<ItemGrade> ItemGrades => Set<ItemGrade>();
     public DbSet<PriceAuditLog> PriceAuditLogs => Set<PriceAuditLog>();
+    public DbSet<OrderStatusHistory> OrderStatusHistories => Set<OrderStatusHistory>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult> SpGetItemsPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult> SpGetGradesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult> SpGetCategoriesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult>();
@@ -101,6 +102,8 @@ public class HimgiriDbContext : DbContext
             e.HasIndex(x => x.PaymentStatus);
             e.HasIndex(x => x.Status);
             e.HasIndex(x => x.CreatedAt);
+            e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(x => x.GradeId);
         });
 
         // ── OrderItem ──
@@ -164,6 +167,13 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.OldMrp).HasPrecision(10, 2);
             e.Property(x => x.NewMrp).HasPrecision(10, 2);
             e.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+        });
+
+        // ── OrderStatusHistory ──
+        modelBuilder.Entity<OrderStatusHistory>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // ═══════════════════════════════════════════
