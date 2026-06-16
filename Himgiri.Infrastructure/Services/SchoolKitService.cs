@@ -84,6 +84,19 @@ public class SchoolKitService : ISchoolKitService
             }
         }
 
+        if (request.IsActive)
+        {
+            var hasActiveKit = await _db.SchoolKits.AnyAsync(sk => 
+                sk.GradeId == request.GradeId && 
+                sk.IsActive && 
+                !sk.IsDeleted, 
+                ct);
+            if (hasActiveKit)
+            {
+                return JsonModel<SchoolKitDto>.Error("An active School Kit already exists for this Grade.", 400);
+            }
+        }
+
         if (request.Items == null || !request.Items.Any())
         {
             return JsonModel<SchoolKitDto>.Error("A School Kit must contain at least one item.", 400);
@@ -238,6 +251,20 @@ public class SchoolKitService : ISchoolKitService
                 {
                     return JsonModel<SchoolKitDto>.Error($"Kit Name cannot reference a different Grade ('{otherGrade.ShortName}').", 400);
                 }
+            }
+        }
+
+        if (request.IsActive)
+        {
+            var hasActiveKit = await _db.SchoolKits.AnyAsync(sk => 
+                sk.GradeId == request.GradeId && 
+                sk.IsActive && 
+                sk.Id != id && 
+                !sk.IsDeleted, 
+                ct);
+            if (hasActiveKit)
+            {
+                return JsonModel<SchoolKitDto>.Error("An active School Kit already exists for this Grade.", 400);
             }
         }
 
