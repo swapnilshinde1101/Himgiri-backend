@@ -127,6 +127,7 @@ public static class ServiceExtensions
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<ISchoolKitRepository, SchoolKitRepository>();
         
         // Services
         services.AddScoped<IAuthService, AuthService>();
@@ -136,6 +137,7 @@ public static class ServiceExtensions
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IStockService, StockService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ISchoolKitService, SchoolKitService>();
         
         // Phase 2+ services registered here as built
         return services;

@@ -230,3 +230,39 @@ public record CustomerSummaryDto(
     decimal TotalSpent,
     System.DateTime LastOrderDate
 );
+
+// ── School Kits DTOs ──
+public record SchoolKitDto(
+    System.Guid Id,
+    string Name,
+    string? Description,
+    System.Guid GradeId,
+    string GradeName,
+    bool IsActive,
+    System.Collections.Generic.List<SchoolKitItemDto> Items,
+    System.DateTime CreatedAt
+);
+
+public record SchoolKitItemDto(
+    System.Guid ItemId,
+    string ItemName,
+    decimal Price,
+    decimal Mrp,
+    int Quantity,
+    string CategoryName,
+    string Unit
+);
+
+public record CreateSchoolKitRequest(
+    string Name,
+    string? Description,
+    System.Guid GradeId,
+    bool IsActive,
+    System.Collections.Generic.List<CreateSchoolKitItemRequest> Items
+);
+
+public record CreateSchoolKitItemRequest(
+    System.Guid ItemId,
+    int Quantity
+);
+

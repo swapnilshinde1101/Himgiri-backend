@@ -88,6 +88,11 @@ public class StockService : IStockService
 
             return JsonModel<bool>.Success(true, "Stock updated successfully");
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(ct);
+            return JsonModel<bool>.Error("Stock level was concurrently modified by another user. Please refresh the page and try again.", 409);
+        }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(ct);
@@ -279,6 +284,11 @@ public class StockService : IStockService
             await transaction.CommitAsync(ct);
 
             return JsonModel<bool>.Success(true, "Bulk stock inwarded successfully");
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(ct);
+            return JsonModel<bool>.Error("One or more stock levels were concurrently modified by another user. Please refresh and try again.", 409);
         }
         catch (Exception ex)
         {

@@ -23,6 +23,8 @@ public class HimgiriDbContext : DbContext
     public DbSet<ItemGrade> ItemGrades => Set<ItemGrade>();
     public DbSet<PriceAuditLog> PriceAuditLogs => Set<PriceAuditLog>();
     public DbSet<OrderStatusHistory> OrderStatusHistories => Set<OrderStatusHistory>();
+    public DbSet<SchoolKit> SchoolKits => Set<SchoolKit>();
+    public DbSet<SchoolKitItem> SchoolKitItems => Set<SchoolKitItem>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult> SpGetItemsPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult> SpGetGradesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult> SpGetCategoriesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult>();
@@ -174,6 +176,22 @@ public class HimgiriDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── SchoolKit ──
+        modelBuilder.Entity<SchoolKit>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).IsRequired().HasMaxLength(200);
+            e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ── SchoolKitItem ──
+        modelBuilder.Entity<SchoolKitItem>(e =>
+        {
+            e.HasKey(ski => new { ski.SchoolKitId, ski.ItemId });
+            e.HasOne(ski => ski.SchoolKit).WithMany(sk => sk.KitItems).HasForeignKey(ski => ski.SchoolKitId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(ski => ski.Item).WithMany().HasForeignKey(ski => ski.ItemId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // ═══════════════════════════════════════════

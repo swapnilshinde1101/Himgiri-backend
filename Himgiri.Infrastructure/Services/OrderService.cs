@@ -314,6 +314,10 @@ public class OrderService : IOrderService
         {
             isValid = true;
         }
+        else if (fromStatus == OrderStatus.Pending && toStatus == OrderStatus.Confirmed)
+        {
+            isValid = true;
+        }
         else if (fromStatus == OrderStatus.Confirmed && toStatus == OrderStatus.Packed)
         {
             isValid = true;
@@ -459,5 +463,156 @@ public class OrderService : IOrderService
         {
             return false;
         }
+    }
+
+    public async Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default)
+    {
+        int retries = 3;
+        while (retries > 0)
+        {
+            using var transaction = await _db.Database.BeginTransactionAsync(ct);
+            try
+            {
+                // load order
+                var order = await _db.Orders
+                    .Include(o => o.Items)
+                    .FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted, ct);
+                
+                if (order == null)
+                {
+                    await transaction.RollbackAsync(ct);
+                    return JsonModel<bool>.Error("Order not found.", 404);
+                }
+
+                if (order.PaymentStatus == PaymentStatus.Success)
+                {
+                    await transaction.RollbackAsync(ct);
+                    return JsonModel<bool>.Success(true, "Payment already processed.");
+                }
+
+                // Verify stock and deduct
+                bool sufficientStock = true;
+                string stockOutMessage = "";
+
+                foreach (var itemReq in order.Items)
+                {
+                    // Reload item to get freshest value from database and ensure EF tracks its concurrency token properly
+                    var item = await _db.Items
+                        .FirstOrDefaultAsync(i => i.Id == itemReq.ItemId && !i.IsDeleted, ct);
+                    
+                    if (item == null)
+                    {
+                        sufficientStock = false;
+                        stockOutMessage = $"Item '{itemReq.ItemName}' no longer exists in the system.";
+                        break;
+                    }
+
+                    if (item.StorageStatus == StorageStatus.InStock)
+                    {
+                        if (item.StockQty < itemReq.Quantity)
+                        {
+                            sufficientStock = false;
+                            stockOutMessage = $"Insufficient stock for '{item.Name}'. Available: {item.StockQty}, Requested: {itemReq.Quantity}";
+                            break;
+                        }
+                    }
+                }
+
+                if (!sufficientStock)
+                {
+                    // Update order status to StockOut
+                    order.Status = OrderStatus.StockOut;
+                    order.PaymentStatus = PaymentStatus.Success;
+                    order.JodoPaymentId = transactionId;
+                    order.UpdatedAt = DateTime.UtcNow;
+                    order.AdminNotes = string.IsNullOrEmpty(order.AdminNotes)
+                        ? $"[System - {DateTime.UtcNow:dd/MM/yyyy HH:mm}] Payment succeeded but stock-out occurred. Reason: {stockOutMessage}"
+                        : $"{order.AdminNotes}\n[System - {DateTime.UtcNow:dd/MM/yyyy HH:mm}] Payment succeeded but stock-out occurred. Reason: {stockOutMessage}";
+
+                    var history = new OrderStatusHistory
+                    {
+                        OrderId = order.Id,
+                        FromStatus = OrderStatus.Pending,
+                        ToStatus = OrderStatus.StockOut,
+                        ChangedBy = "Payment Gateway Webhook",
+                        Note = $"Payment succeeded but stock-out occurred: {stockOutMessage}",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _db.Orders.Update(order);
+                    _db.OrderStatusHistories.Add(history);
+
+                    await _db.SaveChangesAsync(ct);
+                    await transaction.CommitAsync(ct);
+                    return JsonModel<bool>.Success(true, $"Payment processed. Order flagged as Stock-Out due to: {stockOutMessage}");
+                }
+
+                // If sufficient stock, deduct stock and update order
+                foreach (var itemReq in order.Items)
+                {
+                    var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == itemReq.ItemId && !i.IsDeleted, ct);
+                    if (item != null && item.StorageStatus == StorageStatus.InStock)
+                    {
+                        int oldQty = item.StockQty;
+                        item.StockQty -= itemReq.Quantity;
+                        item.UpdatedAt = DateTime.UtcNow;
+                        
+                        var log = new StockLog
+                        {
+                            Id = Guid.NewGuid(),
+                            ItemId = item.Id,
+                            OldQty = oldQty,
+                            NewQty = item.StockQty,
+                            ChangedBy = "Payment Gateway Webhook",
+                            Reason = "Order Placed",
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        _db.Items.Update(item);
+                        _db.StockLogs.Add(log);
+                    }
+                }
+
+                order.Status = OrderStatus.Confirmed;
+                order.PaymentStatus = PaymentStatus.Success;
+                order.JodoPaymentId = transactionId;
+                order.UpdatedAt = DateTime.UtcNow;
+
+                var confirmHistory = new OrderStatusHistory
+                {
+                    OrderId = order.Id,
+                    FromStatus = OrderStatus.Pending,
+                    ToStatus = OrderStatus.Confirmed,
+                    ChangedBy = "Payment Gateway Webhook",
+                    Note = "Payment successful. Order Confirmed.",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _db.Orders.Update(order);
+                _db.OrderStatusHistories.Add(confirmHistory);
+
+                await _db.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+
+                return JsonModel<bool>.Success(true, "Payment confirmed and stock deducted successfully.");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                await transaction.RollbackAsync(ct);
+                retries--;
+                if (retries == 0)
+                {
+                    return JsonModel<bool>.Error("Concurrency collision during payment processing. Please retry.", 409);
+                }
+                // Small random backoff before retrying
+                await Task.Delay(new Random().Next(50, 150), ct);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(ct);
+                return JsonModel<bool>.Error($"Payment confirmation failed: {ex.Message}");
+            }
+        }
+        return JsonModel<bool>.Error("Payment confirmation failed due to persistent concurrency conflicts.", 409);
     }
 }

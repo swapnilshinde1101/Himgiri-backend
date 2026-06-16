@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Himgiri.Core.Enums;
 
 namespace Himgiri.Core.Entities;
@@ -11,6 +12,8 @@ public class Item : BaseEntity
     public decimal? PurchasePrice { get; set; }  // Purchase price (optional)
     public decimal Mrp { get; set; }            // Maximum Retail Price (Required, inclusive of GST)
     public StorageStatus StorageStatus { get; set; } = StorageStatus.InStock;
+
+    [ConcurrencyCheck]
     public int StockQty { get; set; } = 0;
     public int TargetQty { get; set; } = 0;
     public bool IsStockInitialized { get; set; } = false;

@@ -15,6 +15,7 @@ public interface IOrderService
     Task<byte[]> ExportOrdersToCsvAsync(CancellationToken ct = default);
     Task<JsonModel<List<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken ct = default);
     Task<JsonModel<List<OrderSummaryDto>>> GetOrdersByCustomerAsync(string mobile, CancellationToken ct = default);
+    Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default);
 }
 
 // Support DTO records needed for requests:
