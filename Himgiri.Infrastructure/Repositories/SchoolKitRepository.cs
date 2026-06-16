@@ -101,11 +101,10 @@ public class SchoolKitRepository : ISchoolKitRepository
         _db.SchoolKits.Remove(kit);
     }
 
-    public async Task<bool> ExistsByNameAsync(string name, Guid gradeId, Guid? excludeId = null, CancellationToken ct = default)
+    public async Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null, CancellationToken ct = default)
     {
         return await _db.SchoolKits.AnyAsync(sk => 
             sk.Name.ToLower() == name.ToLower() && 
-            sk.GradeId == gradeId &&
             sk.Id != excludeId && 
             !sk.IsDeleted, 
             ct);

@@ -15,5 +15,5 @@ public interface ISchoolKitRepository
     void Add(SchoolKit kit);
     void Update(SchoolKit kit);
     void Delete(SchoolKit kit);
-    Task<bool> ExistsByNameAsync(string name, Guid gradeId, Guid? excludeId = null, CancellationToken ct = default);
+    Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null, CancellationToken ct = default);
 }
