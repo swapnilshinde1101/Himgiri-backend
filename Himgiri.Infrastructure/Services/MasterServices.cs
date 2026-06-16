@@ -33,8 +33,33 @@ public class GradeService : IGradeService
 
     public async Task<JsonModel<GradeDto>> CreateAsync(GradeDto request, CancellationToken ct = default)
     {
-        // ── Smart Re-ordering Logic ──
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return JsonModel<GradeDto>.Error("Grade Name is required.", 400);
+        }
+
+        var trimmedName = request.Name.Trim();
+        if (trimmedName.Length < 3 || trimmedName.Length > 15)
+        {
+            return JsonModel<GradeDto>.Error("Grade Name must be between 3 and 15 characters.", 400);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.ShortName))
+        {
+            return JsonModel<GradeDto>.Error("Short Name is required.", 400);
+        }
+
         var allGrades = await _repo.GetAllAsync(ct);
+        if (allGrades.Any(g => g.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
+        {
+            return JsonModel<GradeDto>.Error("Grade Name already exists.", 400);
+        }
+        if (allGrades.Any(g => g.ShortName.Equals(request.ShortName.Trim(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return JsonModel<GradeDto>.Error("Grade Short Name already exists.", 400);
+        }
+
+        // ── Smart Re-ordering Logic ──
         if (allGrades.Any(g => g.DisplayOrder == request.DisplayOrder))
         {
             var gradesToShift = allGrades.Where(g => g.DisplayOrder >= request.DisplayOrder);
@@ -47,8 +72,8 @@ public class GradeService : IGradeService
 
         var grade = new Grade
         {
-            Name = request.Name,
-            ShortName = request.ShortName,
+            Name = trimmedName,
+            ShortName = request.ShortName.Trim(),
             Description = request.Description ?? string.Empty,
             IsActive = request.IsActive,
             DisplayOrder = request.DisplayOrder
@@ -64,11 +89,35 @@ public class GradeService : IGradeService
         var grade = await _repo.GetByIdAsync(id, ct);
         if (grade == null) return JsonModel<GradeDto>.Error("Grade not found", 404);
 
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return JsonModel<GradeDto>.Error("Grade Name is required.", 400);
+        }
+
+        var trimmedName = request.Name.Trim();
+        if (trimmedName.Length < 3 || trimmedName.Length > 15)
+        {
+            return JsonModel<GradeDto>.Error("Grade Name must be between 3 and 15 characters.", 400);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.ShortName))
+        {
+            return JsonModel<GradeDto>.Error("Short Name is required.", 400);
+        }
+
+        var allGrades = await _repo.GetAllAsync(ct);
+        if (allGrades.Any(g => g.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase) && g.Id != id))
+        {
+            return JsonModel<GradeDto>.Error("Grade Name already exists.", 400);
+        }
+        if (allGrades.Any(g => g.ShortName.Equals(request.ShortName.Trim(), StringComparison.OrdinalIgnoreCase) && g.Id != id))
+        {
+            return JsonModel<GradeDto>.Error("Grade Short Name already exists.", 400);
+        }
+
         // If DisplayOrder is changing, handle the shift
         if (grade.DisplayOrder != request.DisplayOrder)
         {
-            var allGrades = await _repo.GetAllAsync(ct);
-            
             if (request.DisplayOrder < grade.DisplayOrder)
             {
                 // Moving UP: Shift items in between DOWN
@@ -83,8 +132,8 @@ public class GradeService : IGradeService
             }
         }
 
-        grade.Name = request.Name;
-        grade.ShortName = request.ShortName;
+        grade.Name = trimmedName;
+        grade.ShortName = request.ShortName.Trim();
         grade.Description = request.Description ?? string.Empty;
         grade.IsActive = request.IsActive;
         grade.DisplayOrder = request.DisplayOrder;
@@ -159,13 +208,34 @@ public class CategoryService : ICategoryService
 
     public async Task<JsonModel<CategoryDto>> CreateAsync(CategoryDto request, CancellationToken ct = default)
     {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return JsonModel<CategoryDto>.Error("Category Name is required.", 400);
+        }
+
+        var trimmedName = request.Name.Trim();
+        if (trimmedName.Length < 3 || trimmedName.Length > 15)
+        {
+            return JsonModel<CategoryDto>.Error("Category Name must be between 3 and 15 characters.", 400);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.HsnCode))
+        {
+            return JsonModel<CategoryDto>.Error("HSN Code is required.", 400);
+        }
+
+        var allCats = await _repo.GetAllAsync(ct);
+        if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
+        {
+            return JsonModel<CategoryDto>.Error("Category Name already exists.", 400);
+        }
+
         if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
         {
             return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
         }
 
         // ── Smart Re-ordering Logic ──
-        var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.DisplayOrder == request.DisplayOrder))
         {
             var catsToShift = allCats.Where(c => c.DisplayOrder >= request.DisplayOrder);
@@ -178,10 +248,10 @@ public class CategoryService : ICategoryService
 
         var category = new ItemCategory
         {
-            Name = request.Name,
+            Name = trimmedName,
             Description = request.Description ?? string.Empty,
             DisplayOrder = request.DisplayOrder,
-            HsnCode = request.HsnCode,
+            HsnCode = request.HsnCode.Trim(),
             GstPercent = request.GstPercent,
             IsTaxable = request.IsTaxable,
             IsActive = request.IsActive
@@ -199,6 +269,28 @@ public class CategoryService : ICategoryService
         var category = await _repo.GetByIdAsync(id, ct);
         if (category == null) return JsonModel<CategoryDto>.Error("Category not found", 404);
 
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return JsonModel<CategoryDto>.Error("Category Name is required.", 400);
+        }
+
+        var trimmedName = request.Name.Trim();
+        if (trimmedName.Length < 3 || trimmedName.Length > 15)
+        {
+            return JsonModel<CategoryDto>.Error("Category Name must be between 3 and 15 characters.", 400);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.HsnCode))
+        {
+            return JsonModel<CategoryDto>.Error("HSN Code is required.", 400);
+        }
+
+        var allCats = await _repo.GetAllAsync(ct);
+        if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase) && c.Id != id))
+        {
+            return JsonModel<CategoryDto>.Error("Category Name already exists.", 400);
+        }
+
         if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
         {
             return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
@@ -207,8 +299,6 @@ public class CategoryService : ICategoryService
         // If DisplayOrder is changing, handle the shift
         if (category.DisplayOrder != request.DisplayOrder)
         {
-            var allCats = await _repo.GetAllAsync(ct);
-            
             if (request.DisplayOrder < category.DisplayOrder)
             {
                 // Moving UP: Shift items in between DOWN
@@ -223,10 +313,10 @@ public class CategoryService : ICategoryService
             }
         }
 
-        category.Name = request.Name;
+        category.Name = trimmedName;
         category.Description = request.Description ?? string.Empty;
         category.DisplayOrder = request.DisplayOrder;
-        category.HsnCode = request.HsnCode;
+        category.HsnCode = request.HsnCode.Trim();
         category.GstPercent = request.GstPercent;
         category.IsTaxable = request.IsTaxable;
         category.IsActive = request.IsActive;
