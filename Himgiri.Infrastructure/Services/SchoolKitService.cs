@@ -43,9 +43,9 @@ public class SchoolKitService : ISchoolKitService
             return JsonModel<SchoolKitDto>.Error("Kit Name is required and must be between 3 and 200 characters.", 400);
         }
 
-        if (await _schoolKitRepo.ExistsByNameAsync(request.Name.Trim(), null, ct))
+        if (await _schoolKitRepo.ExistsByNameAsync(request.Name.Trim(), request.GradeId, null, ct))
         {
-            return JsonModel<SchoolKitDto>.Error($"A School Kit named '{request.Name}' already exists.", 400);
+            return JsonModel<SchoolKitDto>.Error($"A School Kit named '{request.Name}' already exists for this Grade.", 400);
         }
 
         var grade = await _gradeRepo.GetByIdAsync(request.GradeId, ct);
@@ -175,9 +175,9 @@ public class SchoolKitService : ISchoolKitService
             return JsonModel<SchoolKitDto>.Error("Kit Name is required and must be between 3 and 200 characters.", 400);
         }
 
-        if (await _schoolKitRepo.ExistsByNameAsync(request.Name.Trim(), id, ct))
+        if (await _schoolKitRepo.ExistsByNameAsync(request.Name.Trim(), request.GradeId, id, ct))
         {
-            return JsonModel<SchoolKitDto>.Error($"Another School Kit named '{request.Name}' already exists.", 400);
+            return JsonModel<SchoolKitDto>.Error($"Another School Kit named '{request.Name}' already exists for this Grade.", 400);
         }
 
         var grade = await _gradeRepo.GetByIdAsync(request.GradeId, ct);
