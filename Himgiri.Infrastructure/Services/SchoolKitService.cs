@@ -73,7 +73,7 @@ public class SchoolKitService : ISchoolKitService
         var itemIds = groupedItems.Select(i => i.ItemId).ToList();
         var dbItems = await _itemRepo.GetByIdsAsync(itemIds, ct);
 
-        // Verify all items exist and are active
+        // Verify all items exist, are active, and belong to the selected grade
         foreach (var reqItem in groupedItems)
         {
             var dbItem = dbItems.FirstOrDefault(i => i.Id == reqItem.ItemId);
@@ -85,6 +85,11 @@ public class SchoolKitService : ISchoolKitService
             if (!dbItem.IsActive)
             {
                 return JsonModel<SchoolKitDto>.Error($"Item '{dbItem.Name}' is currently inactive.", 400);
+            }
+
+            if (!dbItem.ItemGrades.Any(ig => ig.GradeId == request.GradeId))
+            {
+                return JsonModel<SchoolKitDto>.Error($"Item '{dbItem.Name}' does not belong to the selected Grade '{grade.Name}'.", 400);
             }
 
             if (reqItem.Quantity <= 0)
@@ -210,6 +215,11 @@ public class SchoolKitService : ISchoolKitService
             if (!dbItem.IsActive)
             {
                 return JsonModel<SchoolKitDto>.Error($"Item '{dbItem.Name}' is currently inactive.", 400);
+            }
+
+            if (!dbItem.ItemGrades.Any(ig => ig.GradeId == request.GradeId))
+            {
+                return JsonModel<SchoolKitDto>.Error($"Item '{dbItem.Name}' does not belong to the selected Grade '{grade.Name}'.", 400);
             }
 
             if (reqItem.Quantity <= 0)
