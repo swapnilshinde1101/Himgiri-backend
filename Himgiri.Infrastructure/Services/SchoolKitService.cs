@@ -59,6 +59,31 @@ public class SchoolKitService : ISchoolKitService
             return JsonModel<SchoolKitDto>.Error("The selected Grade is currently inactive.", 400);
         }
 
+        // Check for grade name mismatches in kit name
+        var allGrades = await _db.Grades.Where(g => !g.IsDeleted).ToListAsync(ct);
+        var otherGrades = allGrades.Where(g => g.Id != request.GradeId).ToList();
+
+        foreach (var otherGrade in otherGrades)
+        {
+            if (!string.IsNullOrEmpty(otherGrade.Name))
+            {
+                var pattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(otherGrade.Name)}\b";
+                if (System.Text.RegularExpressions.Regex.IsMatch(request.Name, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    return JsonModel<SchoolKitDto>.Error($"Kit Name cannot reference a different Grade ('{otherGrade.Name}').", 400);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(otherGrade.ShortName))
+            {
+                var pattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(otherGrade.ShortName)}\b";
+                if (System.Text.RegularExpressions.Regex.IsMatch(request.Name, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    return JsonModel<SchoolKitDto>.Error($"Kit Name cannot reference a different Grade ('{otherGrade.ShortName}').", 400);
+                }
+            }
+        }
+
         if (request.Items == null || !request.Items.Any())
         {
             return JsonModel<SchoolKitDto>.Error("A School Kit must contain at least one item.", 400);
@@ -189,6 +214,31 @@ public class SchoolKitService : ISchoolKitService
         if (!grade.IsActive)
         {
             return JsonModel<SchoolKitDto>.Error("The selected Grade is currently inactive.", 400);
+        }
+
+        // Check for grade name mismatches in kit name
+        var allGrades = await _db.Grades.Where(g => !g.IsDeleted).ToListAsync(ct);
+        var otherGrades = allGrades.Where(g => g.Id != request.GradeId).ToList();
+
+        foreach (var otherGrade in otherGrades)
+        {
+            if (!string.IsNullOrEmpty(otherGrade.Name))
+            {
+                var pattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(otherGrade.Name)}\b";
+                if (System.Text.RegularExpressions.Regex.IsMatch(request.Name, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    return JsonModel<SchoolKitDto>.Error($"Kit Name cannot reference a different Grade ('{otherGrade.Name}').", 400);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(otherGrade.ShortName))
+            {
+                var pattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(otherGrade.ShortName)}\b";
+                if (System.Text.RegularExpressions.Regex.IsMatch(request.Name, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    return JsonModel<SchoolKitDto>.Error($"Kit Name cannot reference a different Grade ('{otherGrade.ShortName}').", 400);
+                }
+            }
         }
 
         if (request.Items == null || !request.Items.Any())
