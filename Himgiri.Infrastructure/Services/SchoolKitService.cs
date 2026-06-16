@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Himgiri.Core.DTOs;
 using Himgiri.Core.Entities;
+using Himgiri.Core.Enums;
 using Himgiri.Core.Interfaces.Repositories;
 using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
@@ -165,6 +166,16 @@ public class SchoolKitService : ISchoolKitService
 
             // Re-load to populate full navigation properties for DTO mapping
             var loadedKit = await _schoolKitRepo.GetByIdAsync(kit.Id, ct);
+            if (loadedKit != null)
+            {
+                foreach (var ki in loadedKit.KitItems)
+                {
+                    if (ki.Item == null)
+                    {
+                        return JsonModel<SchoolKitDto>.Error($"Kit '{loadedKit.Name}' contains a broken item reference (ItemId: {ki.ItemId}). Contact administrator.", 500);
+                    }
+                }
+            }
             return JsonModel<SchoolKitDto>.Success(MapToDto(loadedKit!), "School Kit created successfully.");
         }
         catch (Exception ex)
@@ -182,20 +193,30 @@ public class SchoolKitService : ISchoolKitService
             return JsonModel<SchoolKitDto>.Error("School Kit not found.", 404);
         }
 
+        foreach (var ki in kit.KitItems)
+        {
+            if (ki.Item == null)
+            {
+                return JsonModel<SchoolKitDto>.Error($"Kit '{kit.Name}' contains a broken item reference (ItemId: {ki.ItemId}). Contact administrator.", 500);
+            }
+        }
+
         return JsonModel<SchoolKitDto>.Success(MapToDto(kit));
     }
 
     public async Task<JsonModel<List<SchoolKitDto>>> GetKitsByGradeIdAsync(Guid gradeId, CancellationToken ct = default)
     {
         var kits = await _schoolKitRepo.GetByGradeIdAsync(gradeId, ct);
-        var dtos = kits.Select(MapToDto).ToList();
+        var validKits = kits.Where(k => k.KitItems.All(ki => ki.Item != null)).ToList();
+        var dtos = validKits.Select(MapToDto).ToList();
         return JsonModel<List<SchoolKitDto>>.Success(dtos);
     }
 
     public async Task<JsonModel<List<SchoolKitDto>>> GetPagedKitsAsync(BaseRequest request, CancellationToken ct = default)
     {
         var (kits, total) = await _schoolKitRepo.GetPagedAsync(request, ct);
-        var dtos = kits.Select(MapToDto).ToList();
+        var validKits = kits.Where(k => k.KitItems.All(ki => ki.Item != null)).ToList();
+        var dtos = validKits.Select(MapToDto).ToList();
         return new JsonModel<List<SchoolKitDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));
     }
 
@@ -334,6 +355,16 @@ public class SchoolKitService : ISchoolKitService
             await _unitOfWork.CommitTransactionAsync(ct);
 
             var loadedKit = await _schoolKitRepo.GetByIdAsync(kit.Id, ct);
+            if (loadedKit != null)
+            {
+                foreach (var ki in loadedKit.KitItems)
+                {
+                    if (ki.Item == null)
+                    {
+                        return JsonModel<SchoolKitDto>.Error($"Kit '{loadedKit.Name}' contains a broken item reference (ItemId: {ki.ItemId}). Contact administrator.", 500);
+                    }
+                }
+            }
             return JsonModel<SchoolKitDto>.Success(MapToDto(loadedKit!), "School Kit updated successfully.");
         }
         catch (Exception ex)
@@ -359,15 +390,23 @@ public class SchoolKitService : ISchoolKitService
 
     private SchoolKitDto MapToDto(SchoolKit kit)
     {
-        var itemDtos = kit.KitItems.Select(ki => new SchoolKitItemDto(
-            ki.ItemId,
-            ki.Item?.Name ?? "Unknown Item",
-            ki.Item?.Price ?? 0m,
-            ki.Item?.Mrp ?? 0m,
-            ki.Quantity,
-            ki.Item?.Category?.Name ?? "Unknown Category",
-            ki.Item?.Unit ?? "Pieces (Pcs)"
-        )).ToList();
+        var itemDtos = new List<SchoolKitItemDto>();
+        foreach (var ki in kit.KitItems)
+        {
+            if (ki.Item == null) continue; // Skip broken reference safely to avoid mapping errors
+
+            itemDtos.Add(new SchoolKitItemDto(
+                ki.ItemId,
+                ki.Item.Name,
+                ki.Item.Price,
+                ki.Item.Mrp,
+                ki.Quantity,
+                ki.Item.Category?.Name ?? "Unknown Category",
+                ki.Item.Unit,
+                ki.Item.ImageUrl,
+                ki.Item.StorageStatus
+            ));
+        }
 
         return new SchoolKitDto(
             kit.Id,

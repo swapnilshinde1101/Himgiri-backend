@@ -3,6 +3,7 @@ using System;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Himgiri.Infrastructure.Migrations
 {
     [DbContext(typeof(HimgiriDbContext))]
-    partial class HimgiriDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616182723_AddSchoolKitUniqueActiveConstraint")]
+    partial class AddSchoolKitUniqueActiveConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +92,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000001"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9192),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4635),
                             Email = "superadmin@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -101,7 +104,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000002"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9200),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4642),
                             Email = "pradeep@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -113,7 +116,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000003"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9205),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4646),
                             Email = "inventory@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -125,7 +128,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000004"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9210),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4650),
                             Email = "orders1@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -137,7 +140,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000005"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9235),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4653),
                             Email = "orders2@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -276,7 +279,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9844),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4966),
                             Description = "Primary Grade 1",
                             DisplayOrder = 1,
                             IsActive = true,
@@ -287,7 +290,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000002"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9848),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4970),
                             Description = "Primary Grade 2",
                             DisplayOrder = 2,
                             IsActive = true,
@@ -298,7 +301,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000003"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9855),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(4974),
                             Description = "Primary Grade 3",
                             DisplayOrder = 3,
                             IsActive = true,
@@ -398,66 +401,9 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("00000000-0000-0000-0004-000000000011"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(46),
-                            Description = "Interactive English Reader for Grade 1",
-                            ImageUrl = "https://picsum.photos/200/300?random=11",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 180m,
-                            Name = "Grade 1 English Textbook",
-                            Price = 180m,
-                            PurchasePrice = 120m,
-                            StockQty = 150,
-                            StorageStatus = 0,
-                            TargetQty = 150,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0004-000000000012"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(54),
-                            Description = "Ruled Journal for Grade 1 practice",
-                            ImageUrl = "https://picsum.photos/200/300?random=12",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 45m,
-                            Name = "Grade 1 Red Notebook",
-                            Price = 40m,
-                            PurchasePrice = 25m,
-                            StockQty = 300,
-                            StorageStatus = 0,
-                            TargetQty = 300,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0004-000000000013"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000002"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(62),
-                            Description = "Stationery box containing pencils, eraser, and ruler",
-                            ImageUrl = "https://picsum.photos/200/300?random=13",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 80m,
-                            Name = "Grade 1 Premium Pencil Box",
-                            Price = 70m,
-                            PurchasePrice = 45m,
-                            StockQty = 200,
-                            StorageStatus = 0,
-                            TargetQty = 200,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
                             Id = new Guid("00000000-0000-0000-0004-000000000001"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(225),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5195),
                             Description = "DPS Hinjawadi School Almanac",
                             ImageUrl = "https://picsum.photos/200/300?random=1",
                             IsActive = true,
@@ -467,16 +413,16 @@ namespace Himgiri.Infrastructure.Migrations
                             Name = "Almanac 2026-27",
                             Price = 150m,
                             PurchasePrice = 100m,
-                            StockQty = 120,
+                            StockQty = 0,
                             StorageStatus = 0,
-                            TargetQty = 150,
+                            TargetQty = 0,
                             Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000002"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000002"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(232),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5202),
                             Description = "DPS Hinjawadi Portfolio File",
                             ImageUrl = "https://picsum.photos/200/300?random=2",
                             IsActive = true,
@@ -486,16 +432,16 @@ namespace Himgiri.Infrastructure.Migrations
                             Name = "Portfolio File",
                             Price = 80m,
                             PurchasePrice = 50m,
-                            StockQty = 250,
+                            StockQty = 0,
                             StorageStatus = 0,
-                            TargetQty = 300,
+                            TargetQty = 0,
                             Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000003"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(239),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5209),
                             Description = "DPS Public Speaking Journal",
                             ImageUrl = "https://picsum.photos/200/300?random=3",
                             IsActive = true,
@@ -505,16 +451,16 @@ namespace Himgiri.Infrastructure.Migrations
                             Name = "Public Speaking Journal",
                             Price = 120m,
                             PurchasePrice = 80m,
-                            StockQty = 180,
+                            StockQty = 0,
                             StorageStatus = 0,
-                            TargetQty = 200,
+                            TargetQty = 0,
                             Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000004"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(245),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5215),
                             Description = "Marathi Theme Book",
                             ImageUrl = "https://picsum.photos/200/300?random=4",
                             IsActive = true,
@@ -524,16 +470,16 @@ namespace Himgiri.Infrastructure.Migrations
                             Name = "Majet Shikuya Marathi",
                             Price = 90m,
                             PurchasePrice = 60m,
-                            StockQty = 90,
+                            StockQty = 0,
                             StorageStatus = 0,
-                            TargetQty = 100,
+                            TargetQty = 0,
                             Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000005"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(251),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5221),
                             Description = "Grade 2 Theme Book",
                             ImageUrl = "https://picsum.photos/200/300?random=5",
                             IsActive = true,
@@ -544,65 +490,8 @@ namespace Himgiri.Infrastructure.Migrations
                             Price = 110m,
                             PurchasePrice = 75m,
                             StockQty = 0,
-                            StorageStatus = 1,
-                            TargetQty = 150,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0004-000000000031"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(263),
-                            Description = "Mathematics textbook for Grade 3",
-                            ImageUrl = "https://picsum.photos/200/300?random=31",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 220m,
-                            Name = "Grade 3 Math Magic",
-                            Price = 220m,
-                            PurchasePrice = 150m,
-                            StockQty = 140,
                             StorageStatus = 0,
-                            TargetQty = 150,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0004-000000000032"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(268),
-                            Description = "Science and environment textbook for Grade 3",
-                            ImageUrl = "https://picsum.photos/200/300?random=32",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 240m,
-                            Name = "Grade 3 Science Explorer",
-                            Price = 240m,
-                            PurchasePrice = 160m,
-                            StockQty = 130,
-                            StorageStatus = 0,
-                            TargetQty = 150,
-                            Unit = "Pieces (Pcs)"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0004-000000000033"),
-                            CategoryId = new Guid("00000000-0000-0000-0006-000000000004"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(275),
-                            Description = "Heavy duty school backpack for Grade 3",
-                            ImageUrl = "https://picsum.photos/200/300?random=33",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsStockInitialized = true,
-                            Mrp = 750m,
-                            Name = "Grade 3 School Bag",
-                            Price = 650m,
-                            PurchasePrice = 450m,
-                            StockQty = 80,
-                            StorageStatus = 0,
-                            TargetQty = 100,
+                            TargetQty = 0,
                             Unit = "Pieces (Pcs)"
                         });
                 });
@@ -678,7 +567,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000001"),
                             CgstPercent = 0m,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9900),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5006),
                             Description = "School Textbooks",
                             DisplayOrder = 1,
                             GstPercent = 0m,
@@ -693,7 +582,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000002"),
                             CgstPercent = 6m,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9905),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5012),
                             Description = "School Stationery",
                             DisplayOrder = 2,
                             GstPercent = 12m,
@@ -708,7 +597,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000003"),
                             CgstPercent = 6m,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9907),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5013),
                             Description = "School Journals",
                             DisplayOrder = 3,
                             GstPercent = 12m,
@@ -723,7 +612,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000004"),
                             CgstPercent = 9m,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9908),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5079),
                             Description = "School Bags",
                             DisplayOrder = 4,
                             GstPercent = 18m,
@@ -738,7 +627,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000005"),
                             CgstPercent = 9m,
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9910),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5081),
                             Description = "Delivery Charges",
                             DisplayOrder = 5,
                             GstPercent = 18m,
@@ -768,21 +657,6 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000011"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
-                        },
-                        new
-                        {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000012"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
-                        },
-                        new
-                        {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000013"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
-                        },
-                        new
-                        {
                             ItemId = new Guid("00000000-0000-0000-0004-000000000001"),
                             GradeId = new Guid("00000000-0000-0000-0005-000000000002")
                         },
@@ -805,21 +679,6 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             ItemId = new Guid("00000000-0000-0000-0004-000000000005"),
                             GradeId = new Guid("00000000-0000-0000-0005-000000000002")
-                        },
-                        new
-                        {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000031"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
-                        },
-                        new
-                        {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000032"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
-                        },
-                        new
-                        {
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000033"),
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
                         });
                 });
 
@@ -1309,38 +1168,6 @@ namespace Himgiri.Infrastructure.Migrations
                         .HasFilter("\"IsActive\" = true AND \"IsDeleted\" = false");
 
                     b.ToTable("SchoolKits");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0007-000000000001"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(444),
-                            Description = "Essential textbooks and stationery bundle for Grade 1",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000001"),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Grade 1 Standard Kit"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0007-000000000002"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(448),
-                            Description = "Complete academic package including textbooks and journals for Grade 2",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Grade 2 Premium Kit"
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0007-000000000003"),
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 60, DateTimeKind.Utc).AddTicks(451),
-                            Description = "All required textbooks and school bag for Grade 3",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000003"),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Grade 3 Classic Kit"
-                        });
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.SchoolKitItem", b =>
@@ -1359,74 +1186,6 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("SchoolKitItems");
-
-                    b.HasData(
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000011"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000012"),
-                            Quantity = 3
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000013"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000001"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000002"),
-                            Quantity = 2
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000003"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000004"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000005"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000031"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000032"),
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
-                            ItemId = new Guid("00000000-0000-0000-0004-000000000033"),
-                            Quantity = 1
-                        });
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.StockLog", b =>
@@ -1603,7 +1362,7 @@ namespace Himgiri.Infrastructure.Migrations
                             CompanyName = "Himgiri Goods Pvt. Ltd",
                             ContactEmail = "support@himgirigoods.com",
                             ContactPhone = "PENDING_FROM_CLIENT",
-                            CreatedAt = new DateTime(2026, 6, 16, 18, 50, 18, 59, DateTimeKind.Utc).AddTicks(9988),
+                            CreatedAt = new DateTime(2026, 6, 16, 18, 27, 21, 134, DateTimeKind.Utc).AddTicks(5147),
                             Gstin = "PENDING_FROM_CLIENT",
                             InvoicePrefix = "HG",
                             IsActive = true,

@@ -250,7 +250,9 @@ public record SchoolKitItemDto(
     decimal Mrp,
     int Quantity,
     string CategoryName,
-    string Unit
+    string Unit,
+    string? ImageUrl,
+    StorageStatus StorageStatus
 );
 
 public record CreateSchoolKitRequest(
