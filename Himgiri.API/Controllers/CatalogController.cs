@@ -15,13 +15,8 @@ public class CatalogController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCatalog([FromQuery] Guid gradeId, CancellationToken ct)
+    public async Task<IActionResult> GetCatalog([FromQuery] Guid? gradeId, CancellationToken ct)
     {
-        if (gradeId == Guid.Empty)
-        {
-            return ErrorResponse("Valid Grade ID is required", 400);
-        }
-
         var result = await _itemService.GetCatalogItemsByGradeAsync(gradeId, ct);
         return StatusCode(result.StatusCode, result);
     }

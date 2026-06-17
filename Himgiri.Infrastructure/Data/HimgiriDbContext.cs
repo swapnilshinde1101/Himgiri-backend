@@ -104,7 +104,7 @@ public class HimgiriDbContext : DbContext
             e.HasIndex(x => x.PaymentStatus);
             e.HasIndex(x => x.Status);
             e.HasIndex(x => x.CreatedAt);
-            e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(x => x.GradeId);
         });
 

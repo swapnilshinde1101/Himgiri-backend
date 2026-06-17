@@ -147,7 +147,7 @@ public record CreateOrderRequest(
     string AddressLine2,
     string City,
     string Pincode,
-    Guid GradeId,
+    Guid? GradeId,
     List<OrderItemRequest> Items,
     bool IncludeDelivery
 );

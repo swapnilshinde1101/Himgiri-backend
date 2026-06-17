@@ -71,14 +71,18 @@ public class OrderService : IOrderService
             return JsonModel<OrderSummaryDto>.Error("Pincode must be exactly 6 digits.", 400);
         }
 
-        var grade = await _gradeRepo.GetByIdAsync(request.GradeId, ct);
-        if (grade == null)
+        Grade? grade = null;
+        if (request.GradeId.HasValue && request.GradeId.Value != Guid.Empty)
         {
-            return JsonModel<OrderSummaryDto>.Error("Grade not found.", 404);
-        }
-        if (!grade.IsActive)
-        {
-            return JsonModel<OrderSummaryDto>.Error("Selected grade is inactive.", 400);
+            grade = await _gradeRepo.GetByIdAsync(request.GradeId.Value, ct);
+            if (grade == null)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Grade not found.", 404);
+            }
+            if (!grade.IsActive)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Selected grade is inactive.", 400);
+            }
         }
 
         if (request.Items == null || !request.Items.Any())
@@ -196,7 +200,7 @@ public class OrderService : IOrderService
                 City = request.City.Trim(),
                 Pincode = request.Pincode.Trim(),
                 GradeId = request.GradeId,
-                GradeName = grade.Name,
+                GradeName = grade?.Name ?? "Not specified",
                 SubTotal = subTotal,
                 TotalGst = totalGst,
                 DeliveryFee = deliveryBase,

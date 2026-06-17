@@ -18,6 +18,6 @@ public interface IItemRepository
     Task<List<string>> GetSuggestionsAsync(string term, CancellationToken ct = default);
     Task<CompletedStatsDto> GetCompletedStatsAsync(CancellationToken ct = default);
     Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken ct = default);
-    Task<List<Item>> GetCatalogItemsByGradeAsync(Guid gradeId, CancellationToken ct = default);
+    Task<List<Item>> GetCatalogItemsByGradeAsync(Guid? gradeId, CancellationToken ct = default);
     Task<List<PriceAuditLog>> GetPriceAuditLogsAsync(Guid itemId, CancellationToken ct = default);
 }

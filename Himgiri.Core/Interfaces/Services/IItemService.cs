@@ -15,6 +15,6 @@ public interface IItemService
     Task<JsonModel<bool>> BulkUpdateCategoryAsync(BulkCategoryRequest request, CancellationToken ct = default);
     Task<JsonModel<CompletedStatsDto>> GetCompletedStatsAsync(CancellationToken ct = default);
     Task<JsonModel<DashboardStatsDto>> GetDashboardStatsAsync(CancellationToken ct = default);
-    Task<JsonModel<List<CatalogItemDto>>> GetCatalogItemsByGradeAsync(Guid gradeId, CancellationToken ct = default);
+    Task<JsonModel<List<CatalogItemDto>>> GetCatalogItemsByGradeAsync(Guid? gradeId, CancellationToken ct = default);
     Task<JsonModel<List<PriceAuditLogDto>>> GetPriceAuditLogsAsync(Guid itemId, CancellationToken ct = default);
 }

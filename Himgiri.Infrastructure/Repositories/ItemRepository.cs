@@ -183,14 +183,20 @@ public class ItemRepository : IItemRepository
         );
     }
 
-    public async Task<List<Item>> GetCatalogItemsByGradeAsync(Guid gradeId, CancellationToken ct = default)
+    public async Task<List<Item>> GetCatalogItemsByGradeAsync(Guid? gradeId, CancellationToken ct = default)
     {
-        return await _db.Items
+        var query = _db.Items
             .Include(i => i.Category)
             .Include(i => i.ItemGrades)
                 .ThenInclude(ig => ig.Grade)
-            .Where(i => i.IsActive && !i.IsDeleted && i.ItemGrades.Any(ig => ig.GradeId == gradeId))
-            .ToListAsync(ct);
+            .Where(i => i.IsActive && !i.IsDeleted);
+
+        if (gradeId.HasValue && gradeId.Value != Guid.Empty)
+        {
+            query = query.Where(i => i.ItemGrades.Any(ig => ig.GradeId == gradeId.Value));
+        }
+
+        return await query.ToListAsync(ct);
     }
 
     public async Task<List<PriceAuditLog>> GetPriceAuditLogsAsync(Guid itemId, CancellationToken ct = default)

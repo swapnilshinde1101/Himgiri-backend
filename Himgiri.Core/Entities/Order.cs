@@ -12,8 +12,8 @@ public class Order : BaseEntity
     public string AddressLine2 { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string Pincode { get; set; } = string.Empty;
-    public Guid GradeId { get; set; }
-    public Grade Grade { get; set; } = null!;
+    public Guid? GradeId { get; set; }
+    public Grade? Grade { get; set; }
     public string GradeName { get; set; } = string.Empty; // snapshot at order time
 
     public decimal SubTotal { get; set; }       // Sum of item prices before GST
