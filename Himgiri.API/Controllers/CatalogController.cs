@@ -1,4 +1,5 @@
 using Himgiri.Core.Interfaces.Services;
+using Himgiri.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,9 @@ public class CatalogController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCatalog([FromQuery] Guid? gradeId, CancellationToken ct)
+    public async Task<IActionResult> GetCatalog([FromQuery] BaseRequest request, CancellationToken ct)
     {
-        var result = await _itemService.GetCatalogItemsByGradeAsync(gradeId, ct);
+        var result = await _itemService.GetCatalogItemsByGradeAsync(request, ct);
         return StatusCode(result.StatusCode, result);
     }
 }

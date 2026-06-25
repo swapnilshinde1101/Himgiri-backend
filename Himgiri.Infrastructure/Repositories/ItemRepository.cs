@@ -183,7 +183,7 @@ public class ItemRepository : IItemRepository
         );
     }
 
-    public async Task<List<Item>> GetCatalogItemsByGradeAsync(Guid? gradeId, CancellationToken ct = default)
+    public async Task<(List<Item> Items, int TotalCount)> GetCatalogItemsByGradeAsync(BaseRequest request, CancellationToken ct = default)
     {
         var query = _db.Items
             .Include(i => i.Category)
@@ -191,12 +191,33 @@ public class ItemRepository : IItemRepository
                 .ThenInclude(ig => ig.Grade)
             .Where(i => i.IsActive && !i.IsDeleted);
 
-        if (gradeId.HasValue && gradeId.Value != Guid.Empty)
+        if (request.GradeId.HasValue && request.GradeId.Value != Guid.Empty)
         {
-            query = query.Where(i => i.ItemGrades.Any(ig => ig.GradeId == gradeId.Value));
+            query = query.Where(i => i.ItemGrades.Any(ig => ig.GradeId == request.GradeId.Value));
         }
 
-        return await query.ToListAsync(ct);
+        if (request.CategoryId.HasValue && request.CategoryId.Value != Guid.Empty)
+        {
+            query = query.Where(i => i.CategoryId == request.CategoryId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var term = request.SearchTerm.Trim();
+            query = query.Where(i => 
+                EF.Functions.ILike(i.Name, $"%{term}%") || 
+                (i.Description != null && EF.Functions.ILike(i.Description, $"%{term}%")));
+        }
+
+        var total = await query.CountAsync(ct);
+
+        var items = await query
+            .OrderBy(i => i.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(ct);
+
+        return (items, total);
     }
 
     public async Task<List<PriceAuditLog>> GetPriceAuditLogsAsync(Guid itemId, CancellationToken ct = default)

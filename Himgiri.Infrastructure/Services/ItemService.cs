@@ -312,9 +312,9 @@ public class ItemService : IItemService
         return JsonModel<DashboardStatsDto>.Success(stats);
     }
 
-    public async Task<JsonModel<List<CatalogItemDto>>> GetCatalogItemsByGradeAsync(Guid? gradeId, CancellationToken ct = default)
+    public async Task<JsonModel<List<CatalogItemDto>>> GetCatalogItemsByGradeAsync(BaseRequest request, CancellationToken ct = default)
     {
-        var items = await _itemRepo.GetCatalogItemsByGradeAsync(gradeId, ct);
+        var (items, total) = await _itemRepo.GetCatalogItemsByGradeAsync(request, ct);
         var dtos = items.Select(item => new CatalogItemDto(
             item.Id,
             item.Name,
@@ -336,7 +336,7 @@ public class ItemService : IItemService
             item.CompletedAt
         )).ToList();
 
-        return JsonModel<List<CatalogItemDto>>.Success(dtos);
+        return new JsonModel<List<CatalogItemDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));
     }
 
     public async Task<JsonModel<List<PriceAuditLogDto>>> GetPriceAuditLogsAsync(Guid itemId, CancellationToken ct = default)
