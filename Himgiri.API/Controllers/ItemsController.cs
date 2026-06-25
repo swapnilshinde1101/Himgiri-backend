@@ -61,6 +61,7 @@ public class ItemsController : BaseController
     }
 
     [HttpGet("suggestions")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetSuggestions([FromQuery] string term, CancellationToken ct)
     {
         var result = await _itemService.GetSuggestionsAsync(term, ct);
