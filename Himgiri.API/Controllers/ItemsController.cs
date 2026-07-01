@@ -3,6 +3,12 @@ using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
 
 namespace Himgiri.API.Controllers;
 
@@ -11,11 +17,13 @@ public class ItemsController : BaseController
 {
     private readonly IItemService _itemService;
     private readonly IStockService _stockService;
+    private readonly IConfiguration _config;
 
-    public ItemsController(IItemService itemService, IStockService stockService)
+    public ItemsController(IItemService itemService, IStockService stockService, IConfiguration config)
     {
         _itemService = itemService;
         _stockService = stockService;
+        _config = config;
     }
 
     [HttpGet("{id:guid}")]
@@ -162,5 +170,67 @@ public class ItemsController : BaseController
     {
         var result = await _itemService.GetDashboardStatsAsync(ct);
         return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPost("upload-image")]
+    [Authorize(Policy = "InventoryOrAdmin")]
+    public async Task<IActionResult> UploadImage(IFormFile file, CancellationToken ct)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return ErrorResponse("No file was uploaded.");
+        }
+
+        // Validate size (5MB limit)
+        if (file.Length > 5 * 1024 * 1024)
+        {
+            return ErrorResponse("File size exceeds the 5MB limit.");
+        }
+
+        // Validate type (Images only)
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+        {
+            return ErrorResponse("Invalid image format. Allowed formats: JPG, JPEG, PNG, WEBP.");
+        }
+
+        try
+        {
+            var supabaseUrl = _config["Supabase:Url"];
+            var supabaseKey = _config["Supabase:AnonKey"];
+            var bucketName = _config["Supabase:BucketName"];
+
+            if (string.IsNullOrEmpty(supabaseUrl) || string.IsNullOrEmpty(supabaseKey) || string.IsNullOrEmpty(bucketName))
+            {
+                return ErrorResponse("Supabase storage is not configured on the server.");
+            }
+
+            // Generate unique file name
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            var uploadUrl = $"{supabaseUrl.TrimEnd('/')}/storage/v1/object/{bucketName}/{uniqueFileName}";
+
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseKey}");
+            httpClient.DefaultRequestHeaders.Add("apikey", supabaseKey);
+
+            using var stream = file.OpenReadStream();
+            using var content = new StreamContent(stream);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+            var response = await httpClient.PostAsync(uploadUrl, content, ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync(ct);
+                return ErrorResponse($"Failed to upload to cloud storage: {response.ReasonPhrase}. Details: {errorContent}");
+            }
+
+            var publicUrl = $"{supabaseUrl.TrimEnd('/')}/storage/v1/object/public/{bucketName}/{uniqueFileName}";
+            return OkResponse(new { imageUrl = publicUrl }, "Image uploaded successfully");
+        }
+        catch (Exception ex)
+        {
+            return ErrorResponse($"An error occurred while uploading: {ex.Message}");
+        }
     }
 }
