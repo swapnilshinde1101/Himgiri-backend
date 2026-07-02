@@ -22,6 +22,8 @@ public class ItemRepository : IItemRepository
     {
         return await _db.Items
             .Include(i => i.Category)
+                .ThenInclude(c => c.DefaultGstRate)
+            .Include(i => i.GstRate)
             .Include(i => i.ItemGrades)
                 .ThenInclude(ig => ig.Grade)
             .FirstOrDefaultAsync(i => i.Id == id && !i.IsDeleted, ct);
@@ -31,6 +33,8 @@ public class ItemRepository : IItemRepository
     {
         return await _db.Items
             .Include(i => i.Category)
+                .ThenInclude(c => c.DefaultGstRate)
+            .Include(i => i.GstRate)
             .Include(i => i.ItemGrades)
                 .ThenInclude(ig => ig.Grade)
             .Where(i => ids.Contains(i.Id) && !i.IsDeleted)

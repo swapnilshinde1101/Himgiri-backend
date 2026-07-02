@@ -185,11 +185,13 @@ public class GradeService : IGradeService
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _repo;
+    private readonly IGstRateRepository _gstRateRepo;
     private readonly IUnitOfWork _uow;
 
-    public CategoryService(ICategoryRepository repo, IUnitOfWork uow)
+    public CategoryService(ICategoryRepository repo, IGstRateRepository gstRateRepo, IUnitOfWork uow)
     {
         _repo = repo;
+        _gstRateRepo = gstRateRepo;
         _uow = uow;
     }
 
@@ -219,20 +221,19 @@ public class CategoryService : ICategoryService
             return JsonModel<CategoryDto>.Error("Category Name must be between 3 and 15 characters.", 400);
         }
 
-        if (string.IsNullOrWhiteSpace(request.HsnCode))
+        if (!request.DefaultGstRateId.HasValue)
         {
-            return JsonModel<CategoryDto>.Error("HSN Code is required.", 400);
+            return JsonModel<CategoryDto>.Error("Default GST Rate is required.", 400);
         }
+
+        var gstRate = await _gstRateRepo.GetByIdAsync(request.DefaultGstRateId.Value, ct);
+        if (gstRate == null)
+            return JsonModel<CategoryDto>.Error("GST Rate not found.", 404);
 
         var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
         {
             return JsonModel<CategoryDto>.Error("Category Name already exists.", 400);
-        }
-
-        if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
-        {
-            return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
         }
 
         // ── Smart Re-ordering Logic ──
@@ -251,13 +252,9 @@ public class CategoryService : ICategoryService
             Name = trimmedName,
             Description = request.Description ?? string.Empty,
             DisplayOrder = request.DisplayOrder,
-            HsnCode = request.HsnCode.Trim(),
-            GstPercent = request.GstPercent,
-            IsTaxable = request.IsTaxable,
-            IsActive = request.IsActive
+            IsActive = request.IsActive,
+            DefaultGstRateId = request.DefaultGstRateId.Value
         };
-
-        CalculateGst(category);
 
         _repo.Add(category);
         await _uow.CommitAsync(ct);
@@ -280,20 +277,19 @@ public class CategoryService : ICategoryService
             return JsonModel<CategoryDto>.Error("Category Name must be between 3 and 15 characters.", 400);
         }
 
-        if (string.IsNullOrWhiteSpace(request.HsnCode))
+        if (!request.DefaultGstRateId.HasValue)
         {
-            return JsonModel<CategoryDto>.Error("HSN Code is required.", 400);
+            return JsonModel<CategoryDto>.Error("Default GST Rate is required.", 400);
         }
+
+        var gstRate = await _gstRateRepo.GetByIdAsync(request.DefaultGstRateId.Value, ct);
+        if (gstRate == null)
+            return JsonModel<CategoryDto>.Error("GST Rate not found.", 404);
 
         var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase) && c.Id != id))
         {
             return JsonModel<CategoryDto>.Error("Category Name already exists.", 400);
-        }
-
-        if (request.IsTaxable && !new decimal[] { 0m, 5m, 12m, 18m, 28m }.Contains(request.GstPercent))
-        {
-            return JsonModel<CategoryDto>.Error("GST rate must be a standard rate (0%, 5%, 12%, 18%, or 28%).");
         }
 
         // If DisplayOrder is changing, handle the shift
@@ -316,32 +312,12 @@ public class CategoryService : ICategoryService
         category.Name = trimmedName;
         category.Description = request.Description ?? string.Empty;
         category.DisplayOrder = request.DisplayOrder;
-        category.HsnCode = request.HsnCode.Trim();
-        category.GstPercent = request.GstPercent;
-        category.IsTaxable = request.IsTaxable;
         category.IsActive = request.IsActive;
-
-        CalculateGst(category);
+        category.DefaultGstRateId = request.DefaultGstRateId.Value;
 
         _repo.Update(category);
         await _uow.CommitAsync(ct);
         return JsonModel<CategoryDto>.Success(MapToDto(category), "Category updated and order adjusted.");
-    }
-
-    private void CalculateGst(ItemCategory cat)
-    {
-        if (!cat.IsTaxable || cat.GstPercent == 0)
-        {
-            cat.GstPercent = 0;
-            cat.CgstPercent = 0;
-            cat.SgstPercent = 0;
-            cat.IsTaxable = false;
-        }
-        else
-        {
-            cat.CgstPercent = cat.GstPercent / 2;
-            cat.SgstPercent = cat.GstPercent / 2;
-        }
     }
 
     private List<CategoryDto> MapToDtos(IEnumerable<ItemCategory> categories)
@@ -356,12 +332,13 @@ public class CategoryService : ICategoryService
             c.Name,
             c.Description,
             c.DisplayOrder,
-            c.HsnCode,
-            c.GstPercent,
-            c.CgstPercent,
-            c.SgstPercent,
-            c.IsTaxable,
-            c.IsActive
+            c.DefaultGstRate?.HsnCode ?? string.Empty,
+            c.DefaultGstRate?.Rate ?? 0m,
+            c.DefaultGstRate?.Cgst ?? 0m,
+            c.DefaultGstRate?.Sgst ?? 0m,
+            c.DefaultGstRate != null && c.DefaultGstRate.Rate > 0,
+            c.IsActive,
+            c.DefaultGstRateId
         );
     }
 
@@ -384,5 +361,154 @@ public class CategoryService : ICategoryService
     {
         var suggestions = await _repo.GetSuggestionsAsync(term, ct);
         return JsonModel<List<string>>.Success(suggestions);
+    }
+}
+
+public class GstRateService : IGstRateService
+{
+    private readonly IGstRateRepository _repo;
+    private readonly IUnitOfWork _uow;
+
+    public GstRateService(IGstRateRepository repo, IUnitOfWork uow)
+    {
+        _repo = repo;
+        _uow = uow;
+    }
+
+    public async Task<JsonModel<List<GstRateDto>>> GetAllAsync(CancellationToken ct = default)
+    {
+        var rates = await _repo.GetAllAsync(ct);
+        return JsonModel<List<GstRateDto>>.Success(MapToDtos(rates));
+    }
+
+    public async Task<JsonModel<List<GstRateDto>>> GetPagedAsync(BaseRequest request, CancellationToken ct = default)
+    {
+        var (items, total) = await _repo.GetPagedAsync(request, ct);
+        var dtos = MapToDtos(items);
+        return new JsonModel<List<GstRateDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));
+    }
+
+    public async Task<JsonModel<GstRateDto>> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        var rate = await _repo.GetByIdAsync(id, ct);
+        if (rate == null)
+            return JsonModel<GstRateDto>.Error("GST Rate not found.", 404);
+        return JsonModel<GstRateDto>.Success(MapToDto(rate));
+    }
+
+    public async Task<JsonModel<GstRateDto>> CreateAsync(GstRateDto request, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return JsonModel<GstRateDto>.Error("Tax Slab Name is required.", 400);
+
+        if (string.IsNullOrWhiteSpace(request.HsnCode))
+            return JsonModel<GstRateDto>.Error("HSN Code is required.", 400);
+
+        if (request.Rate < 0 || request.Rate > 100)
+            return JsonModel<GstRateDto>.Error("GST Rate must be between 0 and 100.", 400);
+
+        if (request.Cgst + request.Sgst != request.Rate)
+            return JsonModel<GstRateDto>.Error("CGST + SGST must sum up to the total GST Rate.", 400);
+
+        if (request.Igst != request.Rate)
+            return JsonModel<GstRateDto>.Error("IGST must equal the total GST Rate.", 400);
+
+        var rate = new GstRate
+        {
+            Name = request.Name.Trim(),
+            HsnCode = request.HsnCode.Trim(),
+            Description = request.Description ?? string.Empty,
+            Rate = request.Rate,
+            Cgst = request.Cgst,
+            Sgst = request.Sgst,
+            Igst = request.Igst,
+            Cess = request.Cess,
+            EffectiveFrom = request.EffectiveFrom.ToUniversalTime(),
+            EffectiveTo = request.EffectiveTo?.ToUniversalTime(),
+            IsActive = request.IsActive
+        };
+
+        _repo.Add(rate);
+        await _uow.CommitAsync(ct);
+
+        return JsonModel<GstRateDto>.Success(MapToDto(rate), "GST Rate created successfully.");
+    }
+
+    public async Task<JsonModel<GstRateDto>> UpdateAsync(Guid id, GstRateDto request, CancellationToken ct = default)
+    {
+        var rate = await _repo.GetByIdAsync(id, ct);
+        if (rate == null)
+            return JsonModel<GstRateDto>.Error("GST Rate not found.", 404);
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return JsonModel<GstRateDto>.Error("Tax Slab Name is required.", 400);
+
+        if (string.IsNullOrWhiteSpace(request.HsnCode))
+            return JsonModel<GstRateDto>.Error("HSN Code is required.", 400);
+
+        if (request.Rate < 0 || request.Rate > 100)
+            return JsonModel<GstRateDto>.Error("GST Rate must be between 0 and 100.", 400);
+
+        if (request.Cgst + request.Sgst != request.Rate)
+            return JsonModel<GstRateDto>.Error("CGST + SGST must sum up to the total GST Rate.", 400);
+
+        if (request.Igst != request.Rate)
+            return JsonModel<GstRateDto>.Error("IGST must equal the total GST Rate.", 400);
+
+        rate.Name = request.Name.Trim();
+        rate.HsnCode = request.HsnCode.Trim();
+        rate.Description = request.Description ?? string.Empty;
+        rate.Rate = request.Rate;
+        rate.Cgst = request.Cgst;
+        rate.Sgst = request.Sgst;
+        rate.Igst = request.Igst;
+        rate.Cess = request.Cess;
+        rate.EffectiveFrom = request.EffectiveFrom.ToUniversalTime();
+        rate.EffectiveTo = request.EffectiveTo?.ToUniversalTime();
+        rate.IsActive = request.IsActive;
+
+        _repo.Update(rate);
+        await _uow.CommitAsync(ct);
+
+        return JsonModel<GstRateDto>.Success(MapToDto(rate), "GST Rate updated successfully.");
+    }
+
+    public async Task<JsonModel<bool>> DeleteAsync(Guid id, CancellationToken ct = default)
+    {
+        var rate = await _repo.GetByIdAsync(id, ct);
+        if (rate == null)
+            return JsonModel<bool>.Error("GST Rate not found.", 404);
+
+        if (await _repo.HasLinkedCategoriesOrItemsAsync(id, ct))
+        {
+            return JsonModel<bool>.Error("Cannot delete this GST Rate because it is in use by categories or items.", 400);
+        }
+
+        _repo.Delete(rate);
+        var success = await _uow.CommitAsync(ct);
+        return JsonModel<bool>.Success(success, "GST Rate deleted successfully.");
+    }
+
+    private List<GstRateDto> MapToDtos(List<GstRate> rates)
+    {
+        return rates.Select(MapToDto).ToList();
+    }
+
+    private GstRateDto MapToDto(GstRate rate)
+    {
+        return new GstRateDto(
+            rate.Id,
+            rate.Name,
+            rate.HsnCode,
+            rate.Description ?? string.Empty,
+            rate.Rate,
+            rate.Cgst,
+            rate.Sgst,
+            rate.Igst,
+            rate.Cess,
+            rate.EffectiveFrom,
+            rate.EffectiveTo,
+            rate.IsActive
+        );
     }
 }

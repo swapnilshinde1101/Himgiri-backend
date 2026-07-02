@@ -33,7 +33,8 @@ public record ItemDto(
     string GradeNames,
     bool IsActive,
     DateTime CreatedAt,
-    DateTime? CompletedAt
+    DateTime? CompletedAt,
+    Guid? GstRateId = null
 );
 
 public record CreateItemRequest(
@@ -50,7 +51,8 @@ public record CreateItemRequest(
     bool IsStockInitialized,
     Guid CategoryId,
     System.Collections.Generic.List<Guid> GradeIds,
-    bool IsActive
+    bool IsActive,
+    Guid? GstRateId
 );
 
 public record CatalogItemDto(
@@ -117,6 +119,21 @@ public record StockLogDto(
 );
 
 // ── Support Entities DTOs ──
+public record GstRateDto(
+    Guid Id,
+    string Name,
+    string HsnCode,
+    string? Description,
+    decimal Rate,
+    decimal Cgst,
+    decimal Sgst,
+    decimal Igst,
+    decimal Cess,
+    DateTime EffectiveFrom,
+    DateTime? EffectiveTo,
+    bool IsActive
+);
+
 public record GradeDto(
     Guid Id, 
     string Name, 
@@ -128,14 +145,15 @@ public record GradeDto(
 public record CategoryDto(
     Guid Id, 
     string Name, 
-    string Description,
+    string? Description,
     int DisplayOrder,
-    string HsnCode, 
-    decimal GstPercent, 
-    decimal CgstPercent, 
-    decimal SgstPercent,
-    bool IsTaxable,
-    bool IsActive
+    string? HsnCode, 
+    decimal? GstPercent, 
+    decimal? CgstPercent, 
+    decimal? SgstPercent,
+    bool? IsTaxable,
+    bool IsActive,
+    Guid? DefaultGstRateId = null
 );
 
 // ── Orders ──

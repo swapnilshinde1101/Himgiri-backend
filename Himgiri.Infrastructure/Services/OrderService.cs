@@ -143,15 +143,27 @@ public class OrderService : IOrderService
                     }
                 }
 
-                // ── 3. Snapshot Item Data ──
+                // ── 3. Resolve GstRate & Snapshot Item Data ──
                 decimal unitPrice = item.Price;
-                decimal gstPercent = item.Category?.IsTaxable == true ? item.Category.GstPercent : 0m;
+
+                GstRate? resolvedGstRate = item.GstRate;
+                if (resolvedGstRate == null)
+                {
+                    resolvedGstRate = item.Category?.DefaultGstRate;
+                }
+
+                if (resolvedGstRate == null)
+                {
+                    return JsonModel<OrderSummaryDto>.Error($"GST Rate not configured for item '{item.Name}' or its Category.", 400);
+                }
+
+                decimal gstPercent = resolvedGstRate.Rate;
                 
                 // ── 4. Calculate GST per line item ──
                 decimal taxableAmount = unitPrice * itemReq.Quantity;
                 decimal gstAmount = taxableAmount * (gstPercent / 100m);
-                decimal cgst = gstAmount / 2m;
-                decimal sgst = gstAmount / 2m;
+                decimal cgst = taxableAmount * (resolvedGstRate.Cgst / 100m);
+                decimal sgst = taxableAmount * (resolvedGstRate.Sgst / 100m);
                 decimal lineTotal = taxableAmount + gstAmount;
 
                 subTotal += taxableAmount;
@@ -162,7 +174,7 @@ public class OrderService : IOrderService
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
                     ItemName = item.Name,
-                    HsnCode = item.Category?.HsnCode ?? string.Empty,
+                    HsnCode = resolvedGstRate.HsnCode,
                     Quantity = itemReq.Quantity,
                     UnitPrice = unitPrice,
                     GstPercent = gstPercent,

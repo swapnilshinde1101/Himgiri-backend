@@ -18,6 +18,8 @@ public class HimgiriDbContext : DbContext
     public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
     public DbSet<Grade> Grades => Set<Grade>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+    public DbSet<GstRate> GstRates => Set<GstRate>();
+    public DbSet<State> States => Set<State>();
     public DbSet<VendorSettings> VendorSettings => Set<VendorSettings>();
     public DbSet<ApiErrorLog> ApiErrorLogs => Set<ApiErrorLog>();
     public DbSet<ItemGrade> ItemGrades => Set<ItemGrade>();
@@ -50,10 +52,32 @@ public class HimgiriDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.Name).IsRequired().HasMaxLength(100);
-            e.Property(x => x.HsnCode).HasMaxLength(20);
-            e.Property(x => x.GstPercent).HasPrecision(5, 2);
-            e.Property(x => x.CgstPercent).HasPrecision(5, 2);
-            e.Property(x => x.SgstPercent).HasPrecision(5, 2);
+            e.HasOne(x => x.DefaultGstRate)
+             .WithMany()
+             .HasForeignKey(x => x.DefaultGstRateId)
+             .OnDelete(DeleteBehavior.Restrict)
+             .IsRequired();
+        });
+
+        modelBuilder.Entity<GstRate>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).IsRequired().HasMaxLength(100);
+            e.Property(x => x.HsnCode).IsRequired().HasMaxLength(20);
+            e.Property(x => x.Rate).HasPrecision(5, 2);
+            e.Property(x => x.Cgst).HasPrecision(5, 2);
+            e.Property(x => x.Sgst).HasPrecision(5, 2);
+            e.Property(x => x.Igst).HasPrecision(5, 2);
+            e.Property(x => x.Cess).HasPrecision(5, 2);
+        });
+
+        // ── State ──
+        modelBuilder.Entity<State>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.StateCode).IsRequired().HasMaxLength(10);
+            e.Property(x => x.StateName).IsRequired().HasMaxLength(100);
+            e.Property(x => x.GstStateCode).IsRequired().HasMaxLength(10);
         });
 
         // ── ApiErrorLog ──
@@ -75,6 +99,10 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.Mrp).HasPrecision(10, 2);
             e.Property(x => x.Unit).HasMaxLength(50).HasDefaultValue("Pieces (Pcs)");
             e.HasOne(x => x.Category).WithMany(c => c.Items).HasForeignKey(x => x.CategoryId);
+            e.HasOne(x => x.GstRate)
+             .WithMany()
+             .HasForeignKey(x => x.GstRateId)
+             .OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(x => x.IsActive);
         });
 
@@ -101,21 +129,36 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.DeliveryFee).HasPrecision(10, 2);
             e.Property(x => x.DeliveryGst).HasPrecision(10, 2);
             e.Property(x => x.GrandTotal).HasPrecision(10, 2);
+            e.Property(x => x.CustomerGstin).HasMaxLength(15);
             e.HasIndex(x => x.PaymentStatus);
             e.HasIndex(x => x.Status);
             e.HasIndex(x => x.CreatedAt);
             e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(x => x.GradeId);
+
+            e.HasOne(x => x.SellerState).WithMany().HasForeignKey(x => x.SellerStateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.CustomerState).WithMany().HasForeignKey(x => x.CustomerStateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.PlaceOfSupplyState).WithMany().HasForeignKey(x => x.PlaceOfSupplyStateId).OnDelete(DeleteBehavior.Restrict);
         });
 
         // ── OrderItem ──
         modelBuilder.Entity<OrderItem>(e =>
         {
             e.HasKey(x => x.Id);
+            e.Property(x => x.ItemName).IsRequired().HasMaxLength(200);
+            e.Property(x => x.HsnCode).IsRequired().HasMaxLength(20);
             e.Property(x => x.UnitPrice).HasPrecision(10, 2);
+            e.Property(x => x.BaseAmount).HasPrecision(10, 2);
+            e.Property(x => x.GstPercent).HasPrecision(5, 2);
+            e.Property(x => x.CgstPercent).HasPrecision(5, 2);
+            e.Property(x => x.SgstPercent).HasPrecision(5, 2);
+            e.Property(x => x.IgstPercent).HasPrecision(5, 2);
+            e.Property(x => x.CessPercent).HasPrecision(5, 2);
             e.Property(x => x.GstAmount).HasPrecision(10, 2);
             e.Property(x => x.Cgst).HasPrecision(10, 2);
             e.Property(x => x.Sgst).HasPrecision(10, 2);
+            e.Property(x => x.Igst).HasPrecision(10, 2);
+            e.Property(x => x.CessAmount).HasPrecision(10, 2);
             e.Property(x => x.LineTotal).HasPrecision(10, 2);
             e.HasOne(x => x.Order).WithMany(x => x.Items).HasForeignKey(x => x.OrderId);
             e.HasOne(x => x.Item).WithMany(x => x.OrderItems).HasForeignKey(x => x.ItemId);
@@ -154,10 +197,13 @@ public class HimgiriDbContext : DbContext
             e.HasOne(x => x.Item).WithMany(x => x.PurchaseOrderItems).HasForeignKey(x => x.ItemId);
         });
 
-        // ── VendorSettings (single row) ──
         modelBuilder.Entity<VendorSettings>(e =>
         {
             e.HasKey(x => x.Id);
+            e.HasOne(x => x.State)
+             .WithMany()
+             .HasForeignKey(x => x.StateId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
 
         // ── PriceAuditLog ──
@@ -227,12 +273,29 @@ public class HimgiriDbContext : DbContext
         var catBagId = Guid.Parse("00000000-0000-0000-0006-000000000004");
         var catDeliveryId = Guid.Parse("00000000-0000-0000-0006-000000000005");
 
+        // GST Rates Seed IDs
+        var gstRateIdBooks = Guid.Parse("00000000-0000-0000-0009-000000000001");
+        var gstRateIdStationery = Guid.Parse("00000000-0000-0000-0009-000000000002");
+        var gstRateIdBags = Guid.Parse("00000000-0000-0000-0009-000000000003");
+        var gstRateIdDelivery = Guid.Parse("00000000-0000-0000-0009-000000000004");
+        var gstRateIdGst5 = Guid.Parse("00000000-0000-0000-0009-000000000005");
+        var gstRateIdGst28 = Guid.Parse("00000000-0000-0000-0009-000000000006");
+
+        modelBuilder.Entity<GstRate>().HasData(
+            new GstRate { Id = gstRateIdBooks, Name = "Books Exempt", HsnCode = "4901", Description = "School Textbooks Exempt from GST", Rate = 0m, Cgst = 0m, Sgst = 0m, Igst = 0m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow },
+            new GstRate { Id = gstRateIdGst5, Name = "Medicines/Essentials GST 5%", HsnCode = "3004", Description = "Essential items under 5% GST", Rate = 5m, Cgst = 2.5m, Sgst = 2.5m, Igst = 5m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow },
+            new GstRate { Id = gstRateIdStationery, Name = "Stationery GST 12%", HsnCode = "4820", Description = "Notebooks and Stationery items under 12% GST", Rate = 12m, Cgst = 6m, Sgst = 6m, Igst = 12m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow },
+            new GstRate { Id = gstRateIdBags, Name = "Bags GST 18%", HsnCode = "4202", Description = "School Bags and Backpacks under 18% GST", Rate = 18m, Cgst = 9m, Sgst = 9m, Igst = 18m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow },
+            new GstRate { Id = gstRateIdDelivery, Name = "Delivery Fee GST 18%", HsnCode = "9965", Description = "Logistics and Shipping charges under 18% GST", Rate = 18m, Cgst = 9m, Sgst = 9m, Igst = 18m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow },
+            new GstRate { Id = gstRateIdGst28, Name = "Luxury/Services GST 28%", HsnCode = "8708", Description = "Luxury goods and services under 28% GST", Rate = 28m, Cgst = 14m, Sgst = 14m, Igst = 28m, Cess = 0m, EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), IsActive = true, CreatedAt = DateTime.UtcNow }
+        );
+
         modelBuilder.Entity<ItemCategory>().HasData(
-            new { Id = catTextbookId, Name = "Textbook", Description = "School Textbooks", HsnCode = "4901", GstPercent = 0m, CgstPercent = 0m, SgstPercent = 0m, IsTaxable = false, IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 1 },
-            new { Id = catStationeryId, Name = "Stationery", Description = "School Stationery", HsnCode = "4820", GstPercent = 12m, CgstPercent = 6m, SgstPercent = 6m, IsTaxable = true, IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 2 },
-            new { Id = catJournalId, Name = "Journal", Description = "School Journals", HsnCode = "4820", GstPercent = 12m, CgstPercent = 6m, SgstPercent = 6m, IsTaxable = true, IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 3 },
-            new { Id = catBagId, Name = "Bag", Description = "School Bags", HsnCode = "4202", GstPercent = 18m, CgstPercent = 9m, SgstPercent = 9m, IsTaxable = true, IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 4 },
-            new { Id = catDeliveryId, Name = "Delivery Fee", Description = "Delivery Charges", HsnCode = "9965", GstPercent = 18m, CgstPercent = 9m, SgstPercent = 9m, IsTaxable = true, IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 5 }
+            new { Id = catTextbookId, Name = "Textbook", Description = "School Textbooks", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 1, DefaultGstRateId = (Guid?)gstRateIdBooks },
+            new { Id = catStationeryId, Name = "Stationery", Description = "School Stationery", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 2, DefaultGstRateId = (Guid?)gstRateIdStationery },
+            new { Id = catJournalId, Name = "Journal", Description = "School Journals", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 3, DefaultGstRateId = (Guid?)gstRateIdStationery },
+            new { Id = catBagId, Name = "Bag", Description = "School Bags", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 4, DefaultGstRateId = (Guid?)gstRateIdBags },
+            new { Id = catDeliveryId, Name = "Delivery Fee", Description = "Delivery Charges", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 5, DefaultGstRateId = (Guid?)gstRateIdDelivery }
         );
 
         // Vendor Settings
@@ -243,21 +306,21 @@ public class HimgiriDbContext : DbContext
         // Sample Items linked to Category with Stock/PreOrder properties
         modelBuilder.Entity<Item>().HasData(
             // Grade 1 Items
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000011"), Name = "Grade 1 English Textbook", Description = "Interactive English Reader for Grade 1", ImageUrl = "https://picsum.photos/200/300?random=11", Price = 180, PurchasePrice = 120, Mrp = 180, CategoryId = catTextbookId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 150, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000012"), Name = "Grade 1 Red Notebook", Description = "Ruled Journal for Grade 1 practice", ImageUrl = "https://picsum.photos/200/300?random=12", Price = 40, PurchasePrice = 25, Mrp = 45, CategoryId = catJournalId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 300, TargetQty = 300, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000013"), Name = "Grade 1 Premium Pencil Box", Description = "Stationery box containing pencils, eraser, and ruler", ImageUrl = "https://picsum.photos/200/300?random=13", Price = 70, PurchasePrice = 45, Mrp = 80, CategoryId = catStationeryId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 200, TargetQty = 200, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000011"), Name = "Grade 1 English Textbook", Description = "Interactive English Reader for Grade 1", ImageUrl = "https://picsum.photos/200/300?random=11", Price = 180, PurchasePrice = 120, Mrp = 180, CategoryId = catTextbookId, GstRateId = gstRateIdBooks, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 150, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000012"), Name = "Grade 1 Red Notebook", Description = "Ruled Journal for Grade 1 practice", ImageUrl = "https://picsum.photos/200/300?random=12", Price = 40, PurchasePrice = 25, Mrp = 45, CategoryId = catJournalId, GstRateId = gstRateIdStationery, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 300, TargetQty = 300, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000013"), Name = "Grade 1 Premium Pencil Box", Description = "Stationery box containing pencils, eraser, and ruler", ImageUrl = "https://picsum.photos/200/300?random=13", Price = 70, PurchasePrice = 45, Mrp = 80, CategoryId = catStationeryId, GstRateId = gstRateIdStationery, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 200, TargetQty = 200, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
 
             // Grade 2 Items
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000001"), Name = "Almanac 2026-27", Description = "DPS Hinjawadi School Almanac", ImageUrl = "https://picsum.photos/200/300?random=1", Price = 150, PurchasePrice = 100, Mrp = 180, CategoryId = catJournalId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 120, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000002"), Name = "Portfolio File", Description = "DPS Hinjawadi Portfolio File", ImageUrl = "https://picsum.photos/200/300?random=2", Price = 80, PurchasePrice = 50, Mrp = 90, CategoryId = catStationeryId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 250, TargetQty = 300, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000003"), Name = "Public Speaking Journal", Description = "DPS Public Speaking Journal", ImageUrl = "https://picsum.photos/200/300?random=3", Price = 120, PurchasePrice = 80, Mrp = 140, CategoryId = catJournalId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 180, TargetQty = 200, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000004"), Name = "Majet Shikuya Marathi", Description = "Marathi Theme Book", ImageUrl = "https://picsum.photos/200/300?random=4", Price = 90, PurchasePrice = 60, Mrp = 100, CategoryId = catTextbookId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 90, TargetQty = 100, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000005"), Name = "Theme Book Grade 2", Description = "Grade 2 Theme Book", ImageUrl = "https://picsum.photos/200/300?random=5", Price = 110, PurchasePrice = 75, Mrp = 130, CategoryId = catTextbookId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 0, TargetQty = 150, StorageStatus = StorageStatus.PreOrder, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000001"), Name = "Almanac 2026-27", Description = "DPS Hinjawadi School Almanac", ImageUrl = "https://picsum.photos/200/300?random=1", Price = 150, PurchasePrice = 100, Mrp = 180, CategoryId = catJournalId, GstRateId = gstRateIdStationery, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 120, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000002"), Name = "Portfolio File", Description = "DPS Hinjawadi Portfolio File", ImageUrl = "https://picsum.photos/200/300?random=2", Price = 80, PurchasePrice = 50, Mrp = 90, CategoryId = catStationeryId, GstRateId = gstRateIdStationery, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 250, TargetQty = 300, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000003"), Name = "Public Speaking Journal", Description = "DPS Public Speaking Journal", ImageUrl = "https://picsum.photos/200/300?random=3", Price = 120, PurchasePrice = 80, Mrp = 140, CategoryId = catJournalId, GstRateId = gstRateIdStationery, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 180, TargetQty = 200, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000004"), Name = "Majet Shikuya Marathi", Description = "Marathi Theme Book", ImageUrl = "https://picsum.photos/200/300?random=4", Price = 90, PurchasePrice = 60, Mrp = 100, CategoryId = catTextbookId, GstRateId = gstRateIdBooks, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 90, TargetQty = 100, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000005"), Name = "Theme Book Grade 2", Description = "Grade 2 Theme Book", ImageUrl = "https://picsum.photos/200/300?random=5", Price = 110, PurchasePrice = 75, Mrp = 130, CategoryId = catTextbookId, GstRateId = gstRateIdBooks, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 0, TargetQty = 150, StorageStatus = StorageStatus.PreOrder, CreatedAt = DateTime.UtcNow },
 
             // Grade 3 Items
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000031"), Name = "Grade 3 Math Magic", Description = "Mathematics textbook for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=31", Price = 220, PurchasePrice = 150, Mrp = 220, CategoryId = catTextbookId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 140, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000032"), Name = "Grade 3 Science Explorer", Description = "Science and environment textbook for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=32", Price = 240, PurchasePrice = 160, Mrp = 240, CategoryId = catTextbookId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 130, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
-            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000033"), Name = "Grade 3 School Bag", Description = "Heavy duty school backpack for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=33", Price = 650, PurchasePrice = 450, Mrp = 750, CategoryId = catBagId, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 80, TargetQty = 100, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow }
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000031"), Name = "Grade 3 Math Magic", Description = "Mathematics textbook for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=31", Price = 220, PurchasePrice = 150, Mrp = 220, CategoryId = catTextbookId, GstRateId = gstRateIdBooks, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 140, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000032"), Name = "Grade 3 Science Explorer", Description = "Science and environment textbook for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=32", Price = 240, PurchasePrice = 160, Mrp = 240, CategoryId = catTextbookId, GstRateId = gstRateIdBooks, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 130, TargetQty = 150, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow },
+            new Item { Id = Guid.Parse("00000000-0000-0000-0004-000000000033"), Name = "Grade 3 School Bag", Description = "Heavy duty school backpack for Grade 3", ImageUrl = "https://picsum.photos/200/300?random=33", Price = 650, PurchasePrice = 450, Mrp = 750, CategoryId = catBagId, GstRateId = gstRateIdBags, Unit = "Pieces (Pcs)", IsStockInitialized = true, StockQty = 80, TargetQty = 100, StorageStatus = StorageStatus.InStock, CreatedAt = DateTime.UtcNow }
         );
 
         // Seed ItemGrades Many-to-Many relations

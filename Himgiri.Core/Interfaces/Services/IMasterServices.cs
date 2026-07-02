@@ -22,3 +22,13 @@ public interface ICategoryService
     Task<JsonModel<bool>> DeleteAsync(Guid id, CancellationToken ct = default);
     Task<JsonModel<List<string>>> GetSuggestionsAsync(string term, CancellationToken ct = default);
 }
+
+public interface IGstRateService
+{
+    Task<JsonModel<List<GstRateDto>>> GetAllAsync(CancellationToken ct = default);
+    Task<JsonModel<List<GstRateDto>>> GetPagedAsync(BaseRequest request, CancellationToken ct = default);
+    Task<JsonModel<GstRateDto>> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<JsonModel<GstRateDto>> CreateAsync(GstRateDto request, CancellationToken ct = default);
+    Task<JsonModel<GstRateDto>> UpdateAsync(Guid id, GstRateDto request, CancellationToken ct = default);
+    Task<JsonModel<bool>> DeleteAsync(Guid id, CancellationToken ct = default);
+}

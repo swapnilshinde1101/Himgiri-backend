@@ -126,6 +126,7 @@ public static class ServiceExtensions
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IGstRateRepository, GstRateRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<ISchoolKitRepository, SchoolKitRepository>();
         
@@ -135,6 +136,7 @@ public static class ServiceExtensions
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IGstRateService, GstRateService>();
         services.AddScoped<IStockService, StockService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ISchoolKitService, SchoolKitService>();

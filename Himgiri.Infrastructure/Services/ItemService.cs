@@ -11,12 +11,14 @@ public class ItemService : IItemService
 {
     private readonly IItemRepository _itemRepo;
     private readonly ICategoryRepository _categoryRepo;
+    private readonly IGstRateRepository _gstRateRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ItemService(IItemRepository itemRepo, ICategoryRepository categoryRepo, IUnitOfWork unitOfWork)
+    public ItemService(IItemRepository itemRepo, ICategoryRepository categoryRepo, IGstRateRepository gstRateRepo, IUnitOfWork unitOfWork)
     {
         _itemRepo = itemRepo;
         _categoryRepo = categoryRepo;
+        _gstRateRepo = gstRateRepo;
         _unitOfWork = unitOfWork;
     }
 
@@ -44,7 +46,8 @@ public class ItemService : IItemService
             string.Join(", ", item.ItemGrades.Select(ig => ig.Grade?.Name).Where(n => !string.IsNullOrEmpty(n))),
             item.IsActive,
             item.CreatedAt,
-            item.CompletedAt
+            item.CompletedAt,
+            item.GstRateId
         );
 
         return JsonModel<ItemDto>.Success(dto);
@@ -72,7 +75,8 @@ public class ItemService : IItemService
             string.Join(", ", item.ItemGrades.Select(ig => ig.Grade?.Name).Where(n => !string.IsNullOrEmpty(n))),
             item.IsActive,
             item.CreatedAt,
-            item.CompletedAt
+            item.CompletedAt,
+            item.GstRateId
         )).ToList();
         
         return new JsonModel<List<ItemDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));
@@ -87,7 +91,23 @@ public class ItemService : IItemService
         if (category == null)
             return JsonModel<ItemDto>.Error("Category not found.");
 
-        var gstPercent = category.IsTaxable ? category.GstPercent : 0m;
+        decimal gstPercent = 0m;
+        if (request.GstRateId.HasValue)
+        {
+            var gstRate = await _gstRateRepo.GetByIdAsync(request.GstRateId.Value, ct);
+            if (gstRate == null)
+                return JsonModel<ItemDto>.Error("GST Rate not found.");
+            gstPercent = gstRate.Rate;
+        }
+        else
+        {
+            if (category.DefaultGstRate == null)
+            {
+                return JsonModel<ItemDto>.Error("GST Rate is not configured on the Category. Please set a Default GST Rate on the Category first.", 400);
+            }
+            gstPercent = category.DefaultGstRate.Rate;
+        }
+
         var sellingPriceWithGst = request.Price * (1 + gstPercent / 100m);
         if (sellingPriceWithGst > request.Mrp)
         {
@@ -107,6 +127,7 @@ public class ItemService : IItemService
             TargetQty = request.TargetQty,
             Unit = request.Unit ?? "Pieces (Pcs)",
             CategoryId = request.CategoryId,
+            GstRateId = request.GstRateId,
             IsActive = request.IsActive,
             IsStockInitialized = request.IsStockInitialized || request.StockQty > 0
         };
@@ -154,7 +175,23 @@ public class ItemService : IItemService
         if (category == null)
             return JsonModel<ItemDto>.Error("Category not found.");
 
-        var gstPercent = category.IsTaxable ? category.GstPercent : 0m;
+        decimal gstPercent = 0m;
+        if (request.GstRateId.HasValue)
+        {
+            var gstRate = await _gstRateRepo.GetByIdAsync(request.GstRateId.Value, ct);
+            if (gstRate == null)
+                return JsonModel<ItemDto>.Error("GST Rate not found.");
+            gstPercent = gstRate.Rate;
+        }
+        else
+        {
+            if (category.DefaultGstRate == null)
+            {
+                return JsonModel<ItemDto>.Error("GST Rate is not configured on the Category. Please set a Default GST Rate on the Category first.", 400);
+            }
+            gstPercent = category.DefaultGstRate.Rate;
+        }
+
         var sellingPriceWithGst = request.Price * (1 + gstPercent / 100m);
         if (sellingPriceWithGst > request.Mrp)
         {
@@ -182,6 +219,7 @@ public class ItemService : IItemService
         item.TargetQty = request.TargetQty;
         item.Unit = request.Unit ?? "Pieces (Pcs)";
         item.CategoryId = request.CategoryId;
+        item.GstRateId = request.GstRateId;
         item.IsActive = request.IsActive;
         item.IsStockInitialized = request.IsStockInitialized || request.StockQty > 0;
 

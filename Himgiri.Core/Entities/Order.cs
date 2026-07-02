@@ -16,6 +16,20 @@ public class Order : BaseEntity
     public Grade? Grade { get; set; }
     public string GradeName { get; set; } = string.Empty; // snapshot at order time
 
+    public string CustomerGstin { get; set; } = string.Empty; // Snapshot of customer GSTIN
+    
+    // State snapshots for Indian GST determination
+    public Guid? SellerStateId { get; set; }
+    public State? SellerState { get; set; }
+    
+    public Guid? CustomerStateId { get; set; }
+    public State? CustomerState { get; set; }
+    
+    public Guid? PlaceOfSupplyStateId { get; set; }
+    public State? PlaceOfSupplyState { get; set; }
+    
+    public SupplyType SupplyType { get; set; }
+
     public decimal SubTotal { get; set; }       // Sum of item prices before GST
     public decimal TotalGst { get; set; }       // Total GST amount
     public decimal DeliveryFee { get; set; }    // 250 flat (or 0 if no delivery items)
@@ -45,9 +59,21 @@ public class OrderItem : BaseEntity
     public string HsnCode { get; set; } = string.Empty;
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }      // Price at time of order
+    public decimal BaseAmount { get; set; }     // UnitPrice * Quantity (before GST)
+    
+    // GST Split snapshots
     public decimal GstPercent { get; set; }
+    public decimal CgstPercent { get; set; }
+    public decimal SgstPercent { get; set; }
+    public decimal IgstPercent { get; set; }
+    public decimal CessPercent { get; set; }
+
     public decimal GstAmount { get; set; }      // Total GST for this line
-    public decimal Cgst { get; set; }           // Half of GstAmount
-    public decimal Sgst { get; set; }           // Half of GstAmount
+    public decimal Cgst { get; set; }           // CGST portion
+    public decimal Sgst { get; set; }           // SGST portion
+    public decimal Igst { get; set; }           // IGST portion
+    public decimal CessAmount { get; set; }     // Cess portion
+    
+    public bool IsIgst { get; set; }            // Line-level integrated tax indicator
     public decimal LineTotal { get; set; }      // (UnitPrice + GstAmount) * Quantity
 }

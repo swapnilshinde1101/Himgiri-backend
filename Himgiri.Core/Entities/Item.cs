@@ -24,6 +24,9 @@ public class Item : BaseEntity
     public Guid CategoryId { get; set; }
     public ItemCategory Category { get; set; } = null!;
     
+    public Guid? GstRateId { get; set; }
+    public GstRate? GstRate { get; set; }
+    
     public ICollection<ItemGrade> ItemGrades { get; set; } = new List<ItemGrade>();
 
     // Navigation

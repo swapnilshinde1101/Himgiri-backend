@@ -26,3 +26,14 @@ public interface ICategoryRepository
     Task<List<string>> GetSuggestionsAsync(string term, CancellationToken ct = default);
     Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default);
 }
+
+public interface IGstRateRepository
+{
+    Task<List<GstRate>> GetAllAsync(CancellationToken ct = default);
+    Task<(List<GstRate> Items, int TotalCount)> GetPagedAsync(BaseRequest request, CancellationToken ct = default);
+    Task<GstRate?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    void Add(GstRate rate);
+    void Update(GstRate rate);
+    void Delete(GstRate rate);
+    Task<bool> HasLinkedCategoriesOrItemsAsync(Guid id, CancellationToken ct = default);
+}
