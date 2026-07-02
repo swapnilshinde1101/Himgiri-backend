@@ -24,6 +24,7 @@ public class SpGetCategoriesPagedResult
     public decimal CgstPercent { get; set; }
     public decimal SgstPercent { get; set; }
     public bool IsTaxable { get; set; }
+    public Guid? DefaultGstRateId { get; set; }
     public DateTime CreatedAt { get; set; }
     public int TotalCount { get; set; }
 }

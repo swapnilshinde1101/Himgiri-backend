@@ -30,3 +30,9 @@ public enum AdminRole
     InventoryManager,   // Items + Stock only
     OrderManager        // Orders only
 }
+
+public enum SupplyType
+{
+    IntraState,  // Seller State == Customer State -> CGST + SGST
+    InterState   // Seller State != Customer State -> IGST
+}

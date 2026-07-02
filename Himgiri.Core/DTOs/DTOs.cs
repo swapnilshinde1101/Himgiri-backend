@@ -20,13 +20,21 @@ public record ItemDto(
     string? Description,
     string? ImageUrl,
     decimal Price,
+    decimal? PurchasePrice,
+    decimal Mrp,
     StorageStatus StorageStatus,
     int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
     string CategoryName,
     Guid CategoryId,
-    string GradeName,
-    Guid GradeId,
-    bool IsActive
+    System.Collections.Generic.List<Guid> GradeIds,
+    string GradeNames,
+    bool IsActive,
+    DateTime CreatedAt,
+    DateTime? CompletedAt,
+    Guid? GstRateId = null
 );
 
 public record CreateItemRequest(
@@ -34,16 +42,98 @@ public record CreateItemRequest(
     string? Description,
     string? ImageUrl,
     decimal Price,
+    decimal? PurchasePrice,
+    decimal Mrp,
     StorageStatus StorageStatus,
     int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
     Guid CategoryId,
-    Guid GradeId,
+    System.Collections.Generic.List<Guid> GradeIds,
+    bool IsActive,
+    Guid? GstRateId
+);
+
+public record CatalogItemDto(
+    Guid Id,
+    string Name,
+    string? Description,
+    string? ImageUrl,
+    decimal Price,
+    decimal Mrp,
+    StorageStatus StorageStatus,
+    int StockQty,
+    int TargetQty,
+    string Unit,
+    bool IsStockInitialized,
+    string CategoryName,
+    Guid CategoryId,
+    System.Collections.Generic.List<Guid> GradeIds,
+    string GradeNames,
+    bool IsActive,
+    DateTime CreatedAt,
+    DateTime? CompletedAt
+);
+
+public record PriceAuditLogDto(
+    Guid Id,
+    Guid ItemId,
+    string ItemName,
+    decimal OldPrice,
+    decimal NewPrice,
+    decimal OldMrp,
+    decimal NewMrp,
+    string ChangedBy,
+    string Reason,
+    DateTime CreatedAt
+);
+
+public record CompletedStatsDto(
+    int TotalCompletedCount,
+    decimal TotalPurchaseValue,
+    decimal TotalRetailValue,
+    string MostCompletedCategory
+);
+
+public record DashboardStatsDto(
+    int TotalItems,
+    int LowStockCount,
+    int OutOfStockCount,
+    int TotalOrders,
+    decimal RevenueToday,
+    int PendingOrders
+);
+
+public record UpdateStockRequest(int AdjustmentQty, string Reason, int? LastSeenStockQty = null);
+
+public record StockLogDto(
+    Guid Id,
+    Guid ItemId,
+    string ItemName,
+    int OldQty,
+    int NewQty,
+    string ChangedBy,
+    string Reason,
+    DateTime CreatedAt
+);
+
+// ── Support Entities DTOs ──
+public record GstRateDto(
+    Guid Id,
+    string Name,
+    string HsnCode,
+    string? Description,
+    decimal Rate,
+    decimal Cgst,
+    decimal Sgst,
+    decimal Igst,
+    decimal Cess,
+    DateTime EffectiveFrom,
+    DateTime? EffectiveTo,
     bool IsActive
 );
 
-public record UpdateStockRequest(int NewQty, string Reason);
-
-// ── Support Entities DTOs ──
 public record GradeDto(
     Guid Id, 
     string Name, 
@@ -55,14 +145,15 @@ public record GradeDto(
 public record CategoryDto(
     Guid Id, 
     string Name, 
-    string Description,
+    string? Description,
     int DisplayOrder,
-    string HsnCode, 
-    decimal GstPercent, 
-    decimal CgstPercent, 
-    decimal SgstPercent,
-    bool IsTaxable,
-    bool IsActive
+    string? HsnCode, 
+    decimal? GstPercent, 
+    decimal? CgstPercent, 
+    decimal? SgstPercent,
+    bool? IsTaxable,
+    bool IsActive,
+    Guid? DefaultGstRateId = null
 );
 
 // ── Orders ──
@@ -74,8 +165,9 @@ public record CreateOrderRequest(
     string AddressLine2,
     string City,
     string Pincode,
-    Guid GradeId,
-    List<OrderItemRequest> Items
+    Guid? GradeId,
+    List<OrderItemRequest> Items,
+    bool IncludeDelivery
 );
 
 public record OrderItemRequest(Guid ItemId, int Quantity);
@@ -125,5 +217,72 @@ public record OrderItemDto(
     decimal Cgst,
     decimal Sgst,
     decimal LineTotal
+);
+
+public record BulkInwardRequest(
+    System.Collections.Generic.List<BulkInwardItemDto> Items,
+    string Reason
+);
+
+public record BulkInwardItemDto(
+    System.Guid ItemId,
+    int QuantityToAdd
+);
+
+public record BulkStatusRequest(
+    System.Collections.Generic.List<System.Guid> ItemIds,
+    bool IsActive
+);
+
+public record BulkCategoryRequest(
+    System.Collections.Generic.List<System.Guid> ItemIds,
+    System.Guid CategoryId
+);
+
+public record CustomerSummaryDto(
+    string CustomerName,
+    string Mobile,
+    string Email,
+    string GradeName,
+    int TotalOrders,
+    decimal TotalSpent,
+    System.DateTime LastOrderDate
+);
+
+// ── School Kits DTOs ──
+public record SchoolKitDto(
+    System.Guid Id,
+    string Name,
+    string? Description,
+    System.Guid GradeId,
+    string GradeName,
+    bool IsActive,
+    System.Collections.Generic.List<SchoolKitItemDto> Items,
+    System.DateTime CreatedAt
+);
+
+public record SchoolKitItemDto(
+    System.Guid ItemId,
+    string ItemName,
+    decimal Price,
+    decimal Mrp,
+    int Quantity,
+    string CategoryName,
+    string Unit,
+    string? ImageUrl,
+    StorageStatus StorageStatus
+);
+
+public record CreateSchoolKitRequest(
+    string Name,
+    string? Description,
+    System.Guid GradeId,
+    bool IsActive,
+    System.Collections.Generic.List<CreateSchoolKitItemRequest> Items
+);
+
+public record CreateSchoolKitItemRequest(
+    System.Guid ItemId,
+    int Quantity
 );
 

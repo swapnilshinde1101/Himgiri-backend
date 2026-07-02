@@ -51,6 +51,9 @@ public class GradeRepository : IGradeRepository
             .Select(g => g.Name)
             .Distinct().Take(10).ToListAsync(ct);
     }
+
+    public async Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default)
+        => await _db.ItemGrades.AnyAsync(ig => ig.GradeId == id && !ig.Item.IsDeleted, ct);
 }
 
 public class CategoryRepository : ICategoryRepository
@@ -80,11 +83,14 @@ public class CategoryRepository : ICategoryRepository
             Description = r.Description ?? string.Empty,
             IsActive = r.IsActive,
             DisplayOrder = r.DisplayOrder,
-            HsnCode = r.HsnCode, 
-            GstPercent = r.GstPercent, 
-            CgstPercent = r.CgstPercent,
-            SgstPercent = r.SgstPercent,
-            IsTaxable = r.IsTaxable,
+            DefaultGstRateId = r.DefaultGstRateId ?? Guid.Empty,
+            DefaultGstRate = r.DefaultGstRateId.HasValue ? new GstRate {
+                Id = r.DefaultGstRateId.Value,
+                HsnCode = r.HsnCode,
+                Rate = r.GstPercent,
+                Cgst = r.CgstPercent,
+                Sgst = r.SgstPercent
+            } : null!,
             CreatedAt = r.CreatedAt
         }).ToList();
 
@@ -93,6 +99,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<ItemCategory?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await _db.ItemCategories
+            .Include(c => c.DefaultGstRate)
             .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted, ct);
 
     public void Add(ItemCategory category) => _db.ItemCategories.Add(category);
@@ -106,5 +113,58 @@ public class CategoryRepository : ICategoryRepository
             .Where(c => !c.IsDeleted && c.Name.ToLower().Contains(term.ToLower()))
             .Select(c => c.Name)
             .Distinct().Take(10).ToListAsync(ct);
+    }
+
+    public async Task<bool> HasLinkedItemsAsync(Guid id, CancellationToken ct = default)
+        => await _db.Items.AnyAsync(i => i.CategoryId == id && !i.IsDeleted, ct);
+}
+
+public class GstRateRepository : IGstRateRepository
+{
+    private readonly HimgiriDbContext _db;
+    public GstRateRepository(HimgiriDbContext db) => _db = db;
+
+    public async Task<List<GstRate>> GetAllAsync(CancellationToken ct = default)
+    {
+        var today = DateTime.UtcNow.Date;
+        return await _db.GstRates
+            .Where(r => !r.IsDeleted && 
+                        r.IsActive && 
+                        r.EffectiveFrom.Date <= today && 
+                        (!r.EffectiveTo.HasValue || r.EffectiveTo.Value.Date >= today))
+            .ToListAsync(ct);
+    }
+
+    public async Task<(List<GstRate> Items, int TotalCount)> GetPagedAsync(BaseRequest request, CancellationToken ct = default)
+    {
+        var query = _db.GstRates.Where(r => !r.IsDeleted);
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var term = request.SearchTerm.Trim().ToLower();
+            query = query.Where(r => r.Name.ToLower().Contains(term) || r.HsnCode.ToLower().Contains(term));
+        }
+
+        var total = await query.CountAsync(ct);
+        var items = await query
+            .OrderBy(r => r.Rate)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(ct);
+
+        return (items, total);
+    }
+
+    public async Task<GstRate?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        => await _db.GstRates.FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, ct);
+
+    public void Add(GstRate rate) => _db.GstRates.Add(rate);
+    public void Update(GstRate rate) => _db.GstRates.Update(rate);
+    public void Delete(GstRate rate) => _db.GstRates.Remove(rate);
+
+    public async Task<bool> HasLinkedCategoriesOrItemsAsync(Guid id, CancellationToken ct = default)
+    {
+        var hasCategories = await _db.ItemCategories.AnyAsync(c => c.DefaultGstRateId == id && !c.IsDeleted, ct);
+        var hasItems = await _db.Items.AnyAsync(i => i.GstRateId == id && !i.IsDeleted, ct);
+        return hasCategories || hasItems;
     }
 }

@@ -14,6 +14,7 @@ public class CategoriesController : BaseController
     public CategoriesController(ICategoryService service) => _service = service;
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] BaseRequest request, CancellationToken ct)
     {
         var result = await _service.GetPagedAsync(request, ct);

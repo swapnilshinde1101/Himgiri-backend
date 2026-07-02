@@ -68,4 +68,18 @@ public class VendorSettings : BaseEntity
     public string ContactPhone { get; set; } = string.Empty;
     public string InvoicePrefix { get; set; } = "HG";
     public int LastInvoiceNumber { get; set; } = 0;
+
+    // Navigation
+    public Guid? StateId { get; set; }
+    public State? State { get; set; }
+}
+
+public class OrderStatusHistory : BaseEntity
+{
+    public Guid OrderId { get; set; }
+    public Order Order { get; set; } = null!;
+    public OrderStatus FromStatus { get; set; }
+    public OrderStatus ToStatus { get; set; }
+    public string ChangedBy { get; set; } = string.Empty;
+    public string? Note { get; set; }
 }

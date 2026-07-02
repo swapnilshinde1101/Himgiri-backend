@@ -9,5 +9,5 @@ public class Grade : BaseEntity
     public int DisplayOrder { get; set; } = 0;                 // For sorting LKG, UKG, G1, G2...
     
     // Navigation
-    public ICollection<Item> Items { get; set; } = new List<Item>();
+    public ICollection<ItemGrade> ItemGrades { get; set; } = new List<ItemGrade>();
 }

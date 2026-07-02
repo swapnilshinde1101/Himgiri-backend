@@ -89,7 +89,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000001"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7252),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(695),
                             Email = "superadmin@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -101,7 +101,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000002"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7259),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(706),
                             Email = "pradeep@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -113,7 +113,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000003"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7264),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(712),
                             Email = "inventory@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -125,7 +125,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000004"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7267),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(718),
                             Email = "orders1@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -137,7 +137,7 @@ namespace Himgiri.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0001-000000000005"),
                             AccessFailedCount = 0,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7270),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(723),
                             Email = "orders2@himgirigoods.com",
                             IsActive = true,
                             IsDeleted = false,
@@ -276,7 +276,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000001"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7565),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1361),
                             Description = "Primary Grade 1",
                             DisplayOrder = 1,
                             IsActive = true,
@@ -287,7 +287,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000002"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7581),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1366),
                             Description = "Primary Grade 2",
                             DisplayOrder = 2,
                             IsActive = true,
@@ -298,7 +298,7 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0005-000000000003"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7585),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1372),
                             Description = "Primary Grade 3",
                             DisplayOrder = 3,
                             IsActive = true,
@@ -308,14 +308,19 @@ namespace Himgiri.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Himgiri.Core.Entities.Item", b =>
+            modelBuilder.Entity("Himgiri.Core.Entities.GstRate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
+                    b.Property<decimal>("Cess")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<decimal>("Cgst")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -332,11 +337,20 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("GradeId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HsnCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("Igst")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -349,6 +363,174 @@ namespace Himgiri.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<decimal>("Sgst")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GstRates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000001"),
+                            Cess = 0m,
+                            Cgst = 0m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1479),
+                            Description = "School Textbooks Exempt from GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "4901",
+                            Igst = 0m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Books Exempt",
+                            Rate = 0m,
+                            Sgst = 0m
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000005"),
+                            Cess = 0m,
+                            Cgst = 2.5m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1490),
+                            Description = "Essential items under 5% GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "3004",
+                            Igst = 5m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Medicines/Essentials GST 5%",
+                            Rate = 5m,
+                            Sgst = 2.5m
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000002"),
+                            Cess = 0m,
+                            Cgst = 6m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1496),
+                            Description = "Notebooks and Stationery items under 12% GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "4820",
+                            Igst = 12m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Stationery GST 12%",
+                            Rate = 12m,
+                            Sgst = 6m
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000003"),
+                            Cess = 0m,
+                            Cgst = 9m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1502),
+                            Description = "School Bags and Backpacks under 18% GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "4202",
+                            Igst = 18m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Bags GST 18%",
+                            Rate = 18m,
+                            Sgst = 9m
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000004"),
+                            Cess = 0m,
+                            Cgst = 9m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1509),
+                            Description = "Logistics and Shipping charges under 18% GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "9965",
+                            Igst = 18m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Delivery Fee GST 18%",
+                            Rate = 18m,
+                            Sgst = 9m
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0009-000000000006"),
+                            Cess = 0m,
+                            Cgst = 14m,
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1594),
+                            Description = "Luxury goods and services under 28% GST",
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HsnCode = "8708",
+                            Igst = 28m,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Luxury/Services GST 28%",
+                            Rate = 28m,
+                            Sgst = 14m
+                        });
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.Item", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GstRateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsStockInitialized")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Mrp")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
@@ -356,11 +538,26 @@ namespace Himgiri.Infrastructure.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)");
 
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
                     b.Property<int>("StockQty")
+                        .IsConcurrencyToken()
                         .HasColumnType("integer");
 
                     b.Property<int>("StorageStatus")
                         .HasColumnType("integer");
+
+                    b.Property<int>("TargetQty")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Pieces (Pcs)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -369,7 +566,7 @@ namespace Himgiri.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("GradeId");
+                    b.HasIndex("GstRateId");
 
                     b.HasIndex("IsActive");
 
@@ -378,78 +575,223 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Id = new Guid("00000000-0000-0000-0004-000000000011"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2000),
+                            Description = "Interactive English Reader for Grade 1",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
+                            ImageUrl = "https://picsum.photos/200/300?random=11",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 180m,
+                            Name = "Grade 1 English Textbook",
+                            Price = 180m,
+                            PurchasePrice = 120m,
+                            StockQty = 150,
+                            StorageStatus = 0,
+                            TargetQty = 150,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000012"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2021),
+                            Description = "Ruled Journal for Grade 1 practice",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
+                            ImageUrl = "https://picsum.photos/200/300?random=12",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 45m,
+                            Name = "Grade 1 Red Notebook",
+                            Price = 40m,
+                            PurchasePrice = 25m,
+                            StockQty = 300,
+                            StorageStatus = 0,
+                            TargetQty = 300,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000013"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000002"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2031),
+                            Description = "Stationery box containing pencils, eraser, and ruler",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
+                            ImageUrl = "https://picsum.photos/200/300?random=13",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 80m,
+                            Name = "Grade 1 Premium Pencil Box",
+                            Price = 70m,
+                            PurchasePrice = 45m,
+                            StockQty = 200,
+                            StorageStatus = 0,
+                            TargetQty = 200,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
                             Id = new Guid("00000000-0000-0000-0004-000000000001"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7849),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2043),
                             Description = "DPS Hinjawadi School Almanac",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
                             ImageUrl = "https://picsum.photos/200/300?random=1",
                             IsActive = true,
                             IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 180m,
                             Name = "Almanac 2026-27",
                             Price = 150m,
-                            StockQty = 0,
-                            StorageStatus = 0
+                            PurchasePrice = 100m,
+                            StockQty = 120,
+                            StorageStatus = 0,
+                            TargetQty = 150,
+                            Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000002"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000002"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7854),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2053),
                             Description = "DPS Hinjawadi Portfolio File",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
                             ImageUrl = "https://picsum.photos/200/300?random=2",
                             IsActive = true,
                             IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 90m,
                             Name = "Portfolio File",
                             Price = 80m,
-                            StockQty = 0,
-                            StorageStatus = 0
+                            PurchasePrice = 50m,
+                            StockQty = 250,
+                            StorageStatus = 0,
+                            TargetQty = 300,
+                            Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000003"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7859),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2080),
                             Description = "DPS Public Speaking Journal",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
                             ImageUrl = "https://picsum.photos/200/300?random=3",
                             IsActive = true,
                             IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 140m,
                             Name = "Public Speaking Journal",
                             Price = 120m,
-                            StockQty = 0,
-                            StorageStatus = 0
+                            PurchasePrice = 80m,
+                            StockQty = 180,
+                            StorageStatus = 0,
+                            TargetQty = 200,
+                            Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000004"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7863),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2091),
                             Description = "Marathi Theme Book",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
                             ImageUrl = "https://picsum.photos/200/300?random=4",
                             IsActive = true,
                             IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 100m,
                             Name = "Majet Shikuya Marathi",
                             Price = 90m,
-                            StockQty = 0,
-                            StorageStatus = 0
+                            PurchasePrice = 60m,
+                            StockQty = 90,
+                            StorageStatus = 0,
+                            TargetQty = 100,
+                            Unit = "Pieces (Pcs)"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0004-000000000005"),
                             CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7867),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2100),
                             Description = "Grade 2 Theme Book",
-                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
                             ImageUrl = "https://picsum.photos/200/300?random=5",
                             IsActive = true,
                             IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 130m,
                             Name = "Theme Book Grade 2",
                             Price = 110m,
+                            PurchasePrice = 75m,
                             StockQty = 0,
-                            StorageStatus = 0
+                            StorageStatus = 1,
+                            TargetQty = 150,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000031"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2111),
+                            Description = "Mathematics textbook for Grade 3",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
+                            ImageUrl = "https://picsum.photos/200/300?random=31",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 220m,
+                            Name = "Grade 3 Math Magic",
+                            Price = 220m,
+                            PurchasePrice = 150m,
+                            StockQty = 140,
+                            StorageStatus = 0,
+                            TargetQty = 150,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000032"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000001"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2142),
+                            Description = "Science and environment textbook for Grade 3",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
+                            ImageUrl = "https://picsum.photos/200/300?random=32",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 240m,
+                            Name = "Grade 3 Science Explorer",
+                            Price = 240m,
+                            PurchasePrice = 160m,
+                            StockQty = 130,
+                            StorageStatus = 0,
+                            TargetQty = 150,
+                            Unit = "Pieces (Pcs)"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0004-000000000033"),
+                            CategoryId = new Guid("00000000-0000-0000-0006-000000000004"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2153),
+                            Description = "Heavy duty school backpack for Grade 3",
+                            GstRateId = new Guid("00000000-0000-0000-0009-000000000003"),
+                            ImageUrl = "https://picsum.photos/200/300?random=33",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsStockInitialized = true,
+                            Mrp = 750m,
+                            Name = "Grade 3 School Bag",
+                            Price = 650m,
+                            PurchasePrice = 450m,
+                            StockQty = 80,
+                            StorageStatus = 0,
+                            TargetQty = 100,
+                            Unit = "Pieces (Pcs)"
                         });
                 });
 
@@ -459,14 +801,13 @@ namespace Himgiri.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("CgstPercent")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DefaultGstRateId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -482,22 +823,10 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("GstPercent")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
-                    b.Property<string>("HsnCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTaxable")
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("ModifiedBy")
@@ -508,14 +837,12 @@ namespace Himgiri.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<decimal>("SgstPercent")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultGstRateId");
 
                     b.ToTable("ItemCategories");
 
@@ -523,77 +850,129 @@ namespace Himgiri.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000001"),
-                            CgstPercent = 0m,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7619),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1676),
+                            DefaultGstRateId = new Guid("00000000-0000-0000-0009-000000000001"),
                             Description = "School Textbooks",
                             DisplayOrder = 1,
-                            GstPercent = 0m,
-                            HsnCode = "4901",
                             IsActive = true,
                             IsDeleted = false,
-                            IsTaxable = false,
-                            Name = "Textbook",
-                            SgstPercent = 0m
+                            Name = "Textbook"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000002"),
-                            CgstPercent = 6m,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7627),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1690),
+                            DefaultGstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
                             Description = "School Stationery",
                             DisplayOrder = 2,
-                            GstPercent = 12m,
-                            HsnCode = "4820",
                             IsActive = true,
                             IsDeleted = false,
-                            IsTaxable = true,
-                            Name = "Stationery",
-                            SgstPercent = 6m
+                            Name = "Stationery"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000003"),
-                            CgstPercent = 6m,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7629),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1693),
+                            DefaultGstRateId = new Guid("00000000-0000-0000-0009-000000000002"),
                             Description = "School Journals",
                             DisplayOrder = 3,
-                            GstPercent = 12m,
-                            HsnCode = "4820",
                             IsActive = true,
                             IsDeleted = false,
-                            IsTaxable = true,
-                            Name = "Journal",
-                            SgstPercent = 6m
+                            Name = "Journal"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000004"),
-                            CgstPercent = 9m,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7630),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1694),
+                            DefaultGstRateId = new Guid("00000000-0000-0000-0009-000000000003"),
                             Description = "School Bags",
                             DisplayOrder = 4,
-                            GstPercent = 18m,
-                            HsnCode = "4202",
                             IsActive = true,
                             IsDeleted = false,
-                            IsTaxable = true,
-                            Name = "Bag",
-                            SgstPercent = 9m
+                            Name = "Bag"
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0006-000000000005"),
-                            CgstPercent = 9m,
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7631),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1696),
+                            DefaultGstRateId = new Guid("00000000-0000-0000-0009-000000000004"),
                             Description = "Delivery Charges",
                             DisplayOrder = 5,
-                            GstPercent = 18m,
-                            HsnCode = "9965",
                             IsActive = true,
                             IsDeleted = false,
-                            IsTaxable = true,
-                            Name = "Delivery Fee",
-                            SgstPercent = 9m
+                            Name = "Delivery Fee"
+                        });
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.ItemGrade", b =>
+                {
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("GradeId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ItemId", "GradeId");
+
+                    b.HasIndex("GradeId");
+
+                    b.ToTable("ItemGrades");
+
+                    b.HasData(
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000011"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000012"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000013"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000001")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000001"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000002"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000003"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000004"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000005"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000031"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000032"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
+                        },
+                        new
+                        {
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000033"),
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000003")
                         });
                 });
 
@@ -648,8 +1027,12 @@ namespace Himgiri.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int>("Grade")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("GradeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("GradeName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("GrandTotal")
                         .HasPrecision(10, 2)
@@ -708,6 +1091,8 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
+
+                    b.HasIndex("GradeId");
 
                     b.HasIndex("InvoiceNumber")
                         .IsUnique();
@@ -796,6 +1181,123 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.OrderStatusHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("FromStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ToStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderStatusHistories");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.PriceAuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("NewMrp")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("NewPrice")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("OldMrp")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("OldPrice")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("PriceAuditLogs");
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.PurchaseOrder", b =>
@@ -910,6 +1412,174 @@ namespace Himgiri.Infrastructure.Migrations
                     b.HasIndex("PurchaseOrderId");
 
                     b.ToTable("PurchaseOrderItems");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.SchoolKit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("GradeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeId", "IsActive")
+                        .IsUnique()
+                        .HasFilter("\"IsActive\" = true AND \"IsDeleted\" = false");
+
+                    b.ToTable("SchoolKits");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000001"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2559),
+                            Description = "Essential textbooks and stationery bundle for Grade 1",
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000001"),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Grade 1 Standard Kit"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000002"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2564),
+                            Description = "Complete academic package including textbooks and journals for Grade 2",
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000002"),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Grade 2 Premium Kit"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0007-000000000003"),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(2567),
+                            Description = "All required textbooks and school bag for Grade 3",
+                            GradeId = new Guid("00000000-0000-0000-0005-000000000003"),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Grade 3 Classic Kit"
+                        });
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.SchoolKitItem", b =>
+                {
+                    b.Property<Guid>("SchoolKitId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("SchoolKitId", "ItemId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("SchoolKitItems");
+
+                    b.HasData(
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000011"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000012"),
+                            Quantity = 3
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000001"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000013"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000001"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000002"),
+                            Quantity = 2
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000003"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000004"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000002"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000005"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000031"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000032"),
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            SchoolKitId = new Guid("00000000-0000-0000-0007-000000000003"),
+                            ItemId = new Guid("00000000-0000-0000-0004-000000000033"),
+                            Quantity = 1
+                        });
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.StockLog", b =>
@@ -1086,7 +1756,7 @@ namespace Himgiri.Infrastructure.Migrations
                             CompanyName = "Himgiri Goods Pvt. Ltd",
                             ContactEmail = "support@himgirigoods.com",
                             ContactPhone = "PENDING_FROM_CLIENT",
-                            CreatedAt = new DateTime(2026, 5, 25, 6, 52, 51, 454, DateTimeKind.Utc).AddTicks(7813),
+                            CreatedAt = new DateTime(2026, 7, 2, 2, 2, 4, 758, DateTimeKind.Utc).AddTicks(1866),
                             Gstin = "PENDING_FROM_CLIENT",
                             InvoicePrefix = "HG",
                             IsActive = true,
@@ -1102,6 +1772,9 @@ namespace Himgiri.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DefaultGstRateId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -1178,16 +1851,20 @@ namespace Himgiri.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("GradeId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("GradeIds")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("GradeName")
+                    b.Property<string>("GradeNames")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1200,11 +1877,20 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsStockInitialized")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Mrp")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("PurchasePrice")
                         .HasColumnType("numeric");
 
                     b.Property<int>("StockQty")
@@ -1213,8 +1899,15 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Property<int>("StorageStatus")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TargetQty")
+                        .HasColumnType("integer");
+
                     b.Property<int>("TotalCount")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.ToTable((string)null);
                 });
@@ -1227,13 +1920,52 @@ namespace Himgiri.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Himgiri.Core.Entities.GstRate", "GstRate")
+                        .WithMany()
+                        .HasForeignKey("GstRateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Category");
+
+                    b.Navigation("GstRate");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.ItemCategory", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.GstRate", "DefaultGstRate")
+                        .WithMany()
+                        .HasForeignKey("DefaultGstRateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DefaultGstRate");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.ItemGrade", b =>
+                {
                     b.HasOne("Himgiri.Core.Entities.Grade", "Grade")
-                        .WithMany("Items")
+                        .WithMany("ItemGrades")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.HasOne("Himgiri.Core.Entities.Item", "Item")
+                        .WithMany("ItemGrades")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grade");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.Order", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.Grade", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Grade");
                 });
@@ -1255,6 +1987,28 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.OrderStatusHistory", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.PriceAuditLog", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.PurchaseOrder", b =>
@@ -1287,6 +2041,36 @@ namespace Himgiri.Infrastructure.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
+            modelBuilder.Entity("Himgiri.Core.Entities.SchoolKit", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.Grade", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Grade");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.SchoolKitItem", b =>
+                {
+                    b.HasOne("Himgiri.Core.Entities.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Himgiri.Core.Entities.SchoolKit", "SchoolKit")
+                        .WithMany("KitItems")
+                        .HasForeignKey("SchoolKitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SchoolKit");
+                });
+
             modelBuilder.Entity("Himgiri.Core.Entities.StockLog", b =>
                 {
                     b.HasOne("Himgiri.Core.Entities.Item", "Item")
@@ -1300,11 +2084,13 @@ namespace Himgiri.Infrastructure.Migrations
 
             modelBuilder.Entity("Himgiri.Core.Entities.Grade", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("ItemGrades");
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.Item", b =>
                 {
+                    b.Navigation("ItemGrades");
+
                     b.Navigation("OrderItems");
 
                     b.Navigation("PurchaseOrderItems");
@@ -1325,6 +2111,11 @@ namespace Himgiri.Infrastructure.Migrations
             modelBuilder.Entity("Himgiri.Core.Entities.PurchaseOrder", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Himgiri.Core.Entities.SchoolKit", b =>
+                {
+                    b.Navigation("KitItems");
                 });
 
             modelBuilder.Entity("Himgiri.Core.Entities.Supplier", b =>
