@@ -512,3 +512,38 @@ public class GstRateService : IGstRateService
         );
     }
 }
+
+public class StateService : IStateService
+{
+    private readonly IStateRepository _repo;
+    public StateService(IStateRepository repo) => _repo = repo;
+
+    public async Task<JsonModel<List<StateDto>>> GetAllActiveAsync(CancellationToken ct = default)
+    {
+        var states = await _repo.GetAllActiveAsync(ct);
+        return JsonModel<List<StateDto>>.Success(MapToDtos(states));
+    }
+
+    public async Task<JsonModel<List<StateDto>>> GetAllAsync(CancellationToken ct = default)
+    {
+        var states = await _repo.GetAllAsync(ct);
+        return JsonModel<List<StateDto>>.Success(MapToDtos(states));
+    }
+
+    private List<StateDto> MapToDtos(List<State> states)
+    {
+        return states.Select(MapToDto).ToList();
+    }
+
+    private StateDto MapToDto(State state)
+    {
+        return new StateDto(
+            state.Id,
+            state.StateCode,
+            state.StateName,
+            state.GstStateCode,
+            state.IsUnionTerritory,
+            state.IsActive
+        );
+    }
+}

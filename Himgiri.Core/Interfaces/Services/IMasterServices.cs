@@ -32,3 +32,9 @@ public interface IGstRateService
     Task<JsonModel<GstRateDto>> UpdateAsync(Guid id, GstRateDto request, CancellationToken ct = default);
     Task<JsonModel<bool>> DeleteAsync(Guid id, CancellationToken ct = default);
 }
+
+public interface IStateService
+{
+    Task<JsonModel<List<StateDto>>> GetAllActiveAsync(CancellationToken ct = default);
+    Task<JsonModel<List<StateDto>>> GetAllAsync(CancellationToken ct = default);
+}

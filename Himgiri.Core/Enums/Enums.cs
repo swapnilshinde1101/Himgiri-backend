@@ -33,6 +33,6 @@ public enum AdminRole
 
 public enum SupplyType
 {
-    IntraState,  // Seller State == Customer State -> CGST + SGST
-    InterState   // Seller State != Customer State -> IGST
+    IntraState = 1,  // Seller State == Customer State -> CGST + SGST
+    InterState = 2   // Seller State != Customer State -> IGST
 }

@@ -37,3 +37,10 @@ public interface IGstRateRepository
     void Delete(GstRate rate);
     Task<bool> HasLinkedCategoriesOrItemsAsync(Guid id, CancellationToken ct = default);
 }
+
+public interface IStateRepository
+{
+    Task<List<State>> GetAllActiveAsync(CancellationToken ct = default);
+    Task<List<State>> GetAllAsync(CancellationToken ct = default);
+    Task<State?> GetByIdAsync(Guid id, CancellationToken ct = default);
+}

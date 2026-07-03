@@ -124,21 +124,32 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.Email).HasMaxLength(200);
             e.Property(x => x.Mobile).IsRequired().HasMaxLength(15);
             e.Property(x => x.Pincode).IsRequired().HasMaxLength(6);
-            e.Property(x => x.SubTotal).HasPrecision(10, 2);
-            e.Property(x => x.TotalGst).HasPrecision(10, 2);
-            e.Property(x => x.DeliveryFee).HasPrecision(10, 2);
-            e.Property(x => x.DeliveryGst).HasPrecision(10, 2);
-            e.Property(x => x.GrandTotal).HasPrecision(10, 2);
+            e.Property(x => x.SubTotal).HasPrecision(18, 2);
+            e.Property(x => x.TotalGst).HasPrecision(18, 2);
+            e.Property(x => x.DeliveryFee).HasPrecision(18, 2);
+            e.Property(x => x.DeliveryGst).HasPrecision(18, 2);
+            e.Property(x => x.DeliveryCgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.DeliverySgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.DeliveryIgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.GrandTotal).HasPrecision(18, 2);
             e.Property(x => x.CustomerGstin).HasMaxLength(15);
+            e.Property(x => x.SellerCompanyName).IsRequired().HasMaxLength(200);
+            e.Property(x => x.SellerGstin).IsRequired().HasMaxLength(15);
+            e.Property(x => x.SellerAddress).IsRequired().HasMaxLength(500);
+            e.Property(x => x.SellerStateName).IsRequired().HasMaxLength(100);
+            e.Property(x => x.SellerGstStateCode).IsRequired().HasMaxLength(10);
+            e.Property(x => x.CustomerStateName).IsRequired().HasMaxLength(100);
+            e.Property(x => x.CustomerGstStateCode).IsRequired().HasMaxLength(10);
+            e.Property(x => x.PlaceOfSupply).IsRequired().HasMaxLength(100);
+            e.Property(x => x.PlaceOfSupplyCode).IsRequired().HasMaxLength(10);
             e.HasIndex(x => x.PaymentStatus);
             e.HasIndex(x => x.Status);
             e.HasIndex(x => x.CreatedAt);
             e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(x => x.GradeId);
 
-            e.HasOne(x => x.SellerState).WithMany().HasForeignKey(x => x.SellerStateId).OnDelete(DeleteBehavior.Restrict);
-            e.HasOne(x => x.CustomerState).WithMany().HasForeignKey(x => x.CustomerStateId).OnDelete(DeleteBehavior.Restrict);
-            e.HasOne(x => x.PlaceOfSupplyState).WithMany().HasForeignKey(x => x.PlaceOfSupplyStateId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.SellerState).WithMany().HasForeignKey(x => x.SellerStateId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.CustomerState).WithMany().HasForeignKey(x => x.CustomerStateId).IsRequired().OnDelete(DeleteBehavior.Restrict);
         });
 
         // ── OrderItem ──
@@ -147,19 +158,19 @@ public class HimgiriDbContext : DbContext
             e.HasKey(x => x.Id);
             e.Property(x => x.ItemName).IsRequired().HasMaxLength(200);
             e.Property(x => x.HsnCode).IsRequired().HasMaxLength(20);
-            e.Property(x => x.UnitPrice).HasPrecision(10, 2);
-            e.Property(x => x.BaseAmount).HasPrecision(10, 2);
+            e.Property(x => x.UnitPrice).HasPrecision(18, 2);
+            e.Property(x => x.BaseAmount).HasPrecision(18, 2);
             e.Property(x => x.GstPercent).HasPrecision(5, 2);
             e.Property(x => x.CgstPercent).HasPrecision(5, 2);
             e.Property(x => x.SgstPercent).HasPrecision(5, 2);
             e.Property(x => x.IgstPercent).HasPrecision(5, 2);
             e.Property(x => x.CessPercent).HasPrecision(5, 2);
-            e.Property(x => x.GstAmount).HasPrecision(10, 2);
-            e.Property(x => x.Cgst).HasPrecision(10, 2);
-            e.Property(x => x.Sgst).HasPrecision(10, 2);
-            e.Property(x => x.Igst).HasPrecision(10, 2);
-            e.Property(x => x.CessAmount).HasPrecision(10, 2);
-            e.Property(x => x.LineTotal).HasPrecision(10, 2);
+            e.Property(x => x.GstAmount).HasPrecision(18, 2);
+            e.Property(x => x.CgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.SgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.IgstAmount).HasPrecision(18, 2);
+            e.Property(x => x.CessAmount).HasPrecision(18, 2);
+            e.Property(x => x.LineTotal).HasPrecision(18, 2);
             e.HasOne(x => x.Order).WithMany(x => x.Items).HasForeignKey(x => x.OrderId);
             e.HasOne(x => x.Item).WithMany(x => x.OrderItems).HasForeignKey(x => x.ItemId);
         });
@@ -298,9 +309,61 @@ public class HimgiriDbContext : DbContext
             new { Id = catDeliveryId, Name = "Delivery Fee", Description = "Delivery Charges", IsActive = true, IsDeleted = false, CreatedAt = DateTime.UtcNow, DisplayOrder = 5, DefaultGstRateId = (Guid?)gstRateIdDelivery }
         );
 
+        // States & Union Territories Master Seed (36 jurisdictions)
+        modelBuilder.Entity<State>().HasData(
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000001"), StateName = "Jammu & Kashmir", StateCode = "JK", GstStateCode = "01", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000002"), StateName = "Himachal Pradesh", StateCode = "HP", GstStateCode = "02", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000003"), StateName = "Punjab", StateCode = "PB", GstStateCode = "03", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000004"), StateName = "Chandigarh", StateCode = "CH", GstStateCode = "04", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000005"), StateName = "Uttarakhand", StateCode = "UT", GstStateCode = "05", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000006"), StateName = "Haryana", StateCode = "HR", GstStateCode = "06", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000007"), StateName = "Delhi", StateCode = "DL", GstStateCode = "07", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000008"), StateName = "Rajasthan", StateCode = "RJ", GstStateCode = "08", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000009"), StateName = "Uttar Pradesh", StateCode = "UP", GstStateCode = "09", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000010"), StateName = "Bihar", StateCode = "BR", GstStateCode = "10", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000011"), StateName = "Sikkim", StateCode = "SK", GstStateCode = "11", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000012"), StateName = "Arunachal Pradesh", StateCode = "AR", GstStateCode = "12", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000013"), StateName = "Nagaland", StateCode = "NL", GstStateCode = "13", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000014"), StateName = "Manipur", StateCode = "MN", GstStateCode = "14", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000015"), StateName = "Mizoram", StateCode = "MZ", GstStateCode = "15", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000016"), StateName = "Tripura", StateCode = "TR", GstStateCode = "16", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000017"), StateName = "Meghalaya", StateCode = "ML", GstStateCode = "17", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000018"), StateName = "Assam", StateCode = "AS", GstStateCode = "18", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000019"), StateName = "West Bengal", StateCode = "WB", GstStateCode = "19", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000020"), StateName = "Jharkhand", StateCode = "JH", GstStateCode = "20", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000021"), StateName = "Odisha", StateCode = "OR", GstStateCode = "21", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000022"), StateName = "Chhattisgarh", StateCode = "CG", GstStateCode = "22", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000023"), StateName = "Madhya Pradesh", StateCode = "MP", GstStateCode = "23", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000024"), StateName = "Gujarat", StateCode = "GJ", GstStateCode = "24", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000026"), StateName = "Dadra & Nagar Haveli and Daman & Diu", StateCode = "DN", GstStateCode = "26", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000027"), StateName = "Maharashtra", StateCode = "MH", GstStateCode = "27", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000029"), StateName = "Karnataka", StateCode = "KA", GstStateCode = "29", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000030"), StateName = "Goa", StateCode = "GA", GstStateCode = "30", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000031"), StateName = "Lakshadweep", StateCode = "LD", GstStateCode = "31", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000032"), StateName = "Kerala", StateCode = "KL", GstStateCode = "32", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000033"), StateName = "Tamil Nadu", StateCode = "TN", GstStateCode = "33", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000034"), StateName = "Puducherry", StateCode = "PY", GstStateCode = "34", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000035"), StateName = "Andaman & Nicobar Islands", StateCode = "AN", GstStateCode = "35", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000036"), StateName = "Telangana", StateCode = "TG", GstStateCode = "36", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000037"), StateName = "Andhra Pradesh", StateCode = "AP", GstStateCode = "37", IsUnionTerritory = false, IsActive = true, CreatedAt = DateTime.UtcNow },
+            new State { Id = Guid.Parse("00000000-0000-0000-0008-000000000038"), StateName = "Ladakh", StateCode = "LA", GstStateCode = "38", IsUnionTerritory = true, IsActive = true, CreatedAt = DateTime.UtcNow }
+        );
+
         // Vendor Settings
         modelBuilder.Entity<VendorSettings>().HasData(
-            new VendorSettings { Id = Guid.Parse("00000000-0000-0000-0003-000000000001"), CompanyName = "Himgiri Goods Pvt. Ltd", Gstin = "PENDING_FROM_CLIENT", Address = "Hinjawadi, Pune, Maharashtra", ContactEmail = "support@himgirigoods.com", ContactPhone = "PENDING_FROM_CLIENT", InvoicePrefix = "HG", LastInvoiceNumber = 0, CreatedAt = DateTime.UtcNow }
+            new VendorSettings 
+            { 
+                Id = Guid.Parse("00000000-0000-0000-0003-000000000001"), 
+                CompanyName = "Himgiri Goods Pvt. Ltd", 
+                Gstin = "27GSTIN_PENDING", 
+                Address = "Hinjawadi, Pune, Maharashtra", 
+                ContactEmail = "support@himgirigoods.com", 
+                ContactPhone = "PENDING_FROM_CLIENT", 
+                InvoicePrefix = "HG", 
+                LastInvoiceNumber = 0, 
+                StateId = Guid.Parse("00000000-0000-0000-0008-000000000027"),
+                CreatedAt = DateTime.UtcNow 
+            }
         );
 
         // Sample Items linked to Category with Stock/PreOrder properties

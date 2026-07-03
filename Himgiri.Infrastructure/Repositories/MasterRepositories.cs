@@ -168,3 +168,18 @@ public class GstRateRepository : IGstRateRepository
         return hasCategories || hasItems;
     }
 }
+
+public class StateRepository : IStateRepository
+{
+    private readonly HimgiriDbContext _db;
+    public StateRepository(HimgiriDbContext db) => _db = db;
+
+    public async Task<List<State>> GetAllActiveAsync(CancellationToken ct = default)
+        => await _db.States.Where(s => s.IsActive).OrderBy(s => s.StateName).ToListAsync(ct);
+
+    public async Task<List<State>> GetAllAsync(CancellationToken ct = default)
+        => await _db.States.OrderBy(s => s.StateName).ToListAsync(ct);
+
+    public async Task<State?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        => await _db.States.FirstOrDefaultAsync(s => s.Id == id, ct);
+}

@@ -165,6 +165,8 @@ public record CreateOrderRequest(
     string AddressLine2,
     string City,
     string Pincode,
+    Guid CustomerStateId,
+    string? CustomerGstin,
     Guid? GradeId,
     List<OrderItemRequest> Items,
     bool IncludeDelivery
@@ -284,5 +286,14 @@ public record CreateSchoolKitRequest(
 public record CreateSchoolKitItemRequest(
     System.Guid ItemId,
     int Quantity
+);
+
+public record StateDto(
+    Guid Id,
+    string StateCode,
+    string StateName,
+    string GstStateCode,
+    bool IsUnionTerritory,
+    bool IsActive
 );
 

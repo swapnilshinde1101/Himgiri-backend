@@ -18,15 +18,25 @@ public class Order : BaseEntity
 
     public string CustomerGstin { get; set; } = string.Empty; // Snapshot of customer GSTIN
     
-    // State snapshots for Indian GST determination
-    public Guid? SellerStateId { get; set; }
+    // Relational State bindings
+    public Guid SellerStateId { get; set; }
     public State? SellerState { get; set; }
     
-    public Guid? CustomerStateId { get; set; }
+    public Guid CustomerStateId { get; set; }
     public State? CustomerState { get; set; }
     
-    public Guid? PlaceOfSupplyStateId { get; set; }
-    public State? PlaceOfSupplyState { get; set; }
+    // Immutable snapshots
+    public string SellerCompanyName { get; set; } = string.Empty;
+    public string SellerGstin { get; set; } = string.Empty;
+    public string SellerAddress { get; set; } = string.Empty;
+    public string SellerStateName { get; set; } = string.Empty;
+    public string SellerGstStateCode { get; set; } = string.Empty;
+    
+    public string CustomerStateName { get; set; } = string.Empty;
+    public string CustomerGstStateCode { get; set; } = string.Empty;
+    
+    public string PlaceOfSupply { get; set; } = string.Empty;
+    public string PlaceOfSupplyCode { get; set; } = string.Empty;
     
     public SupplyType SupplyType { get; set; }
 
@@ -34,6 +44,9 @@ public class Order : BaseEntity
     public decimal TotalGst { get; set; }       // Total GST amount
     public decimal DeliveryFee { get; set; }    // 250 flat (or 0 if no delivery items)
     public decimal DeliveryGst { get; set; }    // GST on delivery fee
+    public decimal DeliveryCgstAmount { get; set; }
+    public decimal DeliverySgstAmount { get; set; }
+    public decimal DeliveryIgstAmount { get; set; }
     public decimal GrandTotal { get; set; }     // Final amount charged to customer
 
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
@@ -69,11 +82,11 @@ public class OrderItem : BaseEntity
     public decimal CessPercent { get; set; }
 
     public decimal GstAmount { get; set; }      // Total GST for this line
-    public decimal Cgst { get; set; }           // CGST portion
-    public decimal Sgst { get; set; }           // SGST portion
-    public decimal Igst { get; set; }           // IGST portion
+    public decimal CgstAmount { get; set; }     // CGST portion
+    public decimal SgstAmount { get; set; }     // SGST portion
+    public decimal IgstAmount { get; set; }     // IGST portion
     public decimal CessAmount { get; set; }     // Cess portion
     
-    public bool IsIgst { get; set; }            // Line-level integrated tax indicator
+    public SupplyType SupplyType { get; set; }  // Tax type resolved at checkout
     public decimal LineTotal { get; set; }      // (UnitPrice + GstAmount) * Quantity
 }

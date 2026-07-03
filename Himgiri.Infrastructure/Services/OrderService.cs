@@ -6,6 +6,7 @@ using Himgiri.Core.DTOs;
 using Himgiri.Core.Enums;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Himgiri.Core.Helpers;
 using System.Text;
 
 namespace Himgiri.Infrastructure.Services;
@@ -17,19 +18,22 @@ public class OrderService : IOrderService
     private readonly IGradeRepository _gradeRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly HimgiriDbContext _db;
+    private readonly ITaxService _taxService;
 
     public OrderService(
         IOrderRepository orderRepo,
         IItemRepository itemRepo,
         IGradeRepository gradeRepo,
         IUnitOfWork unitOfWork,
-        HimgiriDbContext db)
+        HimgiriDbContext db,
+        ITaxService taxService)
     {
         _orderRepo = orderRepo;
         _itemRepo = itemRepo;
         _gradeRepo = gradeRepo;
         _unitOfWork = unitOfWork;
         _db = db;
+        _taxService = taxService;
     }
 
     public async Task<JsonModel<OrderSummaryDto>> CreateOrderAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -101,6 +105,63 @@ public class OrderService : IOrderService
                 return JsonModel<OrderSummaryDto>.Error("Vendor settings not initialized in system.", 500);
             }
 
+            // ── Validate Customer & Seller States ──
+            var customerState = await _db.States.FirstOrDefaultAsync(s => s.Id == request.CustomerStateId, ct);
+            if (customerState == null)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Selected Customer State not found.", 404);
+            }
+            if (!customerState.IsActive)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Selected Customer State is inactive.", 400);
+            }
+
+            if (!settings.StateId.HasValue)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Vendor State settings are not configured.", 500);
+            }
+            var sellerState = await _db.States.FirstOrDefaultAsync(s => s.Id == settings.StateId.Value, ct);
+            if (sellerState == null)
+            {
+                return JsonModel<OrderSummaryDto>.Error("Vendor State not found.", 500);
+            }
+
+            // ── Validate GSTIN first 2 digits match state's GST code ──
+            if (!string.IsNullOrWhiteSpace(request.CustomerGstin))
+            {
+                var cleanedGstin = request.CustomerGstin.Trim().ToUpper();
+                if (cleanedGstin.Length != 15)
+                {
+                    return JsonModel<OrderSummaryDto>.Error("GSTIN must be exactly 15 characters long.", 400);
+                }
+                if (cleanedGstin.Substring(0, 2) != customerState.GstStateCode)
+                {
+                    return JsonModel<OrderSummaryDto>.Error($"GSTIN prefix '{cleanedGstin.Substring(0, 2)}' does not match the selected customer state code '{customerState.GstStateCode}'.", 400);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.Gstin))
+            {
+                var cleanedGstin = settings.Gstin.Trim().ToUpper();
+                if (cleanedGstin.Contains("PENDING") || 
+                    cleanedGstin.Contains("GSTIN_") || 
+                    cleanedGstin.Length != 15)
+                {
+                    return JsonModel<OrderSummaryDto>.Error("Order generation blocked. Vendor GSTIN is in a pending or invalid state.", 500);
+                }
+
+                if (cleanedGstin.Substring(0, 2) != sellerState.GstStateCode)
+                {
+                    return JsonModel<OrderSummaryDto>.Error($"Vendor GSTIN prefix '{cleanedGstin.Substring(0, 2)}' does not match the selected vendor state code '{sellerState.GstStateCode}'.", 500);
+                }
+            }
+            else
+            {
+                return JsonModel<OrderSummaryDto>.Error("Order generation blocked. Vendor GSTIN is not configured.", 500);
+            }
+
+            var supplyType = _taxService.DetermineSupplyType(sellerState.Id, customerState.Id);
+
             // ── 2. Validate Items & Stock (Aggregating duplicates for safety) ──
             var aggregatedItems = request.Items
                 .GroupBy(i => i.ItemId)
@@ -161,13 +222,10 @@ public class OrderService : IOrderService
                 
                 // ── 4. Calculate GST per line item ──
                 decimal taxableAmount = unitPrice * itemReq.Quantity;
-                decimal gstAmount = taxableAmount * (gstPercent / 100m);
-                decimal cgst = taxableAmount * (resolvedGstRate.Cgst / 100m);
-                decimal sgst = taxableAmount * (resolvedGstRate.Sgst / 100m);
-                decimal lineTotal = taxableAmount + gstAmount;
+                var itemTaxResult = _taxService.CalculateTax(taxableAmount, gstPercent, 0m, supplyType, customerState.IsUnionTerritory);
 
-                subTotal += taxableAmount;
-                itemsGstSum += gstAmount;
+                subTotal += itemTaxResult.BaseAmount;
+                itemsGstSum += itemTaxResult.GstAmount;
 
                 orderItemsList.Add(new OrderItem
                 {
@@ -177,18 +235,47 @@ public class OrderService : IOrderService
                     HsnCode = resolvedGstRate.HsnCode,
                     Quantity = itemReq.Quantity,
                     UnitPrice = unitPrice,
-                    GstPercent = gstPercent,
-                    GstAmount = gstAmount,
-                    Cgst = cgst,
-                    Sgst = sgst,
-                    LineTotal = lineTotal
+                    GstPercent = itemTaxResult.GstPercent,
+                    CgstPercent = itemTaxResult.CgstPercent,
+                    SgstPercent = itemTaxResult.SgstPercent,
+                    IgstPercent = itemTaxResult.IgstPercent,
+                    CessPercent = itemTaxResult.CessPercent,
+                    BaseAmount = itemTaxResult.BaseAmount,
+                    GstAmount = itemTaxResult.GstAmount,
+                    CgstAmount = itemTaxResult.CgstAmount,
+                    SgstAmount = itemTaxResult.SgstAmount,
+                    IgstAmount = itemTaxResult.IgstAmount,
+                    CessAmount = itemTaxResult.CessAmount,
+                    SupplyType = supplyType,
+                    LineTotal = itemTaxResult.TotalAmount
                 });
             }
 
             // ── 5. Calculate Delivery Fee ──
             bool chargedDelivery = request.IncludeDelivery && hasInStockItem;
-            decimal deliveryBase = chargedDelivery ? 211.86m : 0m;
-            decimal deliveryGst = chargedDelivery ? 38.14m : 0m;
+            decimal deliveryBase = 0m;
+            decimal deliveryGst = 0m;
+            decimal deliveryCgst = 0m;
+            decimal deliverySgst = 0m;
+            decimal deliveryIgst = 0m;
+
+            if (chargedDelivery)
+            {
+                var deliveryCategory = await _db.ItemCategories
+                    .Include(c => c.DefaultGstRate)
+                    .FirstOrDefaultAsync(c => c.Name == "Delivery Fee", ct);
+
+                decimal deliveryGstPercent = deliveryCategory?.DefaultGstRate?.Rate ?? 18m;
+                // Calculate delivery base price dynamically from 250 inclusive total: Base = 250 / (1 + Rate / 100)
+                decimal calculatedDeliveryBase = MoneyHelper.Round(250m / (1m + deliveryGstPercent / 100m));
+
+                var deliveryTaxResult = _taxService.CalculateTax(calculatedDeliveryBase, deliveryGstPercent, 0m, supplyType, customerState.IsUnionTerritory);
+                deliveryBase = deliveryTaxResult.BaseAmount;
+                deliveryGst = deliveryTaxResult.GstAmount;
+                deliveryCgst = deliveryTaxResult.CgstAmount;
+                deliverySgst = deliveryTaxResult.SgstAmount;
+                deliveryIgst = deliveryTaxResult.IgstAmount;
+            }
 
             // ── 6. Calculate Totals ──
             decimal totalGst = itemsGstSum + deliveryGst;
@@ -213,10 +300,33 @@ public class OrderService : IOrderService
                 Pincode = request.Pincode.Trim(),
                 GradeId = request.GradeId,
                 GradeName = grade?.Name ?? "Not specified",
+                CustomerGstin = request.CustomerGstin?.Trim().ToUpper() ?? string.Empty,
+                
+                SellerStateId = sellerState.Id,
+                CustomerStateId = customerState.Id,
+
+                // Snapshots
+                SellerCompanyName = settings.CompanyName,
+                SellerGstin = settings.Gstin,
+                SellerAddress = settings.Address,
+                SellerStateName = sellerState.StateName,
+                SellerGstStateCode = sellerState.GstStateCode,
+
+                CustomerStateName = customerState.StateName,
+                CustomerGstStateCode = customerState.GstStateCode,
+
+                PlaceOfSupply = customerState.StateName,
+                PlaceOfSupplyCode = customerState.GstStateCode,
+                
+                SupplyType = supplyType,
+
                 SubTotal = subTotal,
                 TotalGst = totalGst,
                 DeliveryFee = deliveryBase,
                 DeliveryGst = deliveryGst,
+                DeliveryCgstAmount = deliveryCgst,
+                DeliverySgstAmount = deliverySgst,
+                DeliveryIgstAmount = deliveryIgst,
                 GrandTotal = grandTotal,
                 Status = OrderStatus.Pending,
                 PaymentStatus = PaymentStatus.Pending,
@@ -286,8 +396,8 @@ public class OrderService : IOrderService
                 oi.UnitPrice,
                 oi.GstPercent,
                 oi.GstAmount,
-                oi.Cgst,
-                oi.Sgst,
+                oi.CgstAmount,
+                oi.SgstAmount,
                 oi.LineTotal
             )).ToList()
         );
