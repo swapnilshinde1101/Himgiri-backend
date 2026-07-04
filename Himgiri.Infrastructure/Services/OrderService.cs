@@ -242,7 +242,7 @@ public class OrderService : IOrderService
             }
 
             // ── 5. Calculate Delivery Fee ──
-            bool chargedDelivery = request.IncludeDelivery && hasInStockItem;
+            bool chargedDelivery = hasInStockItem;
             decimal deliveryBase = 0m;
             decimal deliveryGst = 0m;
             decimal deliveryCgst = 0m;
