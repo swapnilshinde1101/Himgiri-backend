@@ -298,3 +298,27 @@ public record StateDto(
     bool IsActive
 );
 
+public record VendorSettingsDto(
+    Guid Id,
+    string CompanyName,
+    string Gstin,
+    string Address,
+    string ContactEmail,
+    string ContactPhone,
+    string InvoicePrefix,
+    int LastInvoiceNumber,
+    Guid? StateId,
+    string? StateName
+);
+
+public record UpdateVendorSettingsRequest(
+    string CompanyName,
+    string Gstin,
+    string Address,
+    string ContactEmail,
+    string ContactPhone,
+    string InvoicePrefix,
+    Guid? StateId
+);
+
+

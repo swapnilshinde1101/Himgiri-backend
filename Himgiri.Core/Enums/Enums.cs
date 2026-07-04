@@ -14,7 +14,8 @@ public enum OrderStatus
     Dispatched,
     Delivered,
     Refunded,
-    StockOut
+    StockOut,
+    Cancelled
 }
 
 public enum PaymentStatus

@@ -100,6 +100,15 @@ public class OrdersController : BaseController
         return File(csvBytes, "text/csv", filename);
     }
 
+    [HttpGet("export/excel")]
+    [Authorize(Policy = "AnyAdmin")]
+    public async Task<IActionResult> ExportExcel(CancellationToken ct)
+    {
+        var xlsxBytes = await _orderService.ExportOrdersToExcelAsync(ct);
+        var filename = $"Orders_Export_{System.DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
+        return File(xlsxBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+    }
+
     [HttpGet("{id:guid}/invoice")]
     [Authorize(Policy = "AnyAdmin")]
     public async Task<IActionResult> DownloadInvoice(Guid id, [FromServices] IInvoiceService invoiceService, CancellationToken ct)

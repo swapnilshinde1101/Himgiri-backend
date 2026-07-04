@@ -133,6 +133,7 @@ public static class ServiceExtensions
         
         // Services
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICsvService, CsvService>();
         services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<IGradeService, GradeService>();

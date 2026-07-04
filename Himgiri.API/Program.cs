@@ -76,6 +76,12 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
     Authorization = new[] { new HangfireAuthorizationFilter() } // We'll create this
 });
 
+RecurringJob.AddOrUpdate<Himgiri.Core.Interfaces.Services.IOrderService>(
+    "cancel-stale-pending-orders",
+    service => service.CancelStalePendingOrdersAsync(default),
+    Cron.Daily
+);
+
 app.MapControllers();
 
 app.Run();

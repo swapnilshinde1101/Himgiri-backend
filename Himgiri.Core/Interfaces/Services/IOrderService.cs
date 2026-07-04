@@ -13,6 +13,8 @@ public interface IOrderService
     Task<JsonModel<bool>> FlagStockOutAsync(Guid id, string changedBy, CancellationToken ct = default);
     Task<JsonModel<bool>> ProcessRefundAsync(Guid id, ProcessRefundRequest request, string changedBy, CancellationToken ct = default);
     Task<byte[]> ExportOrdersToCsvAsync(CancellationToken ct = default);
+    Task<byte[]> ExportOrdersToExcelAsync(CancellationToken ct = default);
+    Task CancelStalePendingOrdersAsync(CancellationToken ct = default);
     Task<JsonModel<List<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken ct = default);
     Task<JsonModel<List<OrderSummaryDto>>> GetOrdersByCustomerAsync(string mobile, CancellationToken ct = default);
     Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default);

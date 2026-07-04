@@ -19,6 +19,8 @@ public class OrderService : IOrderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly HimgiriDbContext _db;
     private readonly ITaxService _taxService;
+    private readonly IExcelService _excelService;
+    private readonly ICsvService _csvService;
 
     public OrderService(
         IOrderRepository orderRepo,
@@ -26,7 +28,9 @@ public class OrderService : IOrderService
         IGradeRepository gradeRepo,
         IUnitOfWork unitOfWork,
         HimgiriDbContext db,
-        ITaxService taxService)
+        ITaxService taxService,
+        IExcelService excelService,
+        ICsvService csvService)
     {
         _orderRepo = orderRepo;
         _itemRepo = itemRepo;
@@ -34,6 +38,8 @@ public class OrderService : IOrderService
         _unitOfWork = unitOfWork;
         _db = db;
         _taxService = taxService;
+        _excelService = excelService;
+        _csvService = csvService;
     }
 
     public async Task<JsonModel<OrderSummaryDto>> CreateOrderAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -535,16 +541,82 @@ public class OrderService : IOrderService
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);
 
-        var csv = new StringBuilder();
-        csv.AppendLine("Invoice No,Customer,Mobile,Email,Grade,Grand Total,Status,Created At,Address");
-
-        foreach (var o in orders)
+        var exportData = orders.Select(o => new OrderExportRow
         {
-            var address = $"\"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}\"".Replace("\n", " ").Replace("\r", " ");
-            csv.AppendLine($"{o.InvoiceNumber},{o.CustomerName},{o.Mobile},{o.Email},{o.GradeName},{o.GrandTotal},{o.Status},{o.CreatedAt},{address}");
+            InvoiceNumber = o.InvoiceNumber,
+            CustomerName = o.CustomerName,
+            Mobile = o.Mobile,
+            Email = o.Email,
+            Grade = o.GradeName,
+            GrandTotal = o.GrandTotal,
+            Status = o.Status.ToString(),
+            CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+        }).ToList();
+
+        return _csvService.ExportToCsv(exportData);
+    }
+
+    public async Task<byte[]> ExportOrdersToExcelAsync(CancellationToken ct = default)
+    {
+        var orders = await _db.Orders
+            .Include(o => o.Grade)
+            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync(ct);
+
+        var exportData = orders.Select(o => new OrderExportRow
+        {
+            InvoiceNumber = o.InvoiceNumber,
+            CustomerName = o.CustomerName,
+            Mobile = o.Mobile,
+            Email = o.Email,
+            Grade = o.GradeName,
+            GrandTotal = o.GrandTotal,
+            Status = o.Status.ToString(),
+            CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+        }).ToList();
+
+        return _excelService.ExportToExcel(exportData, "Orders");
+    }
+
+    public async Task CancelStalePendingOrdersAsync(CancellationToken ct = default)
+    {
+        var cutoff = DateTime.UtcNow.AddDays(-2); // 48 hours ago
+        var staleOrders = await _db.Orders
+            .Where(o => o.Status == OrderStatus.Pending && 
+                        o.PaymentStatus == PaymentStatus.Pending && 
+                        o.CreatedAt < cutoff && 
+                        !o.IsDeleted)
+            .ToListAsync(ct);
+
+        if (!staleOrders.Any())
+        {
+            return;
         }
 
-        return Encoding.UTF8.GetBytes(csv.ToString());
+        foreach (var order in staleOrders)
+        {
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            var history = new OrderStatusHistory
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                FromStatus = OrderStatus.Pending,
+                ToStatus = OrderStatus.Cancelled,
+                ChangedBy = "Hangfire System Scheduler",
+                Note = "Cancelled automatically due to payment timeout (48 hours).",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _db.Orders.Update(order);
+            _db.OrderStatusHistories.Add(history);
+        }
+
+        await _db.SaveChangesAsync(ct);
     }
 
     public async Task<JsonModel<List<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken ct = default)
