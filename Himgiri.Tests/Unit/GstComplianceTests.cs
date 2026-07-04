@@ -45,17 +45,15 @@ public class GstComplianceTests
     }
 
     [Theory]
-    [InlineData(100, 18, 0, SupplyType.IntraState, false, 9, 9, 0, 9, 9, 0, 18, 118)]
-    [InlineData(100, 18, 0, SupplyType.InterState, false, 0, 0, 18, 0, 0, 18, 18, 118)]
-    [InlineData(250, 12, 0, SupplyType.IntraState, false, 6, 6, 0, 15, 15, 0, 30, 280)]
-    [InlineData(100, 18, 0, SupplyType.IntraState, true, 9, 9, 0, 9, 9, 0, 18, 118)] // UT check
-    [InlineData(100, 0, 0, SupplyType.IntraState, false, 0, 0, 0, 0, 0, 0, 0, 100)] // Zero-rate check
+    [InlineData(100, 18, 0, SupplyType.IntraState, 9, 9, 0, 9, 9, 0, 18, 118)]
+    [InlineData(100, 18, 0, SupplyType.InterState, 0, 0, 18, 0, 0, 18, 18, 118)]
+    [InlineData(250, 12, 0, SupplyType.IntraState, 6, 6, 0, 15, 15, 0, 30, 280)]
+    [InlineData(100, 0, 0, SupplyType.IntraState, 0, 0, 0, 0, 0, 0, 0, 100)] // Zero-rate check
     public void CalculateTax_ValidScenarios_ReturnsExpectedTaxResults(
         decimal baseAmount, 
         decimal rate, 
         decimal cess, 
         SupplyType supplyType, 
-        bool isUnionTerritory,
         decimal expectedCgstRate,
         decimal expectedSgstRate,
         decimal expectedIgstRate,
@@ -66,7 +64,7 @@ public class GstComplianceTests
         decimal expectedTotalAmount)
     {
         // Act
-        var result = _taxService.CalculateTax(baseAmount, rate, cess, supplyType, isUnionTerritory);
+        var result = _taxService.CalculateTax(baseAmount, rate, cess, supplyType);
 
         // Assert
         Assert.Equal(expectedCgstRate, result.CgstPercent);

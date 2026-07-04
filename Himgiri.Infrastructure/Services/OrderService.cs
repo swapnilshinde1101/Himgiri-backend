@@ -211,7 +211,7 @@ public class OrderService : IOrderService
                 
                 // ── 4. Calculate GST per line item ──
                 decimal taxableAmount = unitPrice * itemReq.Quantity;
-                var itemTaxResult = _taxService.CalculateTax(taxableAmount, gstPercent, 0m, supplyType, customerState.IsUnionTerritory);
+                var itemTaxResult = _taxService.CalculateTax(taxableAmount, gstPercent, 0m, supplyType);
 
                 subTotal += itemTaxResult.BaseAmount;
                 itemsGstSum += itemTaxResult.GstAmount;
@@ -258,7 +258,7 @@ public class OrderService : IOrderService
                 // Calculate delivery base price dynamically from 250 inclusive total: Base = 250 / (1 + Rate / 100)
                 decimal calculatedDeliveryBase = MoneyHelper.Round(250m / (1m + deliveryGstPercent / 100m));
 
-                var deliveryTaxResult = _taxService.CalculateTax(calculatedDeliveryBase, deliveryGstPercent, 0m, supplyType, customerState.IsUnionTerritory);
+                var deliveryTaxResult = _taxService.CalculateTax(calculatedDeliveryBase, deliveryGstPercent, 0m, supplyType);
                 deliveryBase = deliveryTaxResult.BaseAmount;
                 deliveryGst = deliveryTaxResult.GstAmount;
                 deliveryCgst = deliveryTaxResult.CgstAmount;

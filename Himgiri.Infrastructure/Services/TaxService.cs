@@ -16,8 +16,7 @@ public class TaxService : ITaxService
         decimal taxableValue, 
         decimal gstPercent, 
         decimal cessPercent, 
-        SupplyType supplyType, 
-        bool isCustomerUnionTerritory
+        SupplyType supplyType
     )
     {
         decimal roundedBaseAmount = MoneyHelper.Round(taxableValue);
