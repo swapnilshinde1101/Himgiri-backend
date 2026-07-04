@@ -14,8 +14,16 @@ public class ExcelService : IExcelService
 {
     static ExcelService()
     {
-        // Set EPPlus license to non-commercial
-        ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+        try
+        {
+            // Set EPPlus license to non-commercial
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to set EPPlus LicenseContext: {ex.Message}");
+            Console.WriteLine(ex.ToString());
+        }
     }
 
     public byte[] ExportToExcel<T>(IEnumerable<T> data, string worksheetName)
