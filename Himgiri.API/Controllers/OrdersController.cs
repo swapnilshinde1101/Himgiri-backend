@@ -100,6 +100,18 @@ public class OrdersController : BaseController
         return File(csvBytes, "text/csv", filename);
     }
 
+    [HttpGet("{id:guid}/invoice")]
+    [Authorize(Policy = "AnyAdmin")]
+    public async Task<IActionResult> DownloadInvoice(Guid id, [FromServices] IInvoiceService invoiceService, CancellationToken ct)
+    {
+        var result = await invoiceService.GenerateInvoiceAsync(id, ct);
+        if (result.StatusCode != 200 || result.Data == null)
+        {
+            return StatusCode(result.StatusCode, result);
+        }
+        return File(result.Data.PdfContent, result.Data.ContentType, $"Invoice_{result.Data.InvoiceNumber}.pdf");
+    }
+
     [HttpGet("customers")]
     [Authorize(Policy = "AnyAdmin")]
     public async Task<IActionResult> GetCustomers(CancellationToken ct)

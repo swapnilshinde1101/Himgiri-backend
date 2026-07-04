@@ -143,6 +143,7 @@ public static class ServiceExtensions
         services.AddScoped<ISchoolKitService, SchoolKitService>();
         services.AddScoped<IStateService, StateService>();
         services.AddScoped<ITaxService, TaxService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
         
         // Phase 2+ services registered here as built
         return services;

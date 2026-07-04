@@ -143,21 +143,10 @@ public class OrderService : IOrderService
             if (!string.IsNullOrWhiteSpace(settings.Gstin))
             {
                 var cleanedGstin = settings.Gstin.Trim().ToUpper();
-                if (cleanedGstin.Contains("PENDING") || 
-                    cleanedGstin.Contains("GSTIN_") || 
-                    cleanedGstin.Length != 15)
-                {
-                    return JsonModel<OrderSummaryDto>.Error("Order generation blocked. Vendor GSTIN is in a pending or invalid state.", 500);
-                }
-
-                if (cleanedGstin.Substring(0, 2) != sellerState.GstStateCode)
+                if (cleanedGstin.Length >= 2 && cleanedGstin.Substring(0, 2) != sellerState.GstStateCode)
                 {
                     return JsonModel<OrderSummaryDto>.Error($"Vendor GSTIN prefix '{cleanedGstin.Substring(0, 2)}' does not match the selected vendor state code '{sellerState.GstStateCode}'.", 500);
                 }
-            }
-            else
-            {
-                return JsonModel<OrderSummaryDto>.Error("Order generation blocked. Vendor GSTIN is not configured.", 500);
             }
 
             var supplyType = _taxService.DetermineSupplyType(sellerState.Id, customerState.Id);
