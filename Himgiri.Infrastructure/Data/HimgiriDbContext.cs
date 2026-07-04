@@ -134,7 +134,7 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.GrandTotal).HasPrecision(18, 2);
             e.Property(x => x.CustomerGstin).HasMaxLength(15);
             e.Property(x => x.SellerCompanyName).IsRequired().HasMaxLength(200);
-            e.Property(x => x.SellerGstin).IsRequired().HasMaxLength(15);
+            e.Property(x => x.SellerGstin).IsRequired(false).HasMaxLength(15);
             e.Property(x => x.SellerAddress).IsRequired().HasMaxLength(500);
             e.Property(x => x.SellerStateName).IsRequired().HasMaxLength(100);
             e.Property(x => x.SellerGstStateCode).IsRequired().HasMaxLength(10);

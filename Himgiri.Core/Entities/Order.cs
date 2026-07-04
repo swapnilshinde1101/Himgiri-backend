@@ -16,7 +16,7 @@ public class Order : BaseEntity
     public Grade? Grade { get; set; }
     public string GradeName { get; set; } = string.Empty; // snapshot at order time
 
-    public string CustomerGstin { get; set; } = string.Empty; // Snapshot of customer GSTIN
+    public string? CustomerGstin { get; set; } // Snapshot of customer GSTIN
     
     // Relational State bindings
     public Guid SellerStateId { get; set; }
@@ -27,7 +27,7 @@ public class Order : BaseEntity
     
     // Immutable snapshots
     public string SellerCompanyName { get; set; } = string.Empty;
-    public string SellerGstin { get; set; } = string.Empty;
+    public string? SellerGstin { get; set; }
     public string SellerAddress { get; set; } = string.Empty;
     public string SellerStateName { get; set; } = string.Empty;
     public string SellerGstStateCode { get; set; } = string.Empty;
