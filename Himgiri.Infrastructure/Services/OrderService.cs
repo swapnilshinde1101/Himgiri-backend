@@ -251,9 +251,10 @@ public class OrderService : IOrderService
 
             if (chargedDelivery)
             {
+                var deliveryCategoryId = Guid.Parse("00000000-0000-0000-0006-000000000005");
                 var deliveryCategory = await _db.ItemCategories
                     .Include(c => c.DefaultGstRate)
-                    .FirstOrDefaultAsync(c => c.Name == "Delivery Fee", ct);
+                    .FirstOrDefaultAsync(c => c.Id == deliveryCategoryId, ct);
 
                 decimal deliveryGstPercent = deliveryCategory?.DefaultGstRate?.Rate ?? 18m;
                 // Calculate delivery base price dynamically from 250 inclusive total: Base = 250 / (1 + Rate / 100)
