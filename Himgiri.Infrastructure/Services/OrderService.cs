@@ -153,8 +153,8 @@ public class OrderService : IOrderService
 
             // ── 2. Validate Items & Stock (Aggregating duplicates for safety) ──
             var aggregatedItems = request.Items
-                .GroupBy(i => i.ItemId)
-                .Select(g => new OrderItemRequest(g.Key, g.Sum(i => i.Quantity)))
+                .GroupBy(i => new { i.ItemId, i.IsKitItem })
+                .Select(g => new OrderItemRequest(g.Key.ItemId, g.Sum(i => i.Quantity), g.Key.IsKitItem))
                 .ToList();
 
             var itemIds = aggregatedItems.Select(i => i.ItemId).Distinct().ToList();
@@ -236,7 +236,8 @@ public class OrderService : IOrderService
                     IgstAmount = itemTaxResult.IgstAmount,
                     CessAmount = itemTaxResult.CessAmount,
                     SupplyType = supplyType,
-                    LineTotal = itemTaxResult.TotalAmount
+                    LineTotal = itemTaxResult.TotalAmount,
+                    IsKitItem = itemReq.IsKitItem
                 });
             }
 
@@ -387,7 +388,8 @@ public class OrderService : IOrderService
                 oi.GstAmount,
                 oi.CgstAmount,
                 oi.SgstAmount,
-                oi.LineTotal
+                oi.LineTotal,
+                oi.IsKitItem
             )).ToList()
         );
 

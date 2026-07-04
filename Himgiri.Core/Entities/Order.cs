@@ -89,4 +89,5 @@ public class OrderItem : BaseEntity
     
     public SupplyType SupplyType { get; set; }  // Tax type resolved at checkout
     public decimal LineTotal { get; set; }      // (UnitPrice + GstAmount) * Quantity
+    public bool IsKitItem { get; set; }
 }

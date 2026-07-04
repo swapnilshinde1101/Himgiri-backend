@@ -172,7 +172,7 @@ public record CreateOrderRequest(
     bool IncludeDelivery
 );
 
-public record OrderItemRequest(Guid ItemId, int Quantity);
+public record OrderItemRequest(Guid ItemId, int Quantity, bool IsKitItem);
 
 public record OrderSummaryDto(
     Guid Id,
@@ -218,7 +218,8 @@ public record OrderItemDto(
     decimal GstAmount,
     decimal Cgst,
     decimal Sgst,
-    decimal LineTotal
+    decimal LineTotal,
+    bool IsKitItem
 );
 
 public record BulkInwardRequest(
