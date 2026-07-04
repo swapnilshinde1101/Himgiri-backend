@@ -40,10 +40,7 @@ public class TaxService : ITaxService
             sgstPercent = cgstPercent; // Identical rate split
 
             cgstAmount = MoneyHelper.Round(roundedBaseAmount * (cgstPercent / 100m));
-            sgstAmount = cgstAmount;   // Identical amount split to prevent rounding skew
-            
-            // Adjust total GST to be the sum of local taxes to prevent micro-rounding errors on invoice headers
-            gstAmount = cgstAmount + sgstAmount;
+            sgstAmount = gstAmount - cgstAmount;  // absorbs the rounding remainder
         }
         else
         {
