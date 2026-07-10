@@ -111,8 +111,25 @@ public class OrdersController : BaseController
 
     [HttpGet("{id:guid}/invoice")]
     [AllowAnonymous]
-    public async Task<IActionResult> DownloadInvoice(Guid id, [FromServices] IInvoiceService invoiceService, CancellationToken ct)
+    public async Task<IActionResult> DownloadInvoice(Guid id, [FromQuery] string? mobile, [FromQuery] string? pincode, [FromServices] IInvoiceService invoiceService, CancellationToken ct)
     {
+        // Verify access: Admin or Owner (via mobile & pincode validation)
+        bool isAuthorized = User.Identity?.IsAuthenticated == true;
+        
+        if (!isAuthorized)
+        {
+            if (string.IsNullOrWhiteSpace(mobile) || string.IsNullOrWhiteSpace(pincode))
+            {
+                return Unauthorized(JsonModel<object>.Error("Unauthorized: Mobile number and pincode are required for anonymous downloads."));
+            }
+            
+            var orderMatch = await _orderService.VerifyOrderAccessAsync(id, mobile, pincode, ct);
+            if (!orderMatch)
+            {
+                return Unauthorized(JsonModel<object>.Error("Unauthorized: Invalid order credentials."));
+            }
+        }
+
         var result = await invoiceService.GenerateInvoiceAsync(id, ct);
         if (result.StatusCode != 200 || result.Data == null)
         {

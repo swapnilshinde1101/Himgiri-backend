@@ -778,4 +778,11 @@ public class OrderService : IOrderService
         }
         return JsonModel<bool>.Error("Payment confirmation failed due to persistent concurrency conflicts.", 409);
     }
+
+    public async Task<bool> VerifyOrderAccessAsync(Guid id, string mobile, string pincode, CancellationToken ct = default)
+    {
+        var cleanMobile = mobile.Trim();
+        var cleanPincode = pincode.Trim();
+        return await _db.Orders.AnyAsync(o => o.Id == id && o.Mobile == cleanMobile && o.Pincode == cleanPincode && !o.IsDeleted, ct);
+    }
 }
