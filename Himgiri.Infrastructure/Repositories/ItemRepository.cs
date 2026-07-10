@@ -171,11 +171,18 @@ public class ItemRepository : IItemRepository
 
         return new CompletedStatsDto(totalCount, totalPurchaseValue, totalRetailValue, mostCompletedCategory);
     }
-
     public async Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken ct = default)
     {
+        var globalDefault = await _db.VendorSettings
+            .Select(vs => vs.DefaultLowStockThreshold)
+            .FirstOrDefaultAsync(ct);
+        if (globalDefault <= 0)
+        {
+            globalDefault = 10;
+        }
+
         var totalItems = await _db.Items.CountAsync(i => !i.IsDeleted, ct);
-        var lowStockCount = await _db.Items.CountAsync(i => i.StockQty < 10 && !i.IsDeleted && i.IsStockInitialized, ct);
+        var lowStockCount = await _db.Items.CountAsync(i => i.StockQty < (i.LowStockThreshold ?? globalDefault) && !i.IsDeleted && i.IsStockInitialized, ct);
         var outOfStockCount = await _db.Items.CountAsync(i => i.StockQty == 0 && !i.IsDeleted && i.IsStockInitialized, ct);
 
         var totalOrders = await _db.Orders.CountAsync(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted, ct);
