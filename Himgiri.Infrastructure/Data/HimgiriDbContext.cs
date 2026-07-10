@@ -232,7 +232,7 @@ public class HimgiriDbContext : DbContext
         modelBuilder.Entity<OrderStatusHistory>(e =>
         {
             e.HasKey(x => x.Id);
-            e.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Order).WithMany(o => o.StatusHistories).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // ── SchoolKit ──
