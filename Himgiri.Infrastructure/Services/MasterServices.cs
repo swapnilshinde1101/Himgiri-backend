@@ -229,6 +229,8 @@ public class CategoryService : ICategoryService
         var gstRate = await _gstRateRepo.GetByIdAsync(request.DefaultGstRateId.Value, ct);
         if (gstRate == null)
             return JsonModel<CategoryDto>.Error("GST Rate not found.", 404);
+        if (!gstRate.IsActive)
+            return JsonModel<CategoryDto>.Error("Selected Default GST Rate is currently inactive.", 400);
 
         var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
@@ -285,6 +287,8 @@ public class CategoryService : ICategoryService
         var gstRate = await _gstRateRepo.GetByIdAsync(request.DefaultGstRateId.Value, ct);
         if (gstRate == null)
             return JsonModel<CategoryDto>.Error("GST Rate not found.", 404);
+        if (!gstRate.IsActive)
+            return JsonModel<CategoryDto>.Error("Selected Default GST Rate is currently inactive.", 400);
 
         var allCats = await _repo.GetAllAsync(ct);
         if (allCats.Any(c => c.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase) && c.Id != id))

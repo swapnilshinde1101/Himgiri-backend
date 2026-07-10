@@ -99,6 +99,8 @@ public class ItemService : IItemService
             var gstRate = await _gstRateRepo.GetByIdAsync(request.GstRateId.Value, ct);
             if (gstRate == null)
                 return JsonModel<ItemDto>.Error("GST Rate not found.");
+            if (!gstRate.IsActive)
+                return JsonModel<ItemDto>.Error("Selected GST Rate is currently inactive.");
             gstPercent = gstRate.Rate;
         }
         else
@@ -184,6 +186,8 @@ public class ItemService : IItemService
             var gstRate = await _gstRateRepo.GetByIdAsync(request.GstRateId.Value, ct);
             if (gstRate == null)
                 return JsonModel<ItemDto>.Error("GST Rate not found.");
+            if (!gstRate.IsActive)
+                return JsonModel<ItemDto>.Error("Selected GST Rate is currently inactive.");
             gstPercent = gstRate.Rate;
         }
         else
