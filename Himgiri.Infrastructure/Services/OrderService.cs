@@ -367,7 +367,7 @@ public class OrderService : IOrderService
             order.JodoPaymentId,
             order.AdminNotes,
             order.CreatedAt,
-            order.Items.Select(oi => new OrderItemDto(
+            (order.Items ?? Enumerable.Empty<OrderItem>()).Select(oi => new OrderItemDto(
                 oi.ItemName,
                 oi.HsnCode,
                 oi.Quantity,
@@ -379,7 +379,7 @@ public class OrderService : IOrderService
                 oi.LineTotal,
                 oi.IsKitItem
             )).ToList(),
-            order.StatusHistories.OrderBy(sh => sh.CreatedAt).Select(sh => new OrderStatusHistoryDto(
+            (order.StatusHistories ?? Enumerable.Empty<OrderStatusHistory>()).OrderBy(sh => sh.CreatedAt).Select(sh => new OrderStatusHistoryDto(
                 sh.FromStatus.ToString(),
                 sh.ToStatus.ToString(),
                 sh.ChangedBy,
