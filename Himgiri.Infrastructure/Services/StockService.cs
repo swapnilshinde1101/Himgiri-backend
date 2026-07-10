@@ -116,6 +116,7 @@ public class StockService : IStockService
             l.NewQty,
             l.ChangedBy,
             l.Reason,
+            l.Note,
             l.CreatedAt
         )).ToList();
 
@@ -145,6 +146,7 @@ public class StockService : IStockService
             l.NewQty,
             l.ChangedBy,
             l.Reason,
+            l.Note,
             l.CreatedAt
         )).ToList();
 

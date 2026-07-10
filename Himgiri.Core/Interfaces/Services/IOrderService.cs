@@ -18,6 +18,7 @@ public interface IOrderService
     Task<JsonModel<List<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken ct = default);
     Task<JsonModel<List<OrderSummaryDto>>> GetOrdersByCustomerAsync(string mobile, CancellationToken ct = default);
     Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default);
+    Task<JsonModel<List<OrderLookupDto>>> LookupOrdersAsync(string mobile, string pincode, CancellationToken ct);
 }
 
 // Support DTO records needed for requests:

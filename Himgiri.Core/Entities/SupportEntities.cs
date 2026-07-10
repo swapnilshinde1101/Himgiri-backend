@@ -23,6 +23,7 @@ public class StockLog : BaseEntity
     public int NewQty { get; set; }
     public string ChangedBy { get; set; } = string.Empty; // Admin name
     public string Reason { get; set; } = string.Empty;    // "Manual update" / "Order placed" / "Purchase received"
+    public string Note { get; set; } = string.Empty;
 }
 
 public class Supplier : BaseEntity

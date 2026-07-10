@@ -117,6 +117,7 @@ public class OrderRepository : IOrderRepository
     {
         return await _db.Orders
             .Include(o => o.Items)
+            .Include(o => o.Grade)
             .Where(o => o.Mobile == mobile && o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);

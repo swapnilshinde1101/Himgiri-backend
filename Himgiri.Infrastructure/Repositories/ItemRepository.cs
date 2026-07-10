@@ -1,4 +1,5 @@
 using Himgiri.Core.Entities;
+using Himgiri.Core.Enums;
 using Himgiri.Core.Interfaces.Repositories;
 using Himgiri.Core.Models;
 using Himgiri.Core.DTOs;
@@ -177,13 +178,23 @@ public class ItemRepository : IItemRepository
         var lowStockCount = await _db.Items.CountAsync(i => i.StockQty < 10 && !i.IsDeleted && i.IsStockInitialized, ct);
         var outOfStockCount = await _db.Items.CountAsync(i => i.StockQty == 0 && !i.IsDeleted && i.IsStockInitialized, ct);
 
+        var totalOrders = await _db.Orders.CountAsync(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted, ct);
+
+        var todayStart = DateTime.UtcNow.Date;
+        var todayEnd = todayStart.AddDays(1);
+        var revenueToday = await _db.Orders
+            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted && o.CreatedAt >= todayStart && o.CreatedAt < todayEnd)
+            .SumAsync(o => (decimal?)o.GrandTotal, ct) ?? 0.00m;
+
+        var pendingOrders = await _db.Orders.CountAsync(o => (o.Status == OrderStatus.Pending || o.Status == OrderStatus.Confirmed) && !o.IsDeleted, ct);
+
         return new DashboardStatsDto(
             TotalItems: totalItems,
             LowStockCount: lowStockCount,
             OutOfStockCount: outOfStockCount,
-            TotalOrders: 0,
-            RevenueToday: 0.00m,
-            PendingOrders: 0
+            TotalOrders: totalOrders,
+            RevenueToday: revenueToday,
+            PendingOrders: pendingOrders
         );
     }
 

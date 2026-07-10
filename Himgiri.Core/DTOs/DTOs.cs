@@ -115,6 +115,7 @@ public record StockLogDto(
     int NewQty,
     string ChangedBy,
     string Reason,
+    string Note,
     DateTime CreatedAt
 );
 
@@ -169,7 +170,7 @@ public record CreateOrderRequest(
     string? CustomerGstin,
     Guid? GradeId,
     List<OrderItemRequest> Items,
-    bool IncludeDelivery
+    bool IsHomeDelivery
 );
 
 public record OrderItemRequest(Guid ItemId, int Quantity, bool IsKitItem);
@@ -179,6 +180,9 @@ public record OrderSummaryDto(
     string InvoiceNumber,
     string CustomerName,
     string Mobile,
+    string Email,
+    string? GradeName,
+    bool IsHomeDelivery,
     decimal GrandTotal,
     OrderStatus Status,
     PaymentStatus PaymentStatus,
@@ -320,5 +324,7 @@ public record UpdateVendorSettingsRequest(
     string InvoicePrefix,
     Guid? StateId
 );
+
+
 
 

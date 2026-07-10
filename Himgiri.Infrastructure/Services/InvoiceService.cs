@@ -47,7 +47,7 @@ public class InvoiceService : IInvoiceService
             order.SellerGstin.Contains("GSTIN_") || 
             order.SellerGstin.Length != 15)
         {
-            return JsonModel<InvoicePdfDto>.Error("Invoice generation blocked. Vendor GSTIN is in a pending or invalid state.", 500);
+            return JsonModel<InvoicePdfDto>.Error("Invoice generation blocked. Vendor GSTIN is in a pending or invalid state.", 503);
         }
 
         // Generate QuestPDF Document

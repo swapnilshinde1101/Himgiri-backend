@@ -39,6 +39,7 @@ public class Order : BaseEntity
     public string PlaceOfSupplyCode { get; set; } = string.Empty;
     
     public SupplyType SupplyType { get; set; }
+    public bool IsHomeDelivery { get; set; }
 
     public decimal SubTotal { get; set; }       // Sum of item prices before GST
     public decimal TotalGst { get; set; }       // Total GST amount

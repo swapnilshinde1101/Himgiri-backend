@@ -1,13 +1,12 @@
+using Himgiri.Core.DTOs;
 using Himgiri.Core.Entities;
+using Himgiri.Core.Enums;
+using Himgiri.Core.Helpers;
 using Himgiri.Core.Interfaces.Repositories;
 using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
-using Himgiri.Core.DTOs;
-using Himgiri.Core.Enums;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Himgiri.Core.Helpers;
-using System.Text;
 
 namespace Himgiri.Infrastructure.Services;
 
@@ -169,7 +168,6 @@ public class OrderService : IOrderService
             var orderItemsList = new List<OrderItem>();
             decimal subTotal = 0m;
             decimal itemsGstSum = 0m;
-            bool hasInStockItem = false;
 
             foreach (var itemReq in aggregatedItems)
             {
@@ -192,7 +190,6 @@ public class OrderService : IOrderService
                 // Check stock for InStock items
                 if (item.StorageStatus == StorageStatus.InStock)
                 {
-                    hasInStockItem = true;
                     if (item.StockQty < itemReq.Quantity)
                     {
                         return JsonModel<OrderSummaryDto>.Error($"Insufficient stock for {item.Name}. Available: {item.StockQty}, Requested: {itemReq.Quantity}", 400);
@@ -214,7 +211,7 @@ public class OrderService : IOrderService
                 }
 
                 decimal gstPercent = resolvedGstRate.Rate;
-                
+
                 // ── 4. Calculate GST per line item ──
                 decimal taxableAmount = unitPrice * itemReq.Quantity;
                 var itemTaxResult = _taxService.CalculateTax(taxableAmount, gstPercent, 0m, supplyType);
@@ -247,32 +244,12 @@ public class OrderService : IOrderService
                 });
             }
 
-            // ── 5. Calculate Delivery Fee ──
-            bool chargedDelivery = hasInStockItem;
+            // ── 5. Calculate Delivery Fee (Set to 0m permanently per instructions) ──
             decimal deliveryBase = 0m;
             decimal deliveryGst = 0m;
             decimal deliveryCgst = 0m;
             decimal deliverySgst = 0m;
             decimal deliveryIgst = 0m;
-
-            if (chargedDelivery)
-            {
-                var deliveryCategoryId = Guid.Parse("00000000-0000-0000-0006-000000000005");
-                var deliveryCategory = await _db.ItemCategories
-                    .Include(c => c.DefaultGstRate)
-                    .FirstOrDefaultAsync(c => c.Id == deliveryCategoryId, ct);
-
-                decimal deliveryGstPercent = deliveryCategory?.DefaultGstRate?.Rate ?? 18m;
-                // Calculate delivery base price dynamically from 250 inclusive total: Base = 250 / (1 + Rate / 100)
-                decimal calculatedDeliveryBase = MoneyHelper.Round(250m / (1m + deliveryGstPercent / 100m));
-
-                var deliveryTaxResult = _taxService.CalculateTax(calculatedDeliveryBase, deliveryGstPercent, 0m, supplyType);
-                deliveryBase = deliveryTaxResult.BaseAmount;
-                deliveryGst = deliveryTaxResult.GstAmount;
-                deliveryCgst = deliveryTaxResult.CgstAmount;
-                deliverySgst = deliveryTaxResult.SgstAmount;
-                deliveryIgst = deliveryTaxResult.IgstAmount;
-            }
 
             // ── 6. Calculate Totals ──
             decimal totalGst = itemsGstSum + deliveryGst;
@@ -298,7 +275,7 @@ public class OrderService : IOrderService
                 GradeId = request.GradeId,
                 GradeName = grade?.Name ?? "Not specified",
                 CustomerGstin = request.CustomerGstin?.Trim().ToUpper() ?? string.Empty,
-                
+
                 SellerStateId = sellerState.Id,
                 CustomerStateId = customerState.Id,
 
@@ -314,8 +291,9 @@ public class OrderService : IOrderService
 
                 PlaceOfSupply = customerState.StateName,
                 PlaceOfSupplyCode = customerState.GstStateCode,
-                
+
                 SupplyType = supplyType,
+                IsHomeDelivery = request.IsHomeDelivery,
 
                 SubTotal = subTotal,
                 TotalGst = totalGst,
@@ -342,6 +320,9 @@ public class OrderService : IOrderService
                 order.InvoiceNumber,
                 order.CustomerName,
                 order.Mobile,
+                order.Email,
+                grade?.Name,
+                order.IsHomeDelivery,
                 order.GrandTotal,
                 order.Status,
                 order.PaymentStatus,
@@ -412,6 +393,9 @@ public class OrderService : IOrderService
             o.InvoiceNumber,
             o.CustomerName,
             o.Mobile,
+            o.Email,
+            o.Grade?.Name,
+            o.IsHomeDelivery,
             o.GrandTotal,
             o.Status,
             o.PaymentStatus,
@@ -458,6 +442,40 @@ public class OrderService : IOrderService
         if (!isValid)
         {
             return JsonModel<bool>.Error($"Invalid order status transition from {fromStatus} to {toStatus}.", 400);
+        }
+
+        // Deduct stock when order is dispatched
+        if (fromStatus == OrderStatus.Packed && toStatus == OrderStatus.Dispatched)
+        {
+            foreach (var orderItem in order.Items)
+            {
+                var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == orderItem.ItemId && !i.IsDeleted, ct);
+                if (item != null && item.StorageStatus == StorageStatus.InStock)
+                {
+                    int oldQty = item.StockQty;
+                    item.StockQty -= orderItem.Quantity;
+                    if (item.StockQty < 0)
+                    {
+                        item.StockQty = 0;
+                    }
+                    item.UpdatedAt = DateTime.UtcNow;
+
+                    var log = new StockLog
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        OldQty = oldQty,
+                        NewQty = item.StockQty,
+                        ChangedBy = changedBy,
+                        Reason = "Order Dispatched",
+                        Note = order.InvoiceNumber,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _db.Items.Update(item);
+                    _db.StockLogs.Add(log);
+                }
+            }
         }
 
         order.Status = toStatus;
@@ -585,9 +603,9 @@ public class OrderService : IOrderService
     {
         var cutoff = DateTime.UtcNow.AddDays(-2); // 48 hours ago
         var staleOrders = await _db.Orders
-            .Where(o => o.Status == OrderStatus.Pending && 
-                        o.PaymentStatus == PaymentStatus.Pending && 
-                        o.CreatedAt < cutoff && 
+            .Where(o => o.Status == OrderStatus.Pending &&
+                        o.PaymentStatus == PaymentStatus.Pending &&
+                        o.CreatedAt < cutoff &&
                         !o.IsDeleted)
             .ToListAsync(ct);
 
@@ -633,6 +651,9 @@ public class OrderService : IOrderService
             o.InvoiceNumber,
             o.CustomerName,
             o.Mobile,
+            o.Email,
+            o.Grade?.Name,
+            o.IsHomeDelivery,
             o.GrandTotal,
             o.Status,
             o.PaymentStatus,
@@ -655,6 +676,34 @@ public class OrderService : IOrderService
         }
     }
 
+    public async Task<JsonModel<List<OrderLookupDto>>> LookupOrdersAsync(string mobile, string pincode, CancellationToken ct)
+    {
+        var cleanMobile = mobile.Trim();
+        var cleanPincode = pincode.Trim();
+
+        var orders = await _db.Orders
+            .Where(o => o.Mobile == cleanMobile && o.Pincode == cleanPincode && !o.IsDeleted)
+            .OrderByDescending(o => o.CreatedAt)
+            .Select(o => new OrderLookupDto
+            {
+                Id = o.Id,
+                InvoiceNumber = o.InvoiceNumber,
+                CustomerName = o.CustomerName,
+                GrandTotal = o.GrandTotal,
+                Status = o.Status.ToString(),
+                PaymentStatus = o.PaymentStatus.ToString(),
+                CreatedAt = o.CreatedAt
+            })
+            .ToListAsync(ct);
+
+        if (orders.Count == 0)
+        {
+            return JsonModel<List<OrderLookupDto>>.Error("No orders found matching the mobile number and pincode.", 404);
+        }
+
+        return JsonModel<List<OrderLookupDto>>.Success(orders);
+    }
+
     public async Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default)
     {
         int retries = 3;
@@ -667,7 +716,7 @@ public class OrderService : IOrderService
                 var order = await _db.Orders
                     .Include(o => o.Items)
                     .FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted, ct);
-                
+
                 if (order == null)
                 {
                     await transaction.RollbackAsync(ct);
@@ -678,89 +727,6 @@ public class OrderService : IOrderService
                 {
                     await transaction.RollbackAsync(ct);
                     return JsonModel<bool>.Success(true, "Payment already processed.");
-                }
-
-                // Verify stock and deduct
-                bool sufficientStock = true;
-                string stockOutMessage = "";
-
-                foreach (var itemReq in order.Items)
-                {
-                    // Reload item to get freshest value from database and ensure EF tracks its concurrency token properly
-                    var item = await _db.Items
-                        .FirstOrDefaultAsync(i => i.Id == itemReq.ItemId && !i.IsDeleted, ct);
-                    
-                    if (item == null)
-                    {
-                        sufficientStock = false;
-                        stockOutMessage = $"Item '{itemReq.ItemName}' no longer exists in the system.";
-                        break;
-                    }
-
-                    if (item.StorageStatus == StorageStatus.InStock)
-                    {
-                        if (item.StockQty < itemReq.Quantity)
-                        {
-                            sufficientStock = false;
-                            stockOutMessage = $"Insufficient stock for '{item.Name}'. Available: {item.StockQty}, Requested: {itemReq.Quantity}";
-                            break;
-                        }
-                    }
-                }
-
-                if (!sufficientStock)
-                {
-                    // Update order status to StockOut
-                    order.Status = OrderStatus.StockOut;
-                    order.PaymentStatus = PaymentStatus.Success;
-                    order.JodoPaymentId = transactionId;
-                    order.UpdatedAt = DateTime.UtcNow;
-                    order.AdminNotes = string.IsNullOrEmpty(order.AdminNotes)
-                        ? $"[System - {DateTime.UtcNow:dd/MM/yyyy HH:mm}] Payment succeeded but stock-out occurred. Reason: {stockOutMessage}"
-                        : $"{order.AdminNotes}\n[System - {DateTime.UtcNow:dd/MM/yyyy HH:mm}] Payment succeeded but stock-out occurred. Reason: {stockOutMessage}";
-
-                    var history = new OrderStatusHistory
-                    {
-                        OrderId = order.Id,
-                        FromStatus = OrderStatus.Pending,
-                        ToStatus = OrderStatus.StockOut,
-                        ChangedBy = "Payment Gateway Webhook",
-                        Note = $"Payment succeeded but stock-out occurred: {stockOutMessage}",
-                        CreatedAt = DateTime.UtcNow
-                    };
-
-                    _db.Orders.Update(order);
-                    _db.OrderStatusHistories.Add(history);
-
-                    await _db.SaveChangesAsync(ct);
-                    await transaction.CommitAsync(ct);
-                    return JsonModel<bool>.Success(true, $"Payment processed. Order flagged as Stock-Out due to: {stockOutMessage}");
-                }
-
-                // If sufficient stock, deduct stock and update order
-                foreach (var itemReq in order.Items)
-                {
-                    var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == itemReq.ItemId && !i.IsDeleted, ct);
-                    if (item != null && item.StorageStatus == StorageStatus.InStock)
-                    {
-                        int oldQty = item.StockQty;
-                        item.StockQty -= itemReq.Quantity;
-                        item.UpdatedAt = DateTime.UtcNow;
-                        
-                        var log = new StockLog
-                        {
-                            Id = Guid.NewGuid(),
-                            ItemId = item.Id,
-                            OldQty = oldQty,
-                            NewQty = item.StockQty,
-                            ChangedBy = "Payment Gateway Webhook",
-                            Reason = "Order Placed",
-                            CreatedAt = DateTime.UtcNow
-                        };
-
-                        _db.Items.Update(item);
-                        _db.StockLogs.Add(log);
-                    }
                 }
 
                 order.Status = OrderStatus.Confirmed;
@@ -784,7 +750,7 @@ public class OrderService : IOrderService
                 await _db.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
 
-                return JsonModel<bool>.Success(true, "Payment confirmed and stock deducted successfully.");
+                return JsonModel<bool>.Success(true, "Payment processed. Order Confirmed.");
             }
             catch (DbUpdateConcurrencyException)
             {
