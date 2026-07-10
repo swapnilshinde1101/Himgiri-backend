@@ -86,6 +86,15 @@ public class ItemService : IItemService
 
     public async Task<JsonModel<ItemDto>> CreateItemAsync(CreateItemRequest request, CancellationToken ct = default)
     {
+        if (request.Price <= 0)
+            return JsonModel<ItemDto>.Error("Selling Price must be greater than 0.", 400);
+
+        if (request.Mrp <= 0)
+            return JsonModel<ItemDto>.Error("MRP must be greater than 0.", 400);
+
+        if (request.PurchasePrice.HasValue && request.PurchasePrice.Value < 0)
+            return JsonModel<ItemDto>.Error("Purchase Price cannot be negative.", 400);
+
         if (await _itemRepo.ExistsByNameAsync(request.Name, null, ct))
             return JsonModel<ItemDto>.Error("An item with this name already exists.");
 
@@ -172,6 +181,15 @@ public class ItemService : IItemService
     {
         var item = await _itemRepo.GetByIdAsync(id, ct);
         if (item == null) return JsonModel<ItemDto>.Error("Item not found", 404);
+
+        if (request.Price <= 0)
+            return JsonModel<ItemDto>.Error("Selling Price must be greater than 0.", 400);
+
+        if (request.Mrp <= 0)
+            return JsonModel<ItemDto>.Error("MRP must be greater than 0.", 400);
+
+        if (request.PurchasePrice.HasValue && request.PurchasePrice.Value < 0)
+            return JsonModel<ItemDto>.Error("Purchase Price cannot be negative.", 400);
 
         if (await _itemRepo.ExistsByNameAsync(request.Name, id, ct))
             return JsonModel<ItemDto>.Error("An item with this name already exists.");
