@@ -210,7 +210,16 @@ public record OrderDetailDto(
     string? JodoPaymentId,
     string? AdminNotes,
     DateTime CreatedAt,
-    List<OrderItemDto> Items
+    List<OrderItemDto> Items,
+    List<OrderStatusHistoryDto> StatusHistories
+);
+
+public record OrderStatusHistoryDto(
+    string? FromStatus,
+    string ToStatus,
+    string ChangedBy,
+    string? Note,
+    DateTime CreatedAt
 );
 
 public record OrderItemDto(

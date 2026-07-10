@@ -23,6 +23,7 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Items)
                 .ThenInclude(oi => oi.Item)
             .Include(o => o.Grade)
+            .Include(o => o.StatusHistories)
             .FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted, ct);
     }
 

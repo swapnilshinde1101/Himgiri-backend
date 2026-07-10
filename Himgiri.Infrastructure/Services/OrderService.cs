@@ -378,6 +378,13 @@ public class OrderService : IOrderService
                 oi.SgstAmount,
                 oi.LineTotal,
                 oi.IsKitItem
+            )).ToList(),
+            order.StatusHistories.OrderBy(sh => sh.CreatedAt).Select(sh => new OrderStatusHistoryDto(
+                sh.FromStatus.ToString(),
+                sh.ToStatus.ToString(),
+                sh.ChangedBy,
+                sh.Note,
+                sh.CreatedAt
             )).ToList()
         );
 

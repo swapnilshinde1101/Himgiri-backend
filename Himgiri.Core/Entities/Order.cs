@@ -59,6 +59,7 @@ public class Order : BaseEntity
 
     // Navigation
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+    public ICollection<OrderStatusHistory> StatusHistories { get; set; } = new List<OrderStatusHistory>();
 }
 
 public class OrderItem : BaseEntity
