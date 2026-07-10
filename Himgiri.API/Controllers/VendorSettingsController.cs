@@ -43,7 +43,8 @@ public class VendorSettingsController : BaseController
             settings.InvoicePrefix,
             settings.LastInvoiceNumber,
             settings.StateId,
-            settings.State?.StateName
+            settings.State?.StateName,
+            settings.DefaultLowStockThreshold
         );
 
         return Ok(JsonModel<VendorSettingsDto>.Success(dto));
@@ -109,6 +110,7 @@ public class VendorSettingsController : BaseController
         settings.ContactPhone = request.ContactPhone?.Trim() ?? string.Empty;
         settings.InvoicePrefix = request.InvoicePrefix?.Trim() ?? "HG";
         settings.StateId = request.StateId;
+        settings.DefaultLowStockThreshold = request.DefaultLowStockThreshold;
         settings.UpdatedAt = DateTime.UtcNow;
 
         _db.VendorSettings.Update(settings);

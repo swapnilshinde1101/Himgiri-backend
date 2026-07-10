@@ -13,8 +13,7 @@ public class StockService : IStockService
 {
     private readonly HimgiriDbContext _db;
     
-    // Low stock threshold isolated as a constant configuration variable
-    private const int LowStockThreshold = 10;
+
 
     public StockService(HimgiriDbContext db)
     {
@@ -155,11 +154,19 @@ public class StockService : IStockService
 
     public async Task<JsonModel<List<ItemDto>>> GetLowStockItemsAsync(CancellationToken ct = default)
     {
+        int globalDefault = await _db.VendorSettings
+            .Select(vs => vs.DefaultLowStockThreshold)
+            .FirstOrDefaultAsync(ct);
+        if (globalDefault <= 0)
+        {
+            globalDefault = 10;
+        }
+
         var items = await _db.Items
             .Include(i => i.Category)
             .Include(i => i.ItemGrades)
                 .ThenInclude(ig => ig.Grade)
-            .Where(i => i.StockQty < LowStockThreshold && !i.IsDeleted && i.IsStockInitialized)
+            .Where(i => i.StockQty < (i.LowStockThreshold ?? globalDefault) && !i.IsDeleted && i.IsStockInitialized)
             .ToListAsync(ct);
 
         var dtos = items.Select(item => new ItemDto(
@@ -181,7 +188,9 @@ public class StockService : IStockService
             string.Join(", ", item.ItemGrades.Select(ig => ig.Grade?.Name).Where(n => !string.IsNullOrEmpty(n))),
             item.IsActive,
             item.CreatedAt,
-            item.CompletedAt
+            item.CompletedAt,
+            item.GstRateId,
+            item.LowStockThreshold
         )).ToList();
         
         return JsonModel<List<ItemDto>>.Success(dtos);
@@ -215,7 +224,9 @@ public class StockService : IStockService
             string.Join(", ", item.ItemGrades.Select(ig => ig.Grade?.Name).Where(n => !string.IsNullOrEmpty(n))),
             item.IsActive,
             item.CreatedAt,
-            item.CompletedAt
+            item.CompletedAt,
+            item.GstRateId,
+            item.LowStockThreshold
         )).ToList();
         
         return JsonModel<List<ItemDto>>.Success(dtos);

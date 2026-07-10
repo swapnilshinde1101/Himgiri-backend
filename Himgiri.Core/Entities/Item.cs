@@ -18,6 +18,7 @@ public class Item : BaseEntity
     public int TargetQty { get; set; } = 0;
     public bool IsStockInitialized { get; set; } = false;
     public string Unit { get; set; } = "Pieces (Pcs)";
+    public int? LowStockThreshold { get; set; }
     public DateTime? CompletedAt { get; set; }
     
     // Links to Dynamic Support Entities

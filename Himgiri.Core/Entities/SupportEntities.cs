@@ -69,6 +69,7 @@ public class VendorSettings : BaseEntity
     public string ContactPhone { get; set; } = string.Empty;
     public string InvoicePrefix { get; set; } = "HG";
     public int LastInvoiceNumber { get; set; } = 0;
+    public int DefaultLowStockThreshold { get; set; } = 10;
 
     // Navigation
     public Guid? StateId { get; set; }

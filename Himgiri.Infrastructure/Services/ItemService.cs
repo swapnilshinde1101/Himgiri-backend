@@ -47,7 +47,8 @@ public class ItemService : IItemService
             item.IsActive,
             item.CreatedAt,
             item.CompletedAt,
-            item.GstRateId
+            item.GstRateId,
+            item.LowStockThreshold
         );
 
         return JsonModel<ItemDto>.Success(dto);
@@ -76,7 +77,8 @@ public class ItemService : IItemService
             item.IsActive,
             item.CreatedAt,
             item.CompletedAt,
-            item.GstRateId
+            item.GstRateId,
+            item.LowStockThreshold
         )).ToList();
         
         return new JsonModel<List<ItemDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));
@@ -129,7 +131,8 @@ public class ItemService : IItemService
             CategoryId = request.CategoryId,
             GstRateId = request.GstRateId,
             IsActive = request.IsActive,
-            IsStockInitialized = request.IsStockInitialized || request.StockQty > 0
+            IsStockInitialized = request.IsStockInitialized || request.StockQty > 0,
+            LowStockThreshold = request.LowStockThreshold
         };
 
         if (request.GradeIds != null)
@@ -222,6 +225,7 @@ public class ItemService : IItemService
         item.GstRateId = request.GstRateId;
         item.IsActive = request.IsActive;
         item.IsStockInitialized = request.IsStockInitialized || request.StockQty > 0;
+        item.LowStockThreshold = request.LowStockThreshold;
 
         // Log manual stock update if changed on Edit form
         if (oldQty != newQty)
@@ -371,7 +375,8 @@ public class ItemService : IItemService
             string.Join(", ", item.ItemGrades.Select(ig => ig.Grade?.Name).Where(n => !string.IsNullOrEmpty(n))),
             item.IsActive,
             item.CreatedAt,
-            item.CompletedAt
+            item.CompletedAt,
+            item.LowStockThreshold
         )).ToList();
 
         return new JsonModel<List<CatalogItemDto>>(dtos, "Success", 200, "", new Meta(total, request.PageNumber, request.PageSize));

@@ -34,7 +34,8 @@ public record ItemDto(
     bool IsActive,
     DateTime CreatedAt,
     DateTime? CompletedAt,
-    Guid? GstRateId = null
+    Guid? GstRateId = null,
+    int? LowStockThreshold = null
 );
 
 public record CreateItemRequest(
@@ -52,7 +53,8 @@ public record CreateItemRequest(
     Guid CategoryId,
     System.Collections.Generic.List<Guid> GradeIds,
     bool IsActive,
-    Guid? GstRateId
+    Guid? GstRateId,
+    int? LowStockThreshold
 );
 
 public record CatalogItemDto(
@@ -73,7 +75,8 @@ public record CatalogItemDto(
     string GradeNames,
     bool IsActive,
     DateTime CreatedAt,
-    DateTime? CompletedAt
+    DateTime? CompletedAt,
+    int? LowStockThreshold
 );
 
 public record PriceAuditLogDto(
@@ -321,7 +324,8 @@ public record VendorSettingsDto(
     string InvoicePrefix,
     int LastInvoiceNumber,
     Guid? StateId,
-    string? StateName
+    string? StateName,
+    int DefaultLowStockThreshold
 );
 
 public record UpdateVendorSettingsRequest(
@@ -331,7 +335,8 @@ public record UpdateVendorSettingsRequest(
     string ContactEmail,
     string ContactPhone,
     string InvoicePrefix,
-    Guid? StateId
+    Guid? StateId,
+    int DefaultLowStockThreshold
 );
 
 
