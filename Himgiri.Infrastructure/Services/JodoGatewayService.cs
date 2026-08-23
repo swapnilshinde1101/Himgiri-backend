@@ -1,0 +1,97 @@
+using Himgiri.Core.Entities;
+using Himgiri.Core.DTOs;
+using Himgiri.Core.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Himgiri.Infrastructure.Services;
+
+public class JodoGatewayService : IPaymentGateway
+{
+    private readonly HttpClient _http;
+    private readonly IConfiguration _config;
+
+    public JodoGatewayService(HttpClient http, IConfiguration config)
+    {
+        _http = http;
+        _config = config;
+    }
+
+    public async Task<InitiatePaymentResponse> CreatePaymentAsync(
+        Order order,
+        string callbackUrl,
+        CancellationToken ct = default)
+    {
+        var token = _config["Jodo:ApiToken"];
+        var baseUrl = _config["Jodo:BaseUrl"];
+
+        _http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Basic", token);
+
+        var body = new
+        {
+            name = order.CustomerName,
+            phone = order.Mobile,
+            email = order.Email,
+            details = new[]
+            {
+                new
+                {
+                    component_type = "School Kit Payment",
+                    amount = order.GrandTotal
+                }
+            },
+            callback_url = callbackUrl,
+            notes = new[]
+            {
+                new { key = "erp_reference_id", value = order.InvoiceNumber }
+            }
+        };
+
+        var response = await _http.PostAsJsonAsync(
+            $"{baseUrl}/api/v1/integrations/pay/orders", body, ct);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content
+            .ReadFromJsonAsync<JodoCreateOrderResponse>(
+                cancellationToken: ct);
+
+        return new InitiatePaymentResponse(
+            result!.Data.OrderId,
+            result.Data.RedirectUrl
+        );
+    }
+
+    public Task<bool> VerifyWebhookSignatureAsync(
+        string rawBody,
+        string receivedSignature)
+    {
+        var secret = _config["Jodo:WebhookSecret"];
+
+        if (string.IsNullOrEmpty(secret))
+        {
+            return Task.FromResult(false);
+        }
+
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+        var computedBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(rawBody));
+        var expectedSignature = Convert.ToHexString(computedBytes).ToLower();
+
+        // MUST use constant-time comparison — prevents timing attacks
+        var result = CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(expectedSignature),
+            Encoding.UTF8.GetBytes(receivedSignature ?? string.Empty)
+        );
+
+        return Task.FromResult(result);
+    }
+}

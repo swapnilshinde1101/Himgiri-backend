@@ -20,6 +20,10 @@ public interface IOrderService
     Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default);
     Task<JsonModel<List<OrderLookupDto>>> LookupOrdersAsync(string mobile, string pincode, CancellationToken ct);
     Task<bool> VerifyOrderAccessAsync(Guid id, string mobile, string pincode, CancellationToken ct = default);
+    Task<Himgiri.Core.Entities.Order?> GetOrderForPaymentAsync(Guid orderId, CancellationToken ct = default);
+    Task SaveJodoOrderIdAsync(Guid orderId, string jodoOrderId, CancellationToken ct = default);
+    Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(string invoiceNumber, string jodoOrderId, CancellationToken ct = default);
+    Task<JsonModel<OrderLookupDto>> GetOrderLookupAsync(Guid orderId, CancellationToken ct = default);
 }
 
 // Support DTO records needed for requests:

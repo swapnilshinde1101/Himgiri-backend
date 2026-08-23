@@ -153,7 +153,13 @@ public class OrdersController : BaseController
         var result = await _orderService.GetOrdersByCustomerAsync(mobile, ct);
         return StatusCode(result.StatusCode, result);
     }
-
+    [HttpGet("{id:guid}/lookup")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOrderLookup(Guid id, CancellationToken ct)
+    {
+        var result = await _orderService.GetOrderLookupAsync(id, ct);
+        return StatusCode(result.StatusCode, result);
+    }
 
     [HttpGet("lookup")]
     [AllowAnonymous]

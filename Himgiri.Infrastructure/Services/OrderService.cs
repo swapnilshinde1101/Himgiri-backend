@@ -187,14 +187,7 @@ public class OrderService : IOrderService
                     return JsonModel<OrderSummaryDto>.Error($"Quantity for item '{item.Name}' must be greater than zero.", 400);
                 }
 
-                // Check stock for InStock items
-                if (item.StorageStatus == StorageStatus.InStock)
-                {
-                    if (item.StockQty < itemReq.Quantity)
-                    {
-                        return JsonModel<OrderSummaryDto>.Error($"Insufficient stock for {item.Name}. Available: {item.StockQty}, Requested: {itemReq.Quantity}", 400);
-                    }
-                }
+
 
                 // ── 3. Resolve GstRate & Snapshot Item Data ──
                 decimal unitPrice = item.Price;
@@ -784,5 +777,84 @@ public class OrderService : IOrderService
         var cleanMobile = mobile.Trim();
         var cleanPincode = pincode.Trim();
         return await _db.Orders.AnyAsync(o => o.Id == id && o.Mobile == cleanMobile && o.Pincode == cleanPincode && !o.IsDeleted, ct);
+    }
+
+    public async Task<Himgiri.Core.Entities.Order?> GetOrderForPaymentAsync(Guid orderId, CancellationToken ct = default)
+    {
+        return await _db.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted, ct);
+    }
+
+    public async Task SaveJodoOrderIdAsync(Guid orderId, string jodoOrderId, CancellationToken ct = default)
+    {
+        var order = await _db.Orders
+            .FirstOrDefaultAsync(o => o.Id == orderId, ct);
+
+        if (order != null)
+        {
+            order.JodoPaymentId = jodoOrderId;
+            order.UpdatedAt = DateTime.UtcNow;
+            _db.Orders.Update(order);
+            await _db.SaveChangesAsync(ct);
+        }
+    }
+
+    public async Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(
+        string invoiceNumber,
+        string jodoOrderId,
+        CancellationToken ct = default)
+    {
+        var order = await _db.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(
+                o => o.InvoiceNumber == invoiceNumber && !o.IsDeleted, ct);
+
+        if (order == null)
+            return JsonModel<bool>.Error("Order not found.", 404);
+
+        if (order.PaymentStatus == PaymentStatus.Success)
+            return JsonModel<bool>.Success(true, "Already processed.");
+
+        return await ConfirmPaymentAsync(order.Id, jodoOrderId, ct);
+    }
+
+    public async Task<JsonModel<OrderLookupDto>> GetOrderLookupAsync(
+        Guid orderId,
+        CancellationToken ct = default)
+    {
+        var order = await _db.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted, ct);
+
+        if (order == null)
+            return JsonModel<OrderLookupDto>.Error("Order not found.", 404);
+
+        var dto = new OrderLookupDto
+        {
+            Id = order.Id,
+            InvoiceNumber = order.InvoiceNumber,
+            CustomerName = order.CustomerName,
+            Email = order.Email,
+            Mobile = order.Mobile,
+            AddressLine1 = order.AddressLine1,
+            AddressLine2 = order.AddressLine2,
+            City = order.City,
+            Pincode = order.Pincode,
+            GrandTotal = order.GrandTotal,
+            Status = order.Status.ToString(),
+            PaymentStatus = order.PaymentStatus.ToString(),
+            IsHomeDelivery = order.IsHomeDelivery,
+            Items = order.Items.Select(i => new OrderLookupItemDto(
+                i.ItemId,
+                i.ItemName,
+                i.Quantity,
+                i.LineTotal,
+                i.IsKitItem
+            )).ToList(),
+            CreatedAt = order.CreatedAt
+        };
+
+        return JsonModel<OrderLookupDto>.Success(dto);
     }
 }

@@ -1,97 +1,132 @@
 using Himgiri.Core.DTOs;
 using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
+using Himgiri.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Himgiri.API.Controllers;
 
-[AllowAnonymous]
+[ApiController]
+[Route("api/payments")]
 public class PaymentsController : BaseController
 {
     private readonly IOrderService _orderService;
+    private readonly IPaymentGateway _paymentGateway;
     private readonly IConfiguration _config;
 
-    public PaymentsController(IOrderService orderService, IConfiguration config)
+    public PaymentsController(
+        IOrderService orderService,
+        IPaymentGateway paymentGateway,
+        IConfiguration config)
     {
         _orderService = orderService;
+        _paymentGateway = paymentGateway;
         _config = config;
     }
 
-    [HttpPost("webhook")]
-    public async Task<IActionResult> PaymentWebhook(CancellationToken ct)
+    [HttpPost("initiate")]
+    [AllowAnonymous]
+    public async Task<IActionResult> InitiatePayment(
+        [FromBody] InitiatePaymentRequest request,
+        CancellationToken ct)
     {
-        // 1. Read raw request body for signature verification
-        Request.EnableBuffering();
-        using var reader = new System.IO.StreamReader(Request.Body, System.Text.Encoding.UTF8, true, 1024, true);
-        var rawBody = await reader.ReadToEndAsync();
-        Request.Body.Position = 0; // Reset position for model binder
+        var order = await _orderService.GetOrderForPaymentAsync(
+            request.OrderId, ct);
 
-        var signature = Request.Headers["X-Jodo-Signature"].ToString();
+        if (order == null)
+            return NotFound(JsonModel<object>.Error("Order not found.", 404));
+
+        if (order.PaymentStatus == PaymentStatus.Success)
+            return BadRequest(JsonModel<object>.Error("Order is already paid.", 400));
+
+        var callbackUrl =
+            $"{_config["App:FrontendUrl"]}/confirmation/{order.Id}";
+
+        var result = await _paymentGateway.CreatePaymentAsync(
+            order, callbackUrl, ct);
+
+        await _orderService.SaveJodoOrderIdAsync(
+            order.Id, result.JodoOrderId, ct);
+
+        return Ok(JsonModel<InitiatePaymentResponse>.Success(result));
+    }
+
+    [HttpPost("webhook")]
+    [AllowAnonymous]
+    public async Task<IActionResult> HandleWebhook(CancellationToken ct)
+    {
+        Request.EnableBuffering();
+        using var reader = new StreamReader(
+            Request.Body, Encoding.UTF8, leaveOpen: true);
+        var rawBody = await reader.ReadToEndAsync();
+        Request.Body.Position = 0;
+
+        var receivedSignature =
+            Request.Headers["X-Jodo-Signature"].ToString();
+
         var secret = _config["Jodo:WebhookSecret"];
 
-        // 2. Perform signature validation if secret is configured and not default placeholder
-        if (!string.IsNullOrEmpty(secret) && secret != "YOUR_JODO_WEBHOOK_SECRET")
+#if DEBUG
+        if (string.IsNullOrEmpty(secret) || secret == "YOUR_JODO_WEBHOOK_SECRET")
         {
-            if (string.IsNullOrEmpty(signature))
-            {
-                return BadRequest(JsonModel<bool>.Error("Missing X-Jodo-Signature header."));
-            }
-
-            using var hmac = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(secret));
-            var hashBytes = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(rawBody));
-            var calculatedSignature = Convert.ToHexString(hashBytes).ToLower();
-
-            if (!string.Equals(calculatedSignature, signature.ToLower(), StringComparison.OrdinalIgnoreCase))
-            {
-                return BadRequest(JsonModel<bool>.Error("Invalid webhook signature."));
-            }
-        }
-
-        // 3. Deserialize body
-        JodoWebhookPayload? payload;
-        try
-        {
-            payload = System.Text.Json.JsonSerializer.Deserialize<JodoWebhookPayload>(rawBody, new System.Text.Json.JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-        }
-        catch
-        {
-            return BadRequest(JsonModel<bool>.Error("Invalid payload format."));
-        }
-
-        if (payload == null || string.IsNullOrEmpty(payload.OrderId) || string.IsNullOrEmpty(payload.TransactionId))
-        {
-            return BadRequest(JsonModel<bool>.Error("OrderId and TransactionId are required."));
-        }
-
-        if (!Guid.TryParse(payload.OrderId, out var orderId))
-        {
-            return BadRequest(JsonModel<bool>.Error("Invalid OrderId format. Must be a Guid."));
-        }
-
-        // 4. Confirm payment based on transaction status
-        if (string.Equals(payload.Status, "SUCCESS", StringComparison.OrdinalIgnoreCase) || 
-            string.Equals(payload.Status, "PAID", StringComparison.OrdinalIgnoreCase))
-        {
-            var result = await _orderService.ConfirmPaymentAsync(orderId, payload.TransactionId, ct);
-            return StatusCode(result.StatusCode, result);
+            // Skip verification in development only
+            Console.WriteLine("[DEBUG] Webhook signature check skipped.");
         }
         else
         {
-            // If payment failed, return success to the gateway indicating we processed the webhook
-            return Ok(JsonModel<bool>.Success(true, $"Webhook received with status: {payload.Status}"));
+#endif
+            var isValid = await _paymentGateway.VerifyWebhookSignatureAsync(
+                rawBody, receivedSignature);
+
+            if (!isValid)
+            {
+                return Unauthorized(JsonModel<bool>.Error("Invalid webhook signature.", 401));
+            }
+#if DEBUG
         }
+#endif
+
+        JodoWebhookPayload? payload;
+        try
+        {
+            payload = JsonSerializer.Deserialize<JodoWebhookPayload>(
+                rawBody,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+        }
+        catch
+        {
+            return BadRequest(JsonModel<bool>.Error("Invalid payload format.", 400));
+        }
+
+        if (payload == null)
+            return BadRequest(JsonModel<bool>.Error("Invalid payload.", 400));
+
+        if (payload.Event != "order.payment.debited")
+            return Ok(JsonModel<bool>.Success(true, "Event ignored."));
+
+        var invoiceNumber = payload.Payload.Order.Notes
+            ?.FirstOrDefault(n => n.Key == "erp_reference_id")?.Value;
+
+        if (string.IsNullOrWhiteSpace(invoiceNumber))
+            return BadRequest(JsonModel<bool>.Error("Missing erp_reference_id in notes.", 400));
+
+        var jodoOrderId = payload.Payload.OrderId;
+
+        var result = await _orderService.ConfirmPaymentByInvoiceAsync(
+            invoiceNumber, jodoOrderId, ct);
+
+        return StatusCode(result.StatusCode, result);
     }
 }
-
-public record JodoWebhookPayload(
-    string OrderId,
-    string TransactionId,
-    string Status,
-    decimal Amount,
-    string Message
-);

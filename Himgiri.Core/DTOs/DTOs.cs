@@ -339,6 +339,69 @@ public record UpdateVendorSettingsRequest(
     int DefaultLowStockThreshold
 );
 
+// Jodo webhook payload DTOs
+public record JodoWebhookPayload(
+    [property: System.Text.Json.Serialization.JsonPropertyName("event_id")] string EventId,
+    [property: System.Text.Json.Serialization.JsonPropertyName("event")] string Event,
+    [property: System.Text.Json.Serialization.JsonPropertyName("version")] string Version,
+    [property: System.Text.Json.Serialization.JsonPropertyName("timestamp")] long Timestamp,
+    [property: System.Text.Json.Serialization.JsonPropertyName("payload")] JodoPayloadData Payload
+);
+
+public record JodoPayloadData(
+    [property: System.Text.Json.Serialization.JsonPropertyName("order_id")] string OrderId,
+    [property: System.Text.Json.Serialization.JsonPropertyName("order")] JodoOrderData Order
+);
+
+public record JodoOrderData(
+    [property: System.Text.Json.Serialization.JsonPropertyName("name")] string Name,
+    [property: System.Text.Json.Serialization.JsonPropertyName("phone")] string Phone,
+    [property: System.Text.Json.Serialization.JsonPropertyName("email")] string Email,
+    [property: System.Text.Json.Serialization.JsonPropertyName("identifier")] string? Identifier,
+    [property: System.Text.Json.Serialization.JsonPropertyName("paid_at")] string PaidAt,
+    [property: System.Text.Json.Serialization.JsonPropertyName("status")] string Status,
+    [property: System.Text.Json.Serialization.JsonPropertyName("details")] System.Collections.Generic.List<JodoPaymentDetail> Details,
+    [property: System.Text.Json.Serialization.JsonPropertyName("notes")] System.Collections.Generic.List<JodoNote>? Notes
+);
+
+public record JodoPaymentDetail(
+    [property: System.Text.Json.Serialization.JsonPropertyName("component_type")] string ComponentType,
+    [property: System.Text.Json.Serialization.JsonPropertyName("amount")] decimal Amount
+);
+
+public record JodoNote(
+    [property: System.Text.Json.Serialization.JsonPropertyName("key")] string Key,
+    [property: System.Text.Json.Serialization.JsonPropertyName("value")] string Value
+);
+
+// Payment initiation request/response
+public record InitiatePaymentRequest(Guid OrderId);
+
+public record InitiatePaymentResponse(
+    string JodoOrderId,
+    string RedirectUrl
+);
+
+// Jodo create order response
+public record JodoCreateOrderResponse(
+    string Status,
+    [property: System.Text.Json.Serialization.JsonPropertyName("data")] JodoOrderResponseData Data
+);
+
+public record JodoOrderResponseData(
+    [property: System.Text.Json.Serialization.JsonPropertyName("order_id")] string OrderId,
+    [property: System.Text.Json.Serialization.JsonPropertyName("redirect_url")] string RedirectUrl
+);
+
+
+public record OrderLookupItemDto(
+    Guid ItemId,
+    string ItemName,
+    int Quantity,
+    decimal LineTotal,
+    bool IsKitItem
+);
+
 
 
 

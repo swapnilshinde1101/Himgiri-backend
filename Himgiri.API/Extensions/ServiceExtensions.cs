@@ -146,6 +146,9 @@ public static class ServiceExtensions
         services.AddScoped<ITaxService, TaxService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
         
+        // Register Jodo HTTP client and Payment Gateway
+        services.AddHttpClient<IPaymentGateway, JodoGatewayService>();
+        
         // Phase 2+ services registered here as built
         return services;
     }

@@ -53,11 +53,13 @@ public class AuthService : IAuthService
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
         
         // EMERGENCY FALLBACK: If hash fails, allow "Admin@123" for development
+#if DEBUG
         if (!isPasswordValid && request.Password == "Admin@123")
         {
             Console.WriteLine("[DEBUG] Emergency fallback password used.");
             isPasswordValid = true;
         }
+#endif
 
         if (!isPasswordValid)
         {
