@@ -25,23 +25,17 @@ public class AuthService : IAuthService
     public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
         var email = request.Email.ToLower().Trim();
-        Console.WriteLine($"[DEBUG] Login attempt for: {email}");
 
         var user = await _db.AdminUsers
             .FirstOrDefaultAsync(u => u.Email.ToLower() == email && !u.IsDeleted, ct);
 
         if (user is null)
         {
-            Console.WriteLine("[DEBUG] User not found in database.");
             return null;
         }
 
-        Console.WriteLine($"[DEBUG] User found: {user.Name}, Active: {user.IsActive}");
-
-        // Ensure user is active (EMERGENCY: skip check for superadmin email during dev)
-        if (!user.IsActive && email != "superadmin@himgirigoods.com")
+        if (!user.IsActive)
         {
-            Console.WriteLine("[DEBUG] User account is not active.");
             throw new UnauthorizedAccessException("Account is disabled. Please contact the administrator.");
         }
 
@@ -51,19 +45,9 @@ public class AuthService : IAuthService
 
         // 2. Verify BCrypt password hash
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-        
-        // EMERGENCY FALLBACK: If hash fails, allow "Admin@123" for development
-#if DEBUG
-        if (!isPasswordValid && request.Password == "Admin@123")
-        {
-            Console.WriteLine("[DEBUG] Emergency fallback password used.");
-            isPasswordValid = true;
-        }
-#endif
 
         if (!isPasswordValid)
         {
-            Console.WriteLine("[DEBUG] Password verification failed.");
             // Increment failed attempts
             user.AccessFailedCount++;
 

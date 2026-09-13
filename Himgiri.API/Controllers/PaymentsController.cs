@@ -73,27 +73,13 @@ public class PaymentsController : BaseController
         var receivedSignature =
             Request.Headers["X-Jodo-Signature"].ToString();
 
-        var secret = _config["Jodo:WebhookSecret"];
+        var isValid = await _paymentGateway.VerifyWebhookSignatureAsync(
+            rawBody, receivedSignature);
 
-#if DEBUG
-        if (string.IsNullOrEmpty(secret) || secret == "YOUR_JODO_WEBHOOK_SECRET")
+        if (!isValid)
         {
-            // Skip verification in development only
-            Console.WriteLine("[DEBUG] Webhook signature check skipped.");
+            return Unauthorized(JsonModel<bool>.Error("Invalid webhook signature.", 401));
         }
-        else
-        {
-#endif
-            var isValid = await _paymentGateway.VerifyWebhookSignatureAsync(
-                rawBody, receivedSignature);
-
-            if (!isValid)
-            {
-                return Unauthorized(JsonModel<bool>.Error("Invalid webhook signature.", 401));
-            }
-#if DEBUG
-        }
-#endif
 
         JodoWebhookPayload? payload;
         try

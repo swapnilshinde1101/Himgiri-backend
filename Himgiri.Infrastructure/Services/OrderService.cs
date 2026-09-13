@@ -494,7 +494,15 @@ public class OrderService : IOrderService
         _orderRepo.Update(order);
         _orderRepo.AddStatusHistory(history);
 
-        await _unitOfWork.CommitAsync(ct);
+        try
+        {
+            await _unitOfWork.CommitAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return JsonModel<bool>.Error("Stock levels changed concurrently while dispatching this order. Please retry.", 409);
+        }
+
         return JsonModel<bool>.Success(true, "Order status updated successfully.");
     }
 
@@ -706,70 +714,53 @@ public class OrderService : IOrderService
 
     public async Task<JsonModel<bool>> ConfirmPaymentAsync(Guid orderId, string transactionId, CancellationToken ct = default)
     {
-        int retries = 3;
-        while (retries > 0)
+        using var transaction = await _db.Database.BeginTransactionAsync(ct);
+        try
         {
-            using var transaction = await _db.Database.BeginTransactionAsync(ct);
-            try
+            var orderExists = await _db.Orders.AnyAsync(o => o.Id == orderId && !o.IsDeleted, ct);
+            if (!orderExists)
             {
-                // load order
-                var order = await _db.Orders
-                    .Include(o => o.Items)
-                    .FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted, ct);
+                await transaction.RollbackAsync(ct);
+                return JsonModel<bool>.Error("Order not found.", 404);
+            }
 
-                if (order == null)
-                {
-                    await transaction.RollbackAsync(ct);
-                    return JsonModel<bool>.Error("Order not found.", 404);
-                }
+            // Atomic conditional update: the WHERE clause is re-checked against committed
+            // data by the DB itself, so two concurrent webhook deliveries for the same order
+            // can't both win the race (Order has no in-app concurrency token to rely on instead).
+            var rowsAffected = await _db.Orders
+                .Where(o => o.Id == orderId && !o.IsDeleted && o.PaymentStatus != PaymentStatus.Success)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(o => o.Status, OrderStatus.Confirmed)
+                    .SetProperty(o => o.PaymentStatus, PaymentStatus.Success)
+                    .SetProperty(o => o.JodoPaymentId, transactionId)
+                    .SetProperty(o => o.UpdatedAt, DateTime.UtcNow), ct);
 
-                if (order.PaymentStatus == PaymentStatus.Success)
-                {
-                    await transaction.RollbackAsync(ct);
-                    return JsonModel<bool>.Success(true, "Payment already processed.");
-                }
-
-                order.Status = OrderStatus.Confirmed;
-                order.PaymentStatus = PaymentStatus.Success;
-                order.JodoPaymentId = transactionId;
-                order.UpdatedAt = DateTime.UtcNow;
-
-                var confirmHistory = new OrderStatusHistory
-                {
-                    OrderId = order.Id,
-                    FromStatus = OrderStatus.Pending,
-                    ToStatus = OrderStatus.Confirmed,
-                    ChangedBy = "Payment Gateway Webhook",
-                    Note = "Payment successful. Order Confirmed.",
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                _db.Orders.Update(order);
-                _db.OrderStatusHistories.Add(confirmHistory);
-
-                await _db.SaveChangesAsync(ct);
+            if (rowsAffected == 0)
+            {
                 await transaction.CommitAsync(ct);
+                return JsonModel<bool>.Success(true, "Payment already processed.");
+            }
 
-                return JsonModel<bool>.Success(true, "Payment processed. Order Confirmed.");
-            }
-            catch (DbUpdateConcurrencyException)
+            _db.OrderStatusHistories.Add(new OrderStatusHistory
             {
-                await transaction.RollbackAsync(ct);
-                retries--;
-                if (retries == 0)
-                {
-                    return JsonModel<bool>.Error("Concurrency collision during payment processing. Please retry.", 409);
-                }
-                // Small random backoff before retrying
-                await Task.Delay(new Random().Next(50, 150), ct);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(ct);
-                return JsonModel<bool>.Error($"Payment confirmation failed: {ex.Message}");
-            }
+                OrderId = orderId,
+                FromStatus = OrderStatus.Pending,
+                ToStatus = OrderStatus.Confirmed,
+                ChangedBy = "Payment Gateway Webhook",
+                Note = "Payment successful. Order Confirmed.",
+                CreatedAt = DateTime.UtcNow
+            });
+
+            await _db.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            return JsonModel<bool>.Success(true, "Payment processed. Order Confirmed.");
         }
-        return JsonModel<bool>.Error("Payment confirmation failed due to persistent concurrency conflicts.", 409);
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(ct);
+            return JsonModel<bool>.Error($"Payment confirmation failed: {ex.Message}");
+        }
     }
 
     public async Task<bool> VerifyOrderAccessAsync(Guid id, string mobile, string pincode, CancellationToken ct = default)

@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>32be9930-cf17-4753-9797-727013538a8e</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="8.5.4" />

@@ -30,7 +30,7 @@ public class JodoGatewayService : IPaymentGateway
         string callbackUrl,
         CancellationToken ct = default)
     {
-        var token = _config["Jodo:ApiToken"];
+        var token = _config["Jodo:ApiKey"];
         var baseUrl = _config["Jodo:BaseUrl"];
 
         _http.DefaultRequestHeaders.Authorization =
