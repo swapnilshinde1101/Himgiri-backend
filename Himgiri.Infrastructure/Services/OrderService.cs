@@ -172,6 +172,24 @@ public class OrderService : IOrderService
             var itemIds = aggregatedItems.Select(i => i.ItemId).Distinct().ToList();
             var dbItems = await _itemRepo.GetByIdsAsync(itemIds, ct);
 
+            // Validate stock against TOTAL demand per physical item — the same item can
+            // appear as both a mandatory kit item and a separate add-on in one order, so
+            // this must be checked before the per-line loop below, not inside it (checking
+            // each {ItemId, IsKitItem} group in isolation would miss combined over-demand).
+            var totalQuantityByItem = aggregatedItems
+                .GroupBy(i => i.ItemId)
+                .ToDictionary(g => g.Key, g => g.Sum(i => i.Quantity));
+
+            foreach (var (stockItemId, requestedQty) in totalQuantityByItem)
+            {
+                var stockItem = dbItems.FirstOrDefault(i => i.Id == stockItemId);
+                if (stockItem != null && stockItem.StorageStatus == StorageStatus.InStock && requestedQty > stockItem.StockQty)
+                {
+                    return JsonModel<OrderSummaryDto>.Error(
+                        $"Only {stockItem.StockQty} {stockItem.Unit} of '{stockItem.Name}' available in stock.", 400);
+                }
+            }
+
             var orderItemsList = new List<OrderItem>();
             decimal subTotal = 0m;
             decimal itemsGstSum = 0m;
@@ -799,7 +817,9 @@ public class OrderService : IOrderService
             // data by the DB itself, so two concurrent webhook deliveries for the same order
             // can't both win the race (Order has no in-app concurrency token to rely on instead).
             var rowsAffected = await _db.Orders
-                .Where(o => o.Id == orderId && !o.IsDeleted && o.PaymentStatus != PaymentStatus.Success)
+                .Where(o => o.Id == orderId && !o.IsDeleted
+                         && o.PaymentStatus != PaymentStatus.Success
+                         && o.Status != OrderStatus.Cancelled)
                 .ExecuteUpdateAsync(s => s
                     .SetProperty(o => o.Status, OrderStatus.Confirmed)
                     .SetProperty(o => o.PaymentStatus, PaymentStatus.Success)
@@ -808,7 +828,20 @@ public class OrderService : IOrderService
 
             if (rowsAffected == 0)
             {
+                var currentStatus = await _db.Orders
+                    .Where(o => o.Id == orderId)
+                    .Select(o => o.Status)
+                    .FirstOrDefaultAsync(ct);
+
                 await transaction.CommitAsync(ct);
+
+                if (currentStatus == OrderStatus.Cancelled)
+                {
+                    return JsonModel<bool>.Error(
+                        "This order was already cancelled (payment timeout). Payment received after cancellation requires manual review.",
+                        409);
+                }
+
                 return JsonModel<bool>.Success(true, "Payment already processed.");
             }
 

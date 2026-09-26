@@ -13,6 +13,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <!-- Direct overrides to force resolution past vulnerable transitive versions (GHSA-2m69-gcr7-jv3q, GHSA-447r-wph3-92pm, GHSA-hh2w-p6rv-4g7w, GHSA-8g4q-xg66-9fp4) -->
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
   </ItemGroup>
 
   <ItemGroup>

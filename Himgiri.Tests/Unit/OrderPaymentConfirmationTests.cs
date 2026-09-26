@@ -115,6 +115,25 @@ public class OrderPaymentConfirmationTests : IDisposable
         Assert.Equal(404, result.StatusCode);
     }
 
+    [Fact]
+    public async Task ConfirmPaymentAsync_OrderWasCancelled_ReturnsConflictAndDoesNotRevive()
+    {
+        // Regression test: a stale-pending order auto-cancelled by the Hangfire job (48h
+        // timeout) must not be silently revived by a payment webhook that arrives late.
+        var order = await SeedPendingOrderAsync();
+        order.Status = OrderStatus.Cancelled;
+        await _db.SaveChangesAsync();
+
+        var result = await _orderService.ConfirmPaymentAsync(order.Id, "TXN-LATE");
+
+        Assert.Equal(409, result.StatusCode);
+        Assert.Contains("cancelled", result.Message, StringComparison.OrdinalIgnoreCase);
+
+        var reloaded = await _db.Orders.FirstAsync(o => o.Id == order.Id);
+        Assert.Equal(OrderStatus.Cancelled, reloaded.Status);
+        Assert.Equal(PaymentStatus.Pending, reloaded.PaymentStatus);
+    }
+
     public void Dispose()
     {
         _db.Dispose();
