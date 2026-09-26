@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Himgiri.Core.DTOs;
 using Himgiri.Core.Entities;
@@ -15,6 +16,12 @@ public class AuthService : IAuthService
 {
     private readonly HimgiriDbContext _db;
     private readonly IConfiguration _config;
+
+    // Short-lived access token: even a stolen token is only useful for a few minutes,
+    // and a deactivated account is locked out of getting a new one on the very next
+    // refresh instead of staying valid for hours.
+    private static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromMinutes(15);
+    private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(7);
 
     public AuthService(HimgiriDbContext db, IConfiguration config)
     {
@@ -71,12 +78,127 @@ public class AuthService : IAuthService
         user.AccessFailedCount = 0;
         user.LockoutEnd = null;
         user.LastLoginAt = DateTime.UtcNow;
+
+        var expiry = DateTime.UtcNow.Add(AccessTokenLifetime);
+        var token = GenerateToken(user);
+        var (refreshToken, _) = IssueRefreshToken(user.Id);
+
         await _db.SaveChangesAsync(ct);
 
-        var expiry = DateTime.UtcNow.AddHours(8); // 8-hour session
-        var token = GenerateToken(user);
+        return new LoginResponse(token, refreshToken, user.Name, user.Email, user.Role, expiry);
+    }
 
-        return new LoginResponse(token, user.Name, user.Email, user.Role, expiry);
+    public async Task<RefreshTokenResponse?> RefreshAsync(string refreshToken, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return null;
+        }
+
+        var tokenHash = HashToken(refreshToken);
+        var existing = await _db.RefreshTokens
+            .Include(rt => rt.User)
+            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, ct);
+
+        if (existing is null)
+        {
+            return null;
+        }
+
+        if (existing.RevokedAt != null)
+        {
+            // Reuse of an already-rotated token is a strong signal the token was stolen
+            // (a legitimate client only ever presents the latest one in the chain) — revoke
+            // every active token for this user so the attacker's session dies too.
+            await RevokeAllRefreshTokensForUserAsync(existing.UserId, ct);
+            return null;
+        }
+
+        if (existing.ExpiresAt <= DateTime.UtcNow)
+        {
+            return null;
+        }
+
+        var user = existing.User;
+        if (user is null || user.IsDeleted || !user.IsActive ||
+            (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow))
+        {
+            // Account was deactivated/deleted/locked since this refresh token was issued —
+            // this is the actual point that closes the old "revocation" gap: instead of the
+            // access token staying valid for up to 8 hours regardless, the very next refresh
+            // (at most 15 minutes later) fails outright.
+            existing.RevokedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+            return null;
+        }
+
+        // Rotate: issue a new pair, revoke the old one and link it to its replacement.
+        var (newRefreshToken, newRefreshTokenId) = IssueRefreshToken(user.Id);
+
+        existing.RevokedAt = DateTime.UtcNow;
+        existing.ReplacedByTokenId = newRefreshTokenId;
+
+        var newAccessToken = GenerateToken(user);
+        var newExpiry = DateTime.UtcNow.Add(AccessTokenLifetime);
+
+        await _db.SaveChangesAsync(ct);
+
+        return new RefreshTokenResponse(newAccessToken, newRefreshToken, newExpiry);
+    }
+
+    public async Task RevokeRefreshTokenAsync(string refreshToken, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return;
+        }
+
+        var tokenHash = HashToken(refreshToken);
+        var existing = await _db.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, ct);
+        if (existing != null && existing.RevokedAt == null)
+        {
+            existing.RevokedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+        }
+    }
+
+    private async Task RevokeAllRefreshTokensForUserAsync(Guid userId, CancellationToken ct)
+    {
+        var activeTokens = await _db.RefreshTokens
+            .Where(rt => rt.UserId == userId && rt.RevokedAt == null)
+            .ToListAsync(ct);
+
+        foreach (var token in activeTokens)
+        {
+            token.RevokedAt = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync(ct);
+    }
+
+    // Not saved here — the caller's own SaveChangesAsync persists this alongside whatever
+    // else it's doing in the same unit of work (e.g. revoking the token being rotated out).
+    // BaseEntity.Id is generated client-side at construction, so the Id is known immediately
+    // without a round-trip to the database.
+    private (string RawToken, Guid TokenId) IssueRefreshToken(Guid userId)
+    {
+        var rawToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+
+        var entity = new RefreshToken
+        {
+            UserId = userId,
+            TokenHash = HashToken(rawToken),
+            ExpiresAt = DateTime.UtcNow.Add(RefreshTokenLifetime)
+        };
+
+        _db.RefreshTokens.Add(entity);
+
+        return (rawToken, entity.Id);
+    }
+
+    private static string HashToken(string rawToken)
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(rawToken)));
     }
 
     public string GenerateToken(AdminUser user)
@@ -98,7 +220,7 @@ public class AuthService : IAuthService
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(8),
+            expires: DateTime.UtcNow.Add(AccessTokenLifetime),
             signingCredentials: creds
         );
 

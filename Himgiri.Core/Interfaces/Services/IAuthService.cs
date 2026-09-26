@@ -6,4 +6,6 @@ public interface IAuthService
 {
     Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default);
     string GenerateToken(Core.Entities.AdminUser user);
+    Task<RefreshTokenResponse?> RefreshAsync(string refreshToken, CancellationToken ct = default);
+    Task RevokeRefreshTokenAsync(string refreshToken, CancellationToken ct = default);
 }

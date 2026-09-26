@@ -7,9 +7,18 @@ public record LoginRequest(string Email, string Password);
 
 public record LoginResponse(
     string Token,
+    string RefreshToken,
     string Name,
     string Email,
     AdminRole Role,
+    DateTime ExpiresAt
+);
+
+public record RefreshTokenRequest(string RefreshToken);
+
+public record RefreshTokenResponse(
+    string Token,
+    string RefreshToken,
     DateTime ExpiresAt
 );
 

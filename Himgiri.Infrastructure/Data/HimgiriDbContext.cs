@@ -12,6 +12,7 @@ public class HimgiriDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<StockLog> StockLogs => Set<StockLog>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
@@ -183,6 +184,16 @@ public class HimgiriDbContext : DbContext
             e.HasKey(x => x.Id);
             e.Property(x => x.Email).IsRequired().HasMaxLength(200);
             e.HasIndex(x => x.Email).IsUnique();
+        });
+
+        // ── RefreshToken ──
+        modelBuilder.Entity<RefreshToken>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.TokenHash).IsRequired().HasMaxLength(200);
+            e.HasIndex(x => x.TokenHash).IsUnique();
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.Ignore(x => x.IsUsable);
         });
 
         // ── StockLog ──

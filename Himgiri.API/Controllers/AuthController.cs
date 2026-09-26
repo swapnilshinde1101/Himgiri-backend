@@ -20,7 +20,7 @@ public class AuthController : BaseController
     [EnableRateLimiting("AuthPolicy")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
     {
-        try 
+        try
         {
             var result = await _authService.LoginAsync(request, ct);
 
@@ -33,6 +33,27 @@ public class AuthController : BaseController
         {
             return ErrorResponse(ex.Message, 401);
         }
+    }
+
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [EnableRateLimiting("AuthPolicy")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken ct)
+    {
+        var result = await _authService.RefreshAsync(request.RefreshToken, ct);
+
+        if (result is null)
+            return ErrorResponse("Session expired. Please log in again.", 401);
+
+        return OkResponse(result, "Token refreshed.");
+    }
+
+    [HttpPost("logout")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request, CancellationToken ct)
+    {
+        await _authService.RevokeRefreshTokenAsync(request.RefreshToken, ct);
+        return OkResponse<object?>(null, "Logged out.");
     }
 
     /// <summary>

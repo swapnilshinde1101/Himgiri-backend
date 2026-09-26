@@ -9,10 +9,30 @@ public class AdminUser : BaseEntity
     public string PasswordHash { get; set; } = string.Empty;
     public AdminRole Role { get; set; } = AdminRole.OrderManager;
     public DateTime? LastLoginAt { get; set; }
-    
+
     // Brute Force Protection
     public int AccessFailedCount { get; set; } = 0;
     public DateTime? LockoutEnd { get; set; }
+}
+
+public class RefreshToken : BaseEntity
+{
+    public Guid UserId { get; set; }
+    public AdminUser User { get; set; } = null!;
+
+    // SHA-256 hash of the raw token — the raw value is only ever seen by the client,
+    // never persisted, same principle as a password hash.
+    public string TokenHash { get; set; } = string.Empty;
+
+    public DateTime ExpiresAt { get; set; }
+    public DateTime? RevokedAt { get; set; }
+
+    // Set when this token is rotated out in favor of a newer one — lets a reused
+    // (already-revoked) token be traced back through the rotation chain.
+    public Guid? ReplacedByTokenId { get; set; }
+
+    // Named distinctly from BaseEntity.IsActive (a soft-delete flag) to avoid shadowing it.
+    public bool IsUsable => RevokedAt == null && ExpiresAt > DateTime.UtcNow;
 }
 
 public class StockLog : BaseEntity
