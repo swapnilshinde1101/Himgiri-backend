@@ -273,7 +273,10 @@ public class HimgiriDbContext : DbContext
         // SEED DATA
         // ═══════════════════════════════════════════
 
-        var passwordHash = "$2a$11$rBV2JDeWW3.vKyeCtBiWMurq3vm5JJ1PsHpFN0nHT5hGDYSc3wGWe"; // Admin@123
+        // Regenerated 2026-09-26 — the previous hash here did not actually verify against
+        // "Admin@123" (confirmed by direct BCrypt.Verify testing), locking every default
+        // seeded admin account out on a fresh database. This one is verified correct.
+        var passwordHash = "$2a$11$j09n7x7i8xRS6NBjXvKVyu//iG1fL.tUuWH9WGZ4mX6RIBnw.ziqa"; // Admin@123
 
         // Admin Users
         modelBuilder.Entity<AdminUser>().HasData(
