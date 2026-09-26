@@ -113,22 +113,27 @@ public class OrdersController : BaseController
 
     [HttpGet("{id:guid}/invoice")]
     [AllowAnonymous]
-    public async Task<IActionResult> DownloadInvoice(Guid id, [FromQuery] string? mobile, [FromQuery] string? pincode, [FromServices] IInvoiceService invoiceService, CancellationToken ct)
+    public async Task<IActionResult> DownloadInvoice(
+        Guid id, 
+        [FromQuery] string? token,
+        [FromQuery] string? mobile, 
+        [FromQuery] string? pincode, 
+        [FromServices] IInvoiceService invoiceService, 
+        CancellationToken ct)
     {
-        // Verify access: Admin or Owner (via mobile & pincode validation)
+        // Verify access: Admin or Owner (via token OR mobile & pincode validation)
         bool isAuthorized = User.Identity?.IsAuthenticated == true;
         
         if (!isAuthorized)
         {
-            if (string.IsNullOrWhiteSpace(mobile) || string.IsNullOrWhiteSpace(pincode))
+            bool hasValidToken = !string.IsNullOrWhiteSpace(token) && _orderService.VerifyOrderAccessToken(id, token);
+            bool hasValidCredentials = !string.IsNullOrWhiteSpace(mobile) && 
+                                       !string.IsNullOrWhiteSpace(pincode) && 
+                                       await _orderService.VerifyOrderAccessAsync(id, mobile, pincode, ct);
+
+            if (!hasValidToken && !hasValidCredentials)
             {
-                return Unauthorized(JsonModel<object>.Error("Unauthorized: Mobile number and pincode are required for anonymous downloads."));
-            }
-            
-            var orderMatch = await _orderService.VerifyOrderAccessAsync(id, mobile, pincode, ct);
-            if (!orderMatch)
-            {
-                return Unauthorized(JsonModel<object>.Error("Unauthorized: Invalid order credentials."));
+                return Unauthorized(JsonModel<object>.Error("Unauthorized: A valid access token or matching mobile and pincode are required for anonymous downloads."));
             }
         }
 
