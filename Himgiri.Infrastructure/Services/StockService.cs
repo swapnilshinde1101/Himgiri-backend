@@ -135,6 +135,7 @@ public class StockService : IStockService
 
         var logs = await query
             .OrderByDescending(l => l.CreatedAt)
+            .Take(1000)
             .ToListAsync(ct);
 
         var dtos = logs.Select(l => new StockLogDto(

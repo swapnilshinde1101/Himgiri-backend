@@ -8,6 +8,10 @@ using Himgiri.Core.Models;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+
 namespace Himgiri.Infrastructure.Services;
 
 public class OrderService : IOrderService
@@ -20,6 +24,7 @@ public class OrderService : IOrderService
     private readonly ITaxService _taxService;
     private readonly IExcelService _excelService;
     private readonly ICsvService _csvService;
+    private readonly IConfiguration? _config;
 
     public OrderService(
         IOrderRepository orderRepo,
@@ -29,7 +34,8 @@ public class OrderService : IOrderService
         HimgiriDbContext db,
         ITaxService taxService,
         IExcelService excelService,
-        ICsvService csvService)
+        ICsvService csvService,
+        IConfiguration? config = null)
     {
         _orderRepo = orderRepo;
         _itemRepo = itemRepo;
@@ -39,6 +45,7 @@ public class OrderService : IOrderService
         _taxService = taxService;
         _excelService = excelService;
         _csvService = csvService;
+        _config = config;
     }
 
     public async Task<JsonModel<OrderSummaryDto>> CreateOrderAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -552,19 +559,68 @@ public class OrderService : IOrderService
             return JsonModel<bool>.Error("Order not found.", 404);
         }
 
+        // If order had already been dispatched or delivered (where stock was deducted), restore stock
+        if (order.Status == OrderStatus.Dispatched || order.Status == OrderStatus.Delivered)
+        {
+            foreach (var orderItem in order.Items)
+            {
+                var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == orderItem.ItemId && !i.IsDeleted, ct);
+                if (item != null && item.StorageStatus == StorageStatus.InStock)
+                {
+                    int oldQty = item.StockQty;
+                    item.StockQty += orderItem.Quantity;
+                    item.UpdatedAt = DateTime.UtcNow;
+
+                    var log = new StockLog
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        OldQty = oldQty,
+                        NewQty = item.StockQty,
+                        ChangedBy = changedBy,
+                        Reason = "Refund / Restock",
+                        Note = $"Restocked from refunded order {order.InvoiceNumber}",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _db.Items.Update(item);
+                    _db.StockLogs.Add(log);
+                }
+            }
+        }
+
         order.IsRefunded = true;
         order.RefundReason = request.Reason;
         _orderRepo.Update(order);
 
-        return await UpdateOrderStatusAsync(id, new OrderStatusDto(OrderStatus.Refunded, $"Refund processed. Reason: {request.Reason}"), changedBy, ct);
+        return await UpdateOrderStatusAsync(
+            id, 
+            new OrderStatusDto(OrderStatus.Refunded, $"Refund processed. Reason: {request.Reason}. (Note: Verify settlement/gateway status on Jodo Merchant Portal)."), 
+            changedBy, 
+            ct);
     }
 
-    public async Task<byte[]> ExportOrdersToCsvAsync(CancellationToken ct = default)
+    public async Task<byte[]> ExportOrdersToCsvAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken ct = default)
     {
-        var orders = await _db.Orders
+        var query = _db.Orders
             .Include(o => o.Grade)
-            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted)
+            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted);
+
+        if (startDate.HasValue)
+        {
+            var utcStart = DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc);
+            query = query.Where(o => o.CreatedAt >= utcStart);
+        }
+
+        if (endDate.HasValue)
+        {
+            var utcEnd = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
+            query = query.Where(o => o.CreatedAt <= utcEnd);
+        }
+
+        var orders = await query
             .OrderByDescending(o => o.CreatedAt)
+            .Take(5000) // Safety cap: prevents an unbounded full-table export when no date range is given
             .ToListAsync(ct);
 
         var exportData = orders.Select(o => new OrderExportRow
@@ -583,12 +639,27 @@ public class OrderService : IOrderService
         return _csvService.ExportToCsv(exportData);
     }
 
-    public async Task<byte[]> ExportOrdersToExcelAsync(CancellationToken ct = default)
+    public async Task<byte[]> ExportOrdersToExcelAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken ct = default)
     {
-        var orders = await _db.Orders
+        var query = _db.Orders
             .Include(o => o.Grade)
-            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted)
+            .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted);
+
+        if (startDate.HasValue)
+        {
+            var utcStart = DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc);
+            query = query.Where(o => o.CreatedAt >= utcStart);
+        }
+
+        if (endDate.HasValue)
+        {
+            var utcEnd = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
+            query = query.Where(o => o.CreatedAt <= utcEnd);
+        }
+
+        var orders = await query
             .OrderByDescending(o => o.CreatedAt)
+            .Take(5000) // Safety cap: prevents an unbounded full-table export when no date range is given
             .ToListAsync(ct);
 
         var exportData = orders.Select(o => new OrderExportRow
@@ -847,5 +918,41 @@ public class OrderService : IOrderService
         };
 
         return JsonModel<OrderLookupDto>.Success(dto);
+    }
+
+    // Order-lookup tokens are valid for 30 days — long enough for a customer to revisit
+    // their order confirmation/tracking link, short enough that a leaked URL (browser
+    // history, referrer to Jodo's hosted payment page) doesn't grant permanent PII access.
+    private static readonly TimeSpan OrderAccessTokenLifetime = TimeSpan.FromDays(30);
+
+    public string GenerateOrderAccessToken(Guid orderId)
+    {
+        var expiryUnix = DateTimeOffset.UtcNow.Add(OrderAccessTokenLifetime).ToUnixTimeSeconds();
+        var signature = ComputeOrderAccessSignature(orderId, expiryUnix);
+        return $"{expiryUnix}.{signature}";
+    }
+
+    public bool VerifyOrderAccessToken(Guid orderId, string token)
+    {
+        if (string.IsNullOrWhiteSpace(token)) return false;
+
+        var parts = token.Trim().Split('.', 2);
+        if (parts.Length != 2) return false;
+        if (!long.TryParse(parts[0], out var expiryUnix)) return false;
+        if (DateTimeOffset.UtcNow.ToUnixTimeSeconds() > expiryUnix) return false;
+
+        var expectedSignature = ComputeOrderAccessSignature(orderId, expiryUnix);
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(expectedSignature),
+            Encoding.UTF8.GetBytes(parts[1].Trim().ToLowerInvariant())
+        );
+    }
+
+    private string ComputeOrderAccessSignature(Guid orderId, long expiryUnix)
+    {
+        var secret = _config?["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes($"order_lookup_{orderId}_{expiryUnix}"));
+        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 }

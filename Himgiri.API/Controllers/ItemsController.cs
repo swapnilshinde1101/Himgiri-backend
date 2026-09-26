@@ -18,12 +18,14 @@ public class ItemsController : BaseController
     private readonly IItemService _itemService;
     private readonly IStockService _stockService;
     private readonly IConfiguration _config;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public ItemsController(IItemService itemService, IStockService stockService, IConfiguration config)
+    public ItemsController(IItemService itemService, IStockService stockService, IConfiguration config, IHttpClientFactory httpClientFactory)
     {
         _itemService = itemService;
         _stockService = stockService;
         _config = config;
+        _httpClientFactory = httpClientFactory;
     }
 
     [HttpGet("{id:guid}")]
@@ -195,6 +197,17 @@ public class ItemsController : BaseController
             return ErrorResponse("Invalid image format. Allowed formats: JPG, JPEG, PNG, WEBP.");
         }
 
+        // Validate Magic Bytes (verify real binary file header)
+        using var stream = file.OpenReadStream();
+        var headerBytes = new byte[12];
+        var bytesRead = await stream.ReadAsync(headerBytes.AsMemory(0, 12), ct);
+        stream.Position = 0; // Reset position for upload
+
+        if (!IsValidImageHeader(headerBytes, bytesRead, extension))
+        {
+            return ErrorResponse("Invalid image content. File signature does not match image format.");
+        }
+
         try
         {
             var supabaseUrl = _config["Supabase:Url"];
@@ -210,15 +223,16 @@ public class ItemsController : BaseController
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
             var uploadUrl = $"{supabaseUrl.TrimEnd('/')}/storage/v1/object/{bucketName}/{uniqueFileName}";
 
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseKey}");
-            httpClient.DefaultRequestHeaders.Add("apikey", supabaseKey);
+            var httpClient = _httpClientFactory.CreateClient();
+            using var request = new HttpRequestMessage(HttpMethod.Post, uploadUrl);
+            request.Headers.Add("Authorization", $"Bearer {supabaseKey}");
+            request.Headers.Add("apikey", supabaseKey);
 
-            using var stream = file.OpenReadStream();
             using var content = new StreamContent(stream);
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+            request.Content = content;
 
-            var response = await httpClient.PostAsync(uploadUrl, content, ct);
+            var response = await httpClient.SendAsync(request, ct);
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync(ct);
@@ -232,5 +246,32 @@ public class ItemsController : BaseController
         {
             return ErrorResponse($"An error occurred while uploading: {ex.Message}");
         }
+    }
+
+    private static bool IsValidImageHeader(byte[] header, int bytesRead, string extension)
+    {
+        if (bytesRead < 4) return false;
+
+        // JPEG: FF D8 FF
+        if (extension == ".jpg" || extension == ".jpeg")
+        {
+            return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF;
+        }
+
+        // PNG: 89 50 4E 47
+        if (extension == ".png")
+        {
+            return header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47;
+        }
+
+        // WEBP: 52 49 46 46 (RIFF) ... 57 45 42 50 (WEBP)
+        if (extension == ".webp")
+        {
+            return bytesRead >= 12 &&
+                   header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
+                   header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50;
+        }
+
+        return false;
     }
 }

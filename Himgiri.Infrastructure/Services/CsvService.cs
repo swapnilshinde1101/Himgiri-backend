@@ -41,6 +41,11 @@ public class CsvService : ICsvService
                 }
 
                 var str = value.ToString() ?? string.Empty;
+                // Prevent CSV Formula Injection
+                if (str.Length > 0 && (str[0] == '=' || str[0] == '+' || str[0] == '-' || str[0] == '@' || str[0] == '\t' || str[0] == '\r'))
+                {
+                    str = "'" + str;
+                }
                 return $"\"{str.Replace("\"", "\"\"")}\"";
             });
             csv.AppendLine(string.Join(",", rowValues));

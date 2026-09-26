@@ -5,18 +5,22 @@ using Himgiri.Core.Entities;
 using Himgiri.Core.Interfaces.Repositories;
 using Himgiri.API.Extensions;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Himgiri.API.Middleware;
 
 public partial class ApiAuditLoggingMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public ApiAuditLoggingMiddleware(RequestDelegate next)
+    public ApiAuditLoggingMiddleware(RequestDelegate next, IServiceScopeFactory scopeFactory)
     {
         _next = next;
+        _scopeFactory = scopeFactory;
     }
 
-    public async Task InvokeAsync(HttpContext context, IApiErrorLogRepository logRepo)
+    public async Task InvokeAsync(HttpContext context)
     {
         // 1. Buffer the request
         context.Request.EnableBuffering();
@@ -35,13 +39,13 @@ public partial class ApiAuditLoggingMiddleware
             if (context.Response.StatusCode >= 400)
             {
                 var responseText = await ReadResponseBody(context.Response);
-                await SaveLog(context, logRepo, requestBody, responseText);
+                await SaveLogInIsolatedScope(context, requestBody, responseText);
             }
         }
         catch (Exception ex)
         {
             // 4. Log unhandled exceptions
-            await SaveLog(context, logRepo, requestBody, null, ex);
+            await SaveLogInIsolatedScope(context, requestBody, null, ex);
             throw; // Re-throw for ExceptionMiddleware to handle
         }
         finally
@@ -53,32 +57,40 @@ public partial class ApiAuditLoggingMiddleware
         }
     }
 
-    private async Task SaveLog(HttpContext context, IApiErrorLogRepository logRepo, string requestBody, string? responseText, Exception? ex = null)
+    private async Task SaveLogInIsolatedScope(HttpContext context, string requestBody, string? responseText, Exception? ex = null)
     {
-        // Don't log local/internal requests
-        if (context.Request.Path.StartsWithSegments("/swagger") || context.Connection.RemoteIpAddress?.ToString() == "::1")
-            return;
-
-        var log = new ApiErrorLog
+        try
         {
-            RequestType = context.Request.Method,
-            Url = context.Request.Path + context.Request.QueryString,
-            QueryParams = context.Request.QueryString.ToString(),
-            IpAddress = context.Connection.RemoteIpAddress?.ToString(),
-            UserAgent = context.Request.Headers["User-Agent"].FirstOrDefault(),
-            ResponseCode = context.Response.StatusCode,
-            Payload = MaskSensitiveData(requestBody),
-            Response = responseText,
-            
-            // Context from Extensions
-            UserId = context.User.GetUserId() != Guid.Empty ? context.User.GetUserId() : null,
-            UserEmail = context.User.GetUserEmail(),
-            
-            ExceptionMessage = ex?.Message,
-            StackTrace = ex?.StackTrace
-        };
+            if (context.Request.Path.StartsWithSegments("/swagger"))
+                return;
 
-        await logRepo.AddAsync(log);
+            using var scope = _scopeFactory.CreateScope();
+            var logRepo = scope.ServiceProvider.GetRequiredService<IApiErrorLogRepository>();
+
+            var log = new ApiErrorLog
+            {
+                RequestType = context.Request.Method,
+                Url = context.Request.Path + context.Request.QueryString,
+                QueryParams = context.Request.QueryString.ToString(),
+                IpAddress = context.Connection.RemoteIpAddress?.ToString(),
+                UserAgent = context.Request.Headers["User-Agent"].FirstOrDefault(),
+                ResponseCode = context.Response.StatusCode,
+                Payload = MaskSensitiveData(requestBody),
+                Response = responseText,
+                
+                UserId = context.User.GetUserId() != Guid.Empty ? context.User.GetUserId() : null,
+                UserEmail = context.User.GetUserEmail(),
+                
+                ExceptionMessage = ex?.Message,
+                StackTrace = ex?.StackTrace
+            };
+
+            await logRepo.AddAsync(log);
+        }
+        catch
+        {
+            // Suppress logging write errors to ensure client response pipeline is never broken
+        }
     }
 
     private string MaskSensitiveData(string content)

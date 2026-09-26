@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -6,7 +6,7 @@
     <UserSecretsId>32be9930-cf17-4753-9797-727013538a8e</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="8.5.4" />
+    <PackageReference Include="EPPlus" Version="7.1.2" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />

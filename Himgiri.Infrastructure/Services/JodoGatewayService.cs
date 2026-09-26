@@ -33,9 +33,6 @@ public class JodoGatewayService : IPaymentGateway
         var token = _config["Jodo:ApiKey"];
         var baseUrl = _config["Jodo:BaseUrl"];
 
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Basic", token);
-
         var body = new
         {
             name = order.CustomerName,
@@ -56,9 +53,13 @@ public class JodoGatewayService : IPaymentGateway
             }
         };
 
-        var response = await _http.PostAsJsonAsync(
-            $"{baseUrl}/api/v1/integrations/pay/orders", body, ct);
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/api/v1/integrations/pay/orders")
+        {
+            Content = JsonContent.Create(body)
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", token);
 
+        var response = await _http.SendAsync(request, ct);
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content

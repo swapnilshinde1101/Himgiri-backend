@@ -379,7 +379,8 @@ public record InitiatePaymentRequest(Guid OrderId);
 
 public record InitiatePaymentResponse(
     string JodoOrderId,
-    string RedirectUrl
+    string RedirectUrl,
+    string? AccessToken = null
 );
 
 // Jodo create order response

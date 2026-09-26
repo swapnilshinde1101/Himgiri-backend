@@ -147,6 +147,8 @@ public class HimgiriDbContext : DbContext
             e.HasIndex(x => x.CreatedAt);
             e.HasOne(x => x.Grade).WithMany().HasForeignKey(x => x.GradeId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(x => x.GradeId);
+            e.HasIndex(x => x.Mobile);
+            e.HasIndex(x => new { x.Mobile, x.Pincode });
 
             e.HasOne(x => x.SellerState).WithMany().HasForeignKey(x => x.SellerStateId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.CustomerState).WithMany().HasForeignKey(x => x.CustomerStateId).IsRequired().OnDelete(DeleteBehavior.Restrict);
@@ -188,6 +190,8 @@ public class HimgiriDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.HasOne(x => x.Item).WithMany(x => x.StockLogs).HasForeignKey(x => x.ItemId);
+            e.HasIndex(x => x.CreatedAt);
+            e.HasIndex(x => x.ItemId);
         });
 
         // ── PurchaseOrder ──

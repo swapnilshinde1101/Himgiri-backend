@@ -12,8 +12,8 @@ public interface IOrderService
     Task<JsonModel<bool>> AddOrderNoteAsync(Guid id, AddOrderNoteRequest request, string changedBy, CancellationToken ct = default);
     Task<JsonModel<bool>> FlagStockOutAsync(Guid id, string changedBy, CancellationToken ct = default);
     Task<JsonModel<bool>> ProcessRefundAsync(Guid id, ProcessRefundRequest request, string changedBy, CancellationToken ct = default);
-    Task<byte[]> ExportOrdersToCsvAsync(CancellationToken ct = default);
-    Task<byte[]> ExportOrdersToExcelAsync(CancellationToken ct = default);
+    Task<byte[]> ExportOrdersToCsvAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken ct = default);
+    Task<byte[]> ExportOrdersToExcelAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken ct = default);
     Task CancelStalePendingOrdersAsync(CancellationToken ct = default);
     Task<JsonModel<List<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken ct = default);
     Task<JsonModel<List<OrderSummaryDto>>> GetOrdersByCustomerAsync(string mobile, CancellationToken ct = default);
@@ -24,6 +24,8 @@ public interface IOrderService
     Task SaveJodoOrderIdAsync(Guid orderId, string jodoOrderId, CancellationToken ct = default);
     Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(string invoiceNumber, string jodoOrderId, CancellationToken ct = default);
     Task<JsonModel<OrderLookupDto>> GetOrderLookupAsync(Guid orderId, CancellationToken ct = default);
+    string GenerateOrderAccessToken(Guid orderId);
+    bool VerifyOrderAccessToken(Guid orderId, string token);
 }
 
 // Support DTO records needed for requests:

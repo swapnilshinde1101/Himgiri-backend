@@ -61,7 +61,16 @@ public class ExcelService : IExcelService
                 var value = prop.GetValue(item);
                 var cell = worksheet.Cells[row + 2, col + 1];
 
-                cell.Value = value;
+                // Prevent formula injection if a text value starts with =, +, -, @, \t, or \r
+                if (value is string strVal && strVal.Length > 0 && 
+                    (strVal[0] == '=' || strVal[0] == '+' || strVal[0] == '-' || strVal[0] == '@' || strVal[0] == '\t' || strVal[0] == '\r'))
+                {
+                    cell.Value = "'" + strVal;
+                }
+                else
+                {
+                    cell.Value = value;
+                }
 
                 // Format numeric cells (dec & int)
                 if (prop.PropertyType == typeof(decimal) || prop.PropertyType == typeof(decimal?))

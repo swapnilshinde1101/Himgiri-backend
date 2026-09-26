@@ -2,6 +2,7 @@ using Himgiri.Core.DTOs;
 using Himgiri.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Himgiri.API.Controllers;
 
@@ -16,6 +17,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("AuthPolicy")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
     {
         try 

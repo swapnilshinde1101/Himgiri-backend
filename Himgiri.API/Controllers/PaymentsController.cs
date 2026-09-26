@@ -4,6 +4,7 @@ using Himgiri.Core.Models;
 using Himgiri.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -35,6 +36,7 @@ public class PaymentsController : BaseController
 
     [HttpPost("initiate")]
     [AllowAnonymous]
+    [EnableRateLimiting("PaymentInitiatePolicy")]
     public async Task<IActionResult> InitiatePayment(
         [FromBody] InitiatePaymentRequest request,
         CancellationToken ct)
@@ -48,8 +50,10 @@ public class PaymentsController : BaseController
         if (order.PaymentStatus == PaymentStatus.Success)
             return BadRequest(JsonModel<object>.Error("Order is already paid.", 400));
 
+        var token = _orderService.GenerateOrderAccessToken(order.Id);
+
         var callbackUrl =
-            $"{_config["App:FrontendUrl"]}/confirmation/{order.Id}";
+            $"{_config["App:FrontendUrl"]}/confirmation/{order.Id}?token={token}";
 
         var result = await _paymentGateway.CreatePaymentAsync(
             order, callbackUrl, ct);
@@ -57,7 +61,13 @@ public class PaymentsController : BaseController
         await _orderService.SaveJodoOrderIdAsync(
             order.Id, result.JodoOrderId, ct);
 
-        return Ok(JsonModel<InitiatePaymentResponse>.Success(result));
+        var responseWithToken = new InitiatePaymentResponse(
+            result.JodoOrderId,
+            result.RedirectUrl,
+            token
+        );
+
+        return Ok(JsonModel<InitiatePaymentResponse>.Success(responseWithToken));
     }
 
     [HttpPost("webhook")]

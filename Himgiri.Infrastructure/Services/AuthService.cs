@@ -22,6 +22,9 @@ public class AuthService : IAuthService
         _config = config;
     }
 
+    // Dummy hash used to equalize execution time when an email does not exist (prevents timing attacks)
+    private const string DummyPasswordHash = "$2a$11$e87.tZtKj7F2C0vVvFhT7.vV9vB/lC1fMZe6TjJ3O0M9jB3mD8eK6";
+
     public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
         var email = request.Email.ToLower().Trim();
@@ -31,6 +34,8 @@ public class AuthService : IAuthService
 
         if (user is null)
         {
+            // Defend against timing attacks: run dummy verification so response times match valid users
+            BCrypt.Net.BCrypt.Verify(request.Password, DummyPasswordHash);
             return null;
         }
 

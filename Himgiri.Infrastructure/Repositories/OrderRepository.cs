@@ -139,6 +139,7 @@ public class OrderRepository : IOrderRepository
                 g.Max(o => o.CreatedAt)
             ))
             .OrderByDescending(c => c.LastOrderDate)
+            .Take(1000)
             .ToListAsync(ct);
 
         return customers;
