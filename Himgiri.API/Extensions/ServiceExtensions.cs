@@ -167,11 +167,15 @@ public static class ServiceExtensions
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IStaffService, StaffService>();
         services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IWhatsAppService, WhatsAppService>();
         services.AddScoped<IOrderNotificationService, OrderNotificationService>();
-        
+
         // Register Jodo HTTP client and Payment Gateway
         services.AddHttpClient<IPaymentGateway, JodoGatewayService>();
+
+        // Typed HttpClient (not AddScoped) — WhatsAppService previously fell back to `new HttpClient()`
+        // on every construction since nothing supplied one; being Scoped, that meant a brand-new,
+        // unpooled HttpClient per background job (every order confirmation/dispatch/cancellation).
+        services.AddHttpClient<IWhatsAppService, WhatsAppService>();
         
         // Phase 2+ services registered here as built
         return services;
