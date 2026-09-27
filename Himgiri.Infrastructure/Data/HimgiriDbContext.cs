@@ -488,8 +488,14 @@ public class HimgiriDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.Id = Guid.NewGuid();
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    if (entry.Entity.Id == Guid.Empty)
+                    {
+                        entry.Entity.Id = Guid.NewGuid();
+                    }
+                    if (entry.Entity.CreatedAt == default)
+                    {
+                        entry.Entity.CreatedAt = DateTime.UtcNow;
+                    }
                     entry.Entity.IsDeleted = false;
                     break;
 
