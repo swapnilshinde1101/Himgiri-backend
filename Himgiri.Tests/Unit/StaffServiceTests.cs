@@ -315,6 +315,122 @@ public class StaffServiceTests : IDisposable
         Assert.Contains("cannot delete your own", result.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task UpdateStaffPermissionsAsync_ValidCustomPermissions_SavesAndRevokesTokens()
+    {
+        // Arrange
+        var currentAdminId = Guid.NewGuid();
+        var targetUserId = Guid.NewGuid();
+        var targetUser = new AdminUser
+        {
+            Id = targetUserId,
+            Name = "Order Staff",
+            Email = "orderstaff@himgirigoods.com",
+            PasswordHash = "hash",
+            Role = AdminRole.OrderManager,
+            IsActive = true
+        };
+        _db.AdminUsers.Add(targetUser);
+
+        var activeToken = new RefreshToken
+        {
+            UserId = targetUserId,
+            TokenHash = "testhash",
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            RevokedAt = null
+        };
+        _db.RefreshTokens.Add(activeToken);
+        await _db.SaveChangesAsync();
+
+        var request = new UpdateStaffPermissionsRequest(
+            Permissions: new System.Collections.Generic.List<string>
+            {
+                Himgiri.Core.Security.Permissions.StockInward,
+                Himgiri.Core.Security.Permissions.StockAdjust
+            }
+        );
+
+        // Act
+        var result = await _staffService.UpdateStaffPermissionsAsync(targetUserId, request, currentAdminId);
+
+        // Assert
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Data.CustomPermissions);
+        Assert.Contains(Himgiri.Core.Security.Permissions.StockInward, result.Data.CustomPermissions);
+        Assert.Contains(Himgiri.Core.Security.Permissions.StockAdjust, result.Data.CustomPermissions);
+
+        var updatedUser = _db.AdminUsers.First(u => u.Id == targetUserId);
+        Assert.NotNull(updatedUser.CustomPermissions);
+        Assert.Contains(Himgiri.Core.Security.Permissions.StockInward, updatedUser.CustomPermissions);
+
+        var token = _db.RefreshTokens.First(rt => rt.UserId == targetUserId);
+        Assert.NotNull(token.RevokedAt);
+    }
+
+    [Fact]
+    public async Task UpdateStaffPermissionsAsync_ResetToNull_ClearsCustomPermissions()
+    {
+        // Arrange
+        var currentAdminId = Guid.NewGuid();
+        var targetUserId = Guid.NewGuid();
+        var targetUser = new AdminUser
+        {
+            Id = targetUserId,
+            Name = "Order Staff 2",
+            Email = "orderstaff2@himgirigoods.com",
+            PasswordHash = "hash",
+            Role = AdminRole.OrderManager,
+            CustomPermissions = Himgiri.Core.Security.Permissions.StockInward,
+            IsActive = true
+        };
+        _db.AdminUsers.Add(targetUser);
+        await _db.SaveChangesAsync();
+
+        var request = new UpdateStaffPermissionsRequest(Permissions: null);
+
+        // Act
+        var result = await _staffService.UpdateStaffPermissionsAsync(targetUserId, request, currentAdminId);
+
+        // Assert
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Data);
+        Assert.Null(result.Data.CustomPermissions);
+        var updatedUser = _db.AdminUsers.First(u => u.Id == targetUserId);
+        Assert.Null(updatedUser.CustomPermissions);
+        var effective = updatedUser.GetEffectivePermissions();
+        Assert.Contains(Himgiri.Core.Security.Permissions.OrdersView, effective);
+    }
+
+    [Fact]
+    public async Task UpdateStaffPermissionsAsync_SelfRevokingStaffManage_Returns400()
+    {
+        // Arrange
+        var adminId = Guid.NewGuid();
+        var admin = new AdminUser
+        {
+            Id = adminId,
+            Name = "Self Admin",
+            Email = "selfadmin@himgirigoods.com",
+            PasswordHash = "hash",
+            Role = AdminRole.SuperAdmin,
+            IsActive = true
+        };
+        _db.AdminUsers.Add(admin);
+        await _db.SaveChangesAsync();
+
+        var request = new UpdateStaffPermissionsRequest(
+            Permissions: new System.Collections.Generic.List<string> { Himgiri.Core.Security.Permissions.OrdersView }
+        );
+
+        // Act
+        var result = await _staffService.UpdateStaffPermissionsAsync(adminId, request, adminId);
+
+        // Assert
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("cannot revoke your own staff management permission", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

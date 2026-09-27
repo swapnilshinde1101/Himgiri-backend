@@ -27,24 +27,13 @@ public class StaffService : IStaffService
 
     public async Task<JsonModel<List<StaffMemberDto>>> GetAllStaffAsync(CancellationToken ct = default)
     {
-        var staffList = await _db.AdminUsers
+        var users = await _db.AdminUsers
             .Where(u => !u.IsDeleted)
             .OrderBy(u => u.Role)
             .ThenBy(u => u.Name)
-            .Select(u => new StaffMemberDto(
-                u.Id,
-                u.Name,
-                u.Email,
-                u.Role,
-                u.Role.ToString(),
-                u.IsActive,
-                u.LastLoginAt,
-                u.AccessFailedCount,
-                u.LockoutEnd.HasValue && u.LockoutEnd.Value > DateTime.UtcNow,
-                u.LockoutEnd,
-                u.CreatedAt
-            ))
             .ToListAsync(ct);
+
+        var staffList = users.Select(MapToDto).ToList();
 
         return JsonModel<List<StaffMemberDto>>.Success(staffList, "Staff members retrieved successfully.");
     }
@@ -97,12 +86,17 @@ public class StaffService : IStaffService
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password.Trim(), 11);
 
+        var customPerms = request.CustomPermissions != null && request.CustomPermissions.Count > 0
+            ? string.Join(',', request.CustomPermissions.Where(p => Himgiri.Core.Security.Permissions.All.Contains(p)).Distinct())
+            : null;
+
         var newUser = new AdminUser
         {
             Name = request.Name.Trim(),
             Email = normalizedEmail,
             PasswordHash = passwordHash,
             Role = request.Role,
+            CustomPermissions = customPerms,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -258,6 +252,63 @@ public class StaffService : IStaffService
         return JsonModel<bool>.Success(true, "Account has been unlocked successfully.");
     }
 
+    public async Task<JsonModel<StaffMemberDto>> UpdateStaffPermissionsAsync(
+        Guid targetUserId,
+        UpdateStaffPermissionsRequest request,
+        Guid currentUserId,
+        CancellationToken ct = default)
+    {
+        var user = await _db.AdminUsers
+            .FirstOrDefaultAsync(u => u.Id == targetUserId && !u.IsDeleted, ct);
+
+        if (user == null)
+        {
+            return JsonModel<StaffMemberDto>.Error("Staff member not found.", 404);
+        }
+
+        // Guard: Prevent self-lockout from staff management
+        if (targetUserId == currentUserId && request.Permissions != null && !request.Permissions.Contains(Himgiri.Core.Security.Permissions.StaffManage))
+        {
+            return JsonModel<StaffMemberDto>.Error("You cannot revoke your own staff management permission.", 400);
+        }
+
+        // Guard: If user is sole SuperAdmin, ensure they retain StaffManage
+        if (user.Role == AdminRole.SuperAdmin && request.Permissions != null && !request.Permissions.Contains(Himgiri.Core.Security.Permissions.StaffManage))
+        {
+            var activeSuperAdminCount = await _db.AdminUsers
+                .CountAsync(u => u.Role == AdminRole.SuperAdmin && u.IsActive && !u.IsDeleted, ct);
+
+            if (activeSuperAdminCount <= 1)
+            {
+                return JsonModel<StaffMemberDto>.Error("The only active SuperAdmin must retain staff management permission.", 400);
+            }
+        }
+
+        if (request.Permissions == null || request.Permissions.Count == 0)
+        {
+            // Reset to role defaults
+            user.CustomPermissions = null;
+        }
+        else
+        {
+            var validPerms = request.Permissions
+                .Where(p => Himgiri.Core.Security.Permissions.All.Contains(p))
+                .Distinct()
+                .ToList();
+
+            user.CustomPermissions = string.Join(',', validPerms);
+        }
+
+        // Invalidate active refresh tokens so new permissions take effect
+        await RevokeActiveTokensForUserAsync(targetUserId, ct);
+
+        await _db.SaveChangesAsync(ct);
+
+        _logger?.LogInformation("Custom permissions updated for staff user: {Email}", user.Email);
+
+        return JsonModel<StaffMemberDto>.Success(MapToDto(user), "Permissions updated successfully.");
+    }
+
     public async Task<JsonModel<bool>> DeleteStaffAsync(
         Guid targetUserId, 
         Guid currentUserId, 
@@ -315,6 +366,10 @@ public class StaffService : IStaffService
 
     private static StaffMemberDto MapToDto(AdminUser u)
     {
+        var custom = !string.IsNullOrWhiteSpace(u.CustomPermissions)
+            ? u.CustomPermissions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
+            : null;
+
         return new StaffMemberDto(
             u.Id,
             u.Name,
@@ -326,7 +381,9 @@ public class StaffService : IStaffService
             u.AccessFailedCount,
             u.LockoutEnd.HasValue && u.LockoutEnd.Value > DateTime.UtcNow,
             u.LockoutEnd,
-            u.CreatedAt
+            u.CreatedAt,
+            custom,
+            u.GetEffectivePermissions()
         );
     }
 }

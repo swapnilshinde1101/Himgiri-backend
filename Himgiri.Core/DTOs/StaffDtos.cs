@@ -14,14 +14,17 @@ public record StaffMemberDto(
     int AccessFailedCount,
     bool IsLockedOut,
     DateTime? LockoutEnd,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    System.Collections.Generic.IReadOnlyList<string>? CustomPermissions = null,
+    System.Collections.Generic.IReadOnlyList<string>? EffectivePermissions = null
 );
 
 public record CreateStaffRequest(
     string Name,
     string Email,
     string Password,
-    AdminRole Role
+    AdminRole Role,
+    System.Collections.Generic.List<string>? CustomPermissions = null
 );
 
 public record UpdateStaffRoleRequest(
@@ -34,4 +37,8 @@ public record UpdateStaffStatusRequest(
 
 public record ResetStaffPasswordRequest(
     string NewPassword
+);
+
+public record UpdateStaffPermissionsRequest(
+    System.Collections.Generic.List<string>? Permissions
 );

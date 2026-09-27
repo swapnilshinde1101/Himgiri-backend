@@ -83,7 +83,7 @@ public class AuthService : IAuthService
         var expiry = DateTime.UtcNow.Add(AccessTokenLifetime);
         var token = GenerateToken(user);
         var (refreshToken, _) = IssueRefreshToken(user.Id);
-        var permissions = RolePermissionMapping.GetPermissionsForRole(user.Role);
+        var permissions = user.GetEffectivePermissions();
 
         await _db.SaveChangesAsync(ct);
 
@@ -218,7 +218,7 @@ public class AuthService : IAuthService
             new Claim("role", user.Role.ToString()) // extra for easy frontend reading
         };
 
-        var permissions = Himgiri.Core.Security.RolePermissionMapping.GetPermissionsForRole(user.Role);
+        var permissions = user.GetEffectivePermissions();
         foreach (var permission in permissions)
         {
             claims.Add(new Claim("permission", permission));

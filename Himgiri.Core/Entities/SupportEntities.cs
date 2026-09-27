@@ -13,6 +13,21 @@ public class AdminUser : BaseEntity
     // Brute Force Protection
     public int AccessFailedCount { get; set; } = 0;
     public DateTime? LockoutEnd { get; set; }
+
+    // Custom Permission Overrides (comma-separated codes; null uses Role defaults)
+    public string? CustomPermissions { get; set; }
+
+    public IReadOnlyList<string> GetEffectivePermissions()
+    {
+        if (!string.IsNullOrWhiteSpace(CustomPermissions))
+        {
+            return CustomPermissions
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+        return Himgiri.Core.Security.RolePermissionMapping.GetPermissionsForRole(Role);
+    }
 }
 
 public class RefreshToken : BaseEntity

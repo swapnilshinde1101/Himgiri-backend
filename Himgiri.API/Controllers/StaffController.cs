@@ -52,6 +52,14 @@ public class StaffController : BaseController
         return StatusCode(result.StatusCode, result);
     }
 
+    [HttpPut("{id:guid}/permissions")]
+    public async Task<IActionResult> UpdatePermissions(Guid id, [FromBody] UpdateStaffPermissionsRequest request, CancellationToken ct)
+    {
+        var currentUserId = GetCurrentUserId();
+        var result = await _staffService.UpdateStaffPermissionsAsync(id, request, currentUserId, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
     [HttpPatch("{id:guid}/status")]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateStaffStatusRequest request, CancellationToken ct)
     {

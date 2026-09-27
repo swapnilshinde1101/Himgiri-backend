@@ -15,6 +15,7 @@ public interface IStaffService
     Task<JsonModel<StaffMemberDto>> UpdateStaffRoleAsync(Guid targetUserId, UpdateStaffRoleRequest request, Guid currentUserId, CancellationToken ct = default);
     Task<JsonModel<StaffMemberDto>> UpdateStaffStatusAsync(Guid targetUserId, UpdateStaffStatusRequest request, Guid currentUserId, CancellationToken ct = default);
     Task<JsonModel<bool>> ResetStaffPasswordAsync(Guid targetUserId, ResetStaffPasswordRequest request, CancellationToken ct = default);
+    Task<JsonModel<StaffMemberDto>> UpdateStaffPermissionsAsync(Guid targetUserId, UpdateStaffPermissionsRequest request, Guid currentUserId, CancellationToken ct = default);
     Task<JsonModel<bool>> UnlockStaffAccountAsync(Guid targetUserId, CancellationToken ct = default);
     Task<JsonModel<bool>> DeleteStaffAsync(Guid targetUserId, Guid currentUserId, CancellationToken ct = default);
 }
