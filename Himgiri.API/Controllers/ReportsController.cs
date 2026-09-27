@@ -50,7 +50,7 @@ public class ReportsController : ControllerBase
     /// Gets real staff user directory and a live chronological activity audit trail (SuperAdmin only).
     /// </summary>
     [HttpGet("staff/activity")]
-    [Authorize(Policy = "SuperAdmin")]
+    [Authorize(Policy = "AnyAdmin")]
     [RequirePermission(Permissions.ReportsStaffAudit)]
     public async Task<IActionResult> GetStaffActivity([FromQuery] int limit = 50, CancellationToken ct = default)
     {

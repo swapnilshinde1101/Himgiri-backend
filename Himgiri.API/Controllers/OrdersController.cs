@@ -33,6 +33,7 @@ public class OrdersController : BaseController
 
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersView)]
     public async Task<IActionResult> GetOrder(Guid id, CancellationToken ct)
     {
         var result = await _orderService.GetOrderByIdAsync(id, ct);
@@ -41,6 +42,7 @@ public class OrdersController : BaseController
 
     [HttpGet]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersView)]
     public async Task<IActionResult> GetOrders([FromQuery] OrderQueryRequest request, CancellationToken ct)
     {
         var result = await _orderService.GetPagedOrdersAsync(request, ct);
@@ -49,6 +51,7 @@ public class OrdersController : BaseController
 
     [HttpPatch("{id:guid}/status")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersFulfill)]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] OrderStatusDto request, CancellationToken ct)
     {
         var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
@@ -61,6 +64,7 @@ public class OrdersController : BaseController
 
     [HttpPatch("bulk-status")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersFulfill)]
     public async Task<IActionResult> BulkUpdateStatus([FromBody] BulkOrderStatusRequest request, CancellationToken ct)
     {
         var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
@@ -73,6 +77,7 @@ public class OrdersController : BaseController
 
     [HttpPost("{id:guid}/notes")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersNotes)]
     public async Task<IActionResult> AddNote(Guid id, [FromBody] AddOrderNoteRequest request, CancellationToken ct)
     {
         var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
@@ -85,6 +90,7 @@ public class OrdersController : BaseController
 
     [HttpPatch("{id:guid}/stockout")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersFulfill)]
     public async Task<IActionResult> FlagStockOut(Guid id, CancellationToken ct)
     {
         var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
@@ -96,7 +102,7 @@ public class OrdersController : BaseController
     }
 
     [HttpPatch("{id:guid}/refund")]
-    [Authorize(Policy = "SuperAdmin")]
+    [Authorize(Policy = "AnyAdmin")]
     [RequirePermission(Permissions.OrdersRefund)]
     public async Task<IActionResult> ProcessRefund(Guid id, [FromBody] ProcessRefundRequest request, CancellationToken ct)
     {
@@ -110,6 +116,7 @@ public class OrdersController : BaseController
 
     [HttpGet("export/csv")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersExport)]
     public async Task<IActionResult> ExportCsv([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, CancellationToken ct)
     {
         var csvBytes = await _orderService.ExportOrdersToCsvAsync(startDate, endDate, ct);
@@ -119,6 +126,7 @@ public class OrdersController : BaseController
 
     [HttpGet("export/excel")]
     [Authorize(Policy = "OrderOrAdmin")]
+    [RequirePermission(Permissions.OrdersExport)]
     public async Task<IActionResult> ExportExcel([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, CancellationToken ct)
     {
         var xlsxBytes = await _orderService.ExportOrdersToExcelAsync(startDate, endDate, ct);
