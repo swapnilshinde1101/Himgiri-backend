@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Himgiri.API.Attributes;
 using Himgiri.Core.Interfaces.Services;
+using Himgiri.Core.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,7 @@ public class ReportsController : ControllerBase
     /// Gets aggregated accounting figures: total paid sales, pending receivables, tax distributions, refunds, and grade sales.
     /// </summary>
     [HttpGet("accounts/summary")]
+    [RequirePermission(Permissions.ReportsAccounts)]
     public async Task<IActionResult> GetAccountSummary(
         [FromQuery] DateTime? startDate, 
         [FromQuery] DateTime? endDate, 
@@ -36,6 +39,7 @@ public class ReportsController : ControllerBase
     /// Gets aggregated inventory valuation figures: purchase vs retail valuations, potential margins, stock counts, and category breakdowns.
     /// </summary>
     [HttpGet("inventory/valuation")]
+    [RequirePermission(Permissions.ReportsInventory)]
     public async Task<IActionResult> GetInventoryValuation(CancellationToken ct)
     {
         var result = await _reportService.GetInventoryValuationReportAsync(ct);
@@ -47,6 +51,7 @@ public class ReportsController : ControllerBase
     /// </summary>
     [HttpGet("staff/activity")]
     [Authorize(Policy = "SuperAdmin")]
+    [RequirePermission(Permissions.ReportsStaffAudit)]
     public async Task<IActionResult> GetStaffActivity([FromQuery] int limit = 50, CancellationToken ct = default)
     {
         var result = await _reportService.GetStaffActivityReportAsync(limit, ct);

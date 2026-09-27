@@ -11,7 +11,8 @@ public record LoginResponse(
     string Name,
     string Email,
     AdminRole Role,
-    DateTime ExpiresAt
+    DateTime ExpiresAt,
+    System.Collections.Generic.IReadOnlyList<string>? Permissions = null
 );
 
 public record RefreshTokenRequest(string RefreshToken);

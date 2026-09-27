@@ -5,6 +5,7 @@ using System.Text;
 using Himgiri.Core.DTOs;
 using Himgiri.Core.Entities;
 using Himgiri.Core.Interfaces.Services;
+using Himgiri.Core.Security;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -82,10 +83,11 @@ public class AuthService : IAuthService
         var expiry = DateTime.UtcNow.Add(AccessTokenLifetime);
         var token = GenerateToken(user);
         var (refreshToken, _) = IssueRefreshToken(user.Id);
+        var permissions = RolePermissionMapping.GetPermissionsForRole(user.Role);
 
         await _db.SaveChangesAsync(ct);
 
-        return new LoginResponse(token, refreshToken, user.Name, user.Email, user.Role, expiry);
+        return new LoginResponse(token, refreshToken, user.Name, user.Email, user.Role, expiry, permissions);
     }
 
     public async Task<RefreshTokenResponse?> RefreshAsync(string refreshToken, CancellationToken ct = default)
@@ -207,7 +209,7 @@ public class AuthService : IAuthService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
@@ -215,6 +217,12 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim("role", user.Role.ToString()) // extra for easy frontend reading
         };
+
+        var permissions = Himgiri.Core.Security.RolePermissionMapping.GetPermissionsForRole(user.Role);
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim("permission", permission));
+        }
 
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],

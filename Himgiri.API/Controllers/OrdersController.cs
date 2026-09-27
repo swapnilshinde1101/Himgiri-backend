@@ -1,6 +1,8 @@
+using Himgiri.API.Attributes;
 using Himgiri.Core.DTOs;
 using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
+using Himgiri.Core.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -95,6 +97,7 @@ public class OrdersController : BaseController
 
     [HttpPatch("{id:guid}/refund")]
     [Authorize(Policy = "SuperAdmin")]
+    [RequirePermission(Permissions.OrdersRefund)]
     public async Task<IActionResult> ProcessRefund(Guid id, [FromBody] ProcessRefundRequest request, CancellationToken ct)
     {
         var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
