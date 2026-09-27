@@ -138,6 +138,67 @@ public class ReportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAccountReportSummaryAsync_InterStateOrder_AttributesGstToIgstNotCgstSgst()
+    {
+        // Regression test: an inter-state order's GST must show up entirely as IGST, never split into
+        // CGST/SGST — that split only applies to intra-state orders.
+        var intraOrder = new Order
+        {
+            Id = Guid.NewGuid(),
+            InvoiceNumber = "HG-INTRA-001",
+            CustomerName = "Parent Intra",
+            Email = "intra@example.com",
+            Mobile = "9876543220",
+            AddressLine1 = "1 Local St",
+            City = "Pune",
+            Pincode = "411057",
+            SellerStateId = Guid.NewGuid(),
+            CustomerStateId = Guid.NewGuid(),
+            SupplyType = SupplyType.IntraState,
+            SubTotal = 1000m,
+            TotalGst = 180m,
+            GrandTotal = 1180m,
+            Status = OrderStatus.Confirmed,
+            PaymentStatus = PaymentStatus.Success,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var interOrder = new Order
+        {
+            Id = Guid.NewGuid(),
+            InvoiceNumber = "HG-INTER-001",
+            CustomerName = "Parent Inter",
+            Email = "inter@example.com",
+            Mobile = "9876543221",
+            AddressLine1 = "1 Distant St",
+            City = "Mumbai",
+            Pincode = "400001",
+            SellerStateId = Guid.NewGuid(),
+            CustomerStateId = Guid.NewGuid(),
+            SupplyType = SupplyType.InterState,
+            SubTotal = 1000m,
+            TotalGst = 180m,
+            GrandTotal = 1180m,
+            Status = OrderStatus.Confirmed,
+            PaymentStatus = PaymentStatus.Success,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.Orders.AddRange(intraOrder, interOrder);
+        await _db.SaveChangesAsync();
+
+        var result = await _reportService.GetAccountReportSummaryAsync();
+
+        Assert.Equal(200, result.StatusCode);
+        var data = result.Data!;
+
+        Assert.Equal(360m, data.TotalGstCollected); // 180 + 180
+        Assert.Equal(90m, data.TotalCgst);           // only from the intra-state order
+        Assert.Equal(90m, data.TotalSgst);           // only from the intra-state order
+        Assert.Equal(180m, data.TotalIgst);          // only from the inter-state order
+    }
+
+    [Fact]
     public async Task GetInventoryValuationReportAsync_ComputesAccurateValuationAndMargins()
     {
         // Arrange

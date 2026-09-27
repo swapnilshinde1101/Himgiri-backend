@@ -56,11 +56,15 @@ public class ReportService : IReportService
             var totalPaidSales = paidOrdersList.Sum(o => o.GrandTotal);
             var totalPaidOrdersCount = paidOrdersList.Count;
 
-            // GST Calculations on paid orders
+            // GST Calculations on paid orders — split per order by its actual SupplyType rather than
+            // assuming every order is intra-state. An inter-state order's GST is entirely IGST, never
+            // CGST/SGST; blindly halving TotalGst into CGST+SGST for every order (as this used to do)
+            // silently misreported all IGST collected as CGST+SGST instead.
             var totalGstCollected = paidOrdersList.Sum(o => o.TotalGst);
-            var totalCgst = Math.Round(totalGstCollected / 2m, 2);
-            var totalSgst = totalGstCollected - totalCgst;
-            var totalIgst = 0m;
+            var intraStateOrders = paidOrdersList.Where(o => o.SupplyType == SupplyType.IntraState).ToList();
+            var totalCgst = intraStateOrders.Sum(o => Math.Round(o.TotalGst / 2m, 2));
+            var totalSgst = intraStateOrders.Sum(o => o.TotalGst - Math.Round(o.TotalGst / 2m, 2));
+            var totalIgst = paidOrdersList.Where(o => o.SupplyType == SupplyType.InterState).Sum(o => o.TotalGst);
             var totalNetSales = totalPaidSales - totalGstCollected;
 
             // Unpaid Receivables (Pending orders awaiting customer payment)
