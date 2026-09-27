@@ -143,7 +143,7 @@ public class OrderNotificationService : IOrderNotificationService
 
         // 1. Generate Delivery Challan PDF
         byte[]? challanPdf = null;
-        var challanRes = await _invoiceService.GenerateDeliveryChallanAsync(order.Id, ct);
+        var challanRes = await _invoiceService.GenerateDeliveryChallanAsync(order.Id, ct: ct);
         if (challanRes.StatusCode == 200 && challanRes.Data != null)
         {
             challanPdf = challanRes.Data.PdfContent;

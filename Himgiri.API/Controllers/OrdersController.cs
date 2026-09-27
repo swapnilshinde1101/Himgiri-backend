@@ -196,7 +196,7 @@ public class OrdersController : BaseController
             }
         }
 
-        var result = await invoiceService.GenerateDeliveryChallanAsync(id, ct);
+        var result = await invoiceService.GenerateDeliveryChallanAsync(id, enforceDispatchedStatus: !isAuthorized, ct: ct);
         if (result.StatusCode != 200 || result.Data == null)
         {
             return StatusCode(result.StatusCode, result);

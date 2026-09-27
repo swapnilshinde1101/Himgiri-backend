@@ -201,6 +201,47 @@ public class InvoiceServiceTests : IDisposable
         Assert.True(result.Data.PdfContent.Length > 1000);
     }
 
+    [Fact]
+    public async Task GenerateDeliveryChallanAsync_EnforceDispatchedStatus_NotYetDispatched_ReturnsBadRequest()
+    {
+        // Default test order status is Confirmed — not yet dispatched.
+        var order = await CreateTestOrderAsync();
+
+        var result = await _invoiceService.GenerateDeliveryChallanAsync(order.Id, enforceDispatchedStatus: true);
+
+        Assert.Equal(400, result.StatusCode);
+        Assert.Null(result.Data);
+        Assert.Contains("dispatched", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(OrderStatus.Dispatched)]
+    [InlineData(OrderStatus.Delivered)]
+    public async Task GenerateDeliveryChallanAsync_EnforceDispatchedStatus_AlreadyDispatchedOrDelivered_Succeeds(OrderStatus status)
+    {
+        var order = await CreateTestOrderAsync();
+        order.Status = status;
+        await _db.SaveChangesAsync();
+
+        var result = await _invoiceService.GenerateDeliveryChallanAsync(order.Id, enforceDispatchedStatus: true);
+
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task GenerateDeliveryChallanAsync_AdminAccess_NotYetDispatched_StillSucceeds()
+    {
+        // enforceDispatchedStatus defaults to false — admins/staff can generate the challan
+        // as a pre-dispatch warehouse packing slip, before the order is marked Dispatched.
+        var order = await CreateTestOrderAsync();
+
+        var result = await _invoiceService.GenerateDeliveryChallanAsync(order.Id);
+
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Data);
+    }
+
     public void Dispose()
     {
         _db.Dispose();

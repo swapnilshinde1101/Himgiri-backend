@@ -302,7 +302,7 @@ public class InvoiceService : IInvoiceService
         return JsonModel<InvoicePdfDto>.Success(dto, "Invoice PDF generated successfully.");
     }
 
-    public async Task<JsonModel<DeliveryChallanPdfDto>> GenerateDeliveryChallanAsync(Guid orderId, CancellationToken ct = default)
+    public async Task<JsonModel<DeliveryChallanPdfDto>> GenerateDeliveryChallanAsync(Guid orderId, bool enforceDispatchedStatus = false, CancellationToken ct = default)
     {
         var order = await _db.Orders
             .Include(o => o.Items)
@@ -311,6 +311,11 @@ public class InvoiceService : IInvoiceService
         if (order == null)
         {
             return JsonModel<DeliveryChallanPdfDto>.Error("Order not found.", 404);
+        }
+
+        if (enforceDispatchedStatus && order.Status != OrderStatus.Dispatched && order.Status != OrderStatus.Delivered)
+        {
+            return JsonModel<DeliveryChallanPdfDto>.Error("Delivery challan is not available yet — it will be ready once your order has been dispatched.", 400);
         }
 
         string challanNumber = !string.IsNullOrWhiteSpace(order.InvoiceNumber)
