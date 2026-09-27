@@ -6,6 +6,7 @@ using Himgiri.Core.Models;
 using Himgiri.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Himgiri.Infrastructure.Services;
 
@@ -15,9 +16,12 @@ public class StockService : IStockService
     
 
 
-    public StockService(HimgiriDbContext db)
+    private readonly ILogger<StockService>? _logger;
+
+    public StockService(HimgiriDbContext db, ILogger<StockService>? logger = null)
     {
         _db = db;
+        _logger = logger;
     }
 
     public async Task<JsonModel<bool>> UpdateStockAsync(Guid itemId, UpdateStockRequest request, string changedBy, CancellationToken ct = default)
@@ -94,8 +98,9 @@ public class StockService : IStockService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Unexpected error adjusting stock for ItemId {ItemId}", itemId);
             await transaction.RollbackAsync(ct);
-            return JsonModel<bool>.Error($"Stock update failed: {ex.Message}");
+            return JsonModel<bool>.Error("Stock update failed due to an internal server error. Please try again.", 500);
         }
     }
 
@@ -306,8 +311,9 @@ public class StockService : IStockService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Unexpected error during bulk stock update");
             await transaction.RollbackAsync(ct);
-            return JsonModel<bool>.Error($"Bulk inwarding failed: {ex.Message}");
+            return JsonModel<bool>.Error("Bulk stock update failed due to an internal server error. Please try again.", 500);
         }
     }
 

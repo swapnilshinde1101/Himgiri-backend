@@ -57,6 +57,18 @@ public class OrdersController : BaseController
         return StatusCode(result.StatusCode, result);
     }
 
+    [HttpPatch("bulk-status")]
+    [Authorize(Policy = "OrderOrAdmin")]
+    public async Task<IActionResult> BulkUpdateStatus([FromBody] BulkOrderStatusRequest request, CancellationToken ct)
+    {
+        var adminName = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? 
+                         User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? 
+                         User.Identity?.Name ?? "Admin";
+
+        var result = await _orderService.BulkUpdateOrderStatusAsync(request, adminName, ct);
+        return StatusCode(result.StatusCode, result);
+    }
+
     [HttpPost("{id:guid}/notes")]
     [Authorize(Policy = "OrderOrAdmin")]
     public async Task<IActionResult> AddNote(Guid id, [FromBody] AddOrderNoteRequest request, CancellationToken ct)

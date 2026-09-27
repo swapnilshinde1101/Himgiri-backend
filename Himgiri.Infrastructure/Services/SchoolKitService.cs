@@ -11,6 +11,7 @@ using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
 using Himgiri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Himgiri.Infrastructure.Services;
 
@@ -21,19 +22,22 @@ public class SchoolKitService : ISchoolKitService
     private readonly IItemRepository _itemRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly HimgiriDbContext _db;
+    private readonly ILogger<SchoolKitService>? _logger;
 
     public SchoolKitService(
         ISchoolKitRepository schoolKitRepo,
         IGradeRepository gradeRepo,
         IItemRepository itemRepo,
         IUnitOfWork unitOfWork,
-        HimgiriDbContext db)
+        HimgiriDbContext db,
+        ILogger<SchoolKitService>? logger = null)
     {
         _schoolKitRepo = schoolKitRepo;
         _gradeRepo = gradeRepo;
         _itemRepo = itemRepo;
         _unitOfWork = unitOfWork;
         _db = db;
+        _logger = logger;
     }
 
     public async Task<JsonModel<SchoolKitDto>> CreateKitAsync(CreateSchoolKitRequest request, CancellationToken ct = default)
@@ -180,8 +184,9 @@ public class SchoolKitService : ISchoolKitService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Unexpected error creating School Kit '{KitName}'", request.Name);
             await _unitOfWork.RollbackTransactionAsync(ct);
-            return JsonModel<SchoolKitDto>.Error($"Failed to create School Kit: {ex.Message}");
+            return JsonModel<SchoolKitDto>.Error("Failed to create School Kit due to an internal server error. Please try again.", 500);
         }
     }
 
@@ -369,8 +374,9 @@ public class SchoolKitService : ISchoolKitService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Unexpected error updating School Kit '{KitName}' (Id: {KitId})", request.Name, id);
             await _unitOfWork.RollbackTransactionAsync(ct);
-            return JsonModel<SchoolKitDto>.Error($"Failed to update School Kit: {ex.Message}");
+            return JsonModel<SchoolKitDto>.Error("Failed to update School Kit due to an internal server error. Please try again.", 500);
         }
     }
 

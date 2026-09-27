@@ -11,9 +11,11 @@ using Himgiri.Infrastructure.Data.Transactions;
 using Himgiri.Infrastructure.Services;
 using Himgiri.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Himgiri.Core.Models;
 
 namespace Himgiri.API.Extensions;
 
@@ -108,6 +110,23 @@ public static class ServiceExtensions
         // FluentValidation
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Himgiri.Core.Entities.BaseEntity>();
+
+        // Standardize ASP.NET Core Model Validation errors into JsonModel format
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = actionContext =>
+            {
+                var firstError = actionContext.ModelState
+                    .Where(e => e.Value?.Errors.Count > 0)
+                    .Select(e => e.Value!.Errors.First().ErrorMessage)
+                    .FirstOrDefault(msg => !string.IsNullOrWhiteSpace(msg))
+                    ?? "One or more validation errors occurred.";
+
+                var traceId = actionContext.HttpContext.TraceIdentifier;
+                var response = JsonModel<object>.Error(firstError, 400, traceId);
+                return new BadRequestObjectResult(response);
+            };
+        });
 
         // Mapster
         services.AddMapster();

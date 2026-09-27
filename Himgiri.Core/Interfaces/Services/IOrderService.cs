@@ -24,11 +24,14 @@ public interface IOrderService
     Task SaveJodoOrderIdAsync(Guid orderId, string jodoOrderId, CancellationToken ct = default);
     Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(string invoiceNumber, string jodoOrderId, CancellationToken ct = default);
     Task<JsonModel<OrderLookupDto>> GetOrderLookupAsync(Guid orderId, CancellationToken ct = default);
+    Task<JsonModel<BulkOrderStatusResultDto>> BulkUpdateOrderStatusAsync(BulkOrderStatusRequest request, string changedBy, CancellationToken ct = default);
     string GenerateOrderAccessToken(Guid orderId);
     bool VerifyOrderAccessToken(Guid orderId, string token);
 }
 
 // Support DTO records needed for requests:
 public record OrderStatusDto(Himgiri.Core.Enums.OrderStatus ToStatus, string? Note);
+public record BulkOrderStatusRequest(List<Guid> OrderIds, Himgiri.Core.Enums.OrderStatus ToStatus, string? Note);
+public record BulkOrderStatusResultDto(int UpdatedCount, int SkippedCount, List<string> UpdatedInvoices, List<string> SkippedReasons);
 public record AddOrderNoteRequest(string Note);
 public record ProcessRefundRequest(string Reason);

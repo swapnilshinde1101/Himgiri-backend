@@ -1,6 +1,14 @@
+using System;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Himgiri.Core.Exceptions;
 using Himgiri.Core.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Himgiri.API.Middleware;
 
@@ -23,35 +31,85 @@ public class ExceptionMiddleware
         {
             await _next(context);
         }
+        catch (OperationCanceledException)
+        {
+            // Client closed tab / aborted HTTP request — log as info, do not fail
+            _logger.LogInformation("HTTP request cancelled by client. Path: {Path}, TraceId: {TraceId}", 
+                context.Request.Path, context.TraceIdentifier);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception: {Message}. Path: {Path}", ex.Message, context.Request.Path);
+            _logger.LogError(ex, "Unhandled exception: {Message}. Path: {Path}, TraceId: {TraceId}", 
+                ex.Message, context.Request.Path, context.TraceIdentifier);
             await HandleExceptionAsync(context, ex);
         }
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-        
-        var statusCode = exception switch
+        if (context.Response.HasStarted)
         {
-            UnauthorizedAccessException => HttpStatusCode.Unauthorized,
-            KeyNotFoundException => HttpStatusCode.NotFound,
-            InvalidOperationException => HttpStatusCode.BadRequest,
-            _ => HttpStatusCode.InternalServerError
+            _logger.LogWarning("Response has already started; cannot write error response for {Path}", context.Request.Path);
+            return;
+        }
+
+        context.Response.ContentType = "application/json";
+
+        int statusCode;
+        string message;
+
+        switch (exception)
+        {
+            case AppException appEx:
+                statusCode = appEx.StatusCode;
+                message = appEx.Message;
+                break;
+
+            case DbUpdateConcurrencyException:
+                statusCode = (int)HttpStatusCode.Conflict;
+                message = "The record was concurrently modified or deleted by another user. Please refresh and try again.";
+                break;
+
+            case BadHttpRequestException:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                message = "Invalid request payload or malformed JSON structure.";
+                break;
+
+            case UnauthorizedAccessException:
+                statusCode = (int)HttpStatusCode.Unauthorized;
+                message = "Unauthorized access.";
+                break;
+
+            case KeyNotFoundException:
+                statusCode = (int)HttpStatusCode.NotFound;
+                message = exception.Message;
+                break;
+
+            case InvalidOperationException:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                message = _env.IsDevelopment() 
+                    ? exception.Message 
+                    : "The requested operation is not valid in the current state.";
+                break;
+
+            default:
+                statusCode = (int)HttpStatusCode.InternalServerError;
+                message = _env.IsDevelopment()
+                    ? $"{exception.Message} ({exception.GetType().Name})"
+                    : $"An unexpected server error occurred. Please contact support quoting Error ID: {context.TraceIdentifier}";
+                break;
+        }
+
+        context.Response.StatusCode = statusCode;
+
+        var response = JsonModel<object>.Error(message, statusCode, context.TraceIdentifier);
+
+        var jsonOptions = new JsonSerializerOptions 
+        { 
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false 
         };
 
-        context.Response.StatusCode = (int)statusCode;
-
-        // In Production, never leak the real exception message unless it's a known domain exception
-        var message = _env.IsDevelopment() 
-            ? exception.Message 
-            : "An unexpected error occurred. Please contact support if the issue persists.";
-
-        var response = JsonModel<object>.Error(message, (int)statusCode);
-        
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
     }
 }

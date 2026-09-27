@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Himgiri.Infrastructure.Services;
 
@@ -25,6 +26,7 @@ public class OrderService : IOrderService
     private readonly IExcelService _excelService;
     private readonly ICsvService _csvService;
     private readonly IConfiguration? _config;
+    private readonly ILogger<OrderService>? _logger;
 
     public OrderService(
         IOrderRepository orderRepo,
@@ -35,7 +37,8 @@ public class OrderService : IOrderService
         ITaxService taxService,
         IExcelService excelService,
         ICsvService csvService,
-        IConfiguration? config = null)
+        IConfiguration? config = null,
+        ILogger<OrderService>? logger = null)
     {
         _orderRepo = orderRepo;
         _itemRepo = itemRepo;
@@ -46,6 +49,7 @@ public class OrderService : IOrderService
         _excelService = excelService;
         _csvService = csvService;
         _config = config;
+        _logger = logger;
     }
 
     public async Task<JsonModel<OrderSummaryDto>> CreateOrderAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -351,8 +355,9 @@ public class OrderService : IOrderService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Unexpected error creating order for customer {CustomerName} ({Mobile})", request.CustomerName, request.Mobile);
             await _unitOfWork.RollbackTransactionAsync(ct);
-            return JsonModel<OrderSummaryDto>.Error($"Failed to create order: {ex.Message}");
+            return JsonModel<OrderSummaryDto>.Error("Failed to create order due to an internal server error. Please try again.", 500);
         }
     }
 
@@ -529,6 +534,142 @@ public class OrderService : IOrderService
         }
 
         return JsonModel<bool>.Success(true, "Order status updated successfully.");
+    }
+
+    public async Task<JsonModel<BulkOrderStatusResultDto>> BulkUpdateOrderStatusAsync(
+        BulkOrderStatusRequest request, 
+        string changedBy, 
+        CancellationToken ct = default)
+    {
+        if (request.OrderIds == null || !request.OrderIds.Any())
+        {
+            return JsonModel<BulkOrderStatusResultDto>.Error("No order IDs provided.", 400);
+        }
+
+        if (request.OrderIds.Count > 100)
+        {
+            return JsonModel<BulkOrderStatusResultDto>.Error("Maximum 100 orders can be updated in a single bulk operation.", 400);
+        }
+
+        var distinctIds = request.OrderIds.Distinct().ToList();
+        var toStatus = request.ToStatus;
+
+        var updatedInvoices = new List<string>();
+        var skippedReasons = new List<string>();
+
+        await _unitOfWork.BeginTransactionAsync(ct);
+        try
+        {
+            var orders = await _db.Orders
+                .Include(o => o.Items)
+                .Where(o => distinctIds.Contains(o.Id) && !o.IsDeleted)
+                .ToListAsync(ct);
+
+            foreach (var orderId in distinctIds)
+            {
+                var order = orders.FirstOrDefault(o => o.Id == orderId);
+                if (order == null)
+                {
+                    skippedReasons.Add($"Order {orderId}: Not found.");
+                    continue;
+                }
+
+                var fromStatus = order.Status;
+
+                // Validate transition
+                bool isValid = false;
+                if (fromStatus == OrderStatus.Confirmed && toStatus == OrderStatus.Packed)
+                {
+                    isValid = true;
+                }
+                else if (fromStatus == OrderStatus.Packed && toStatus == OrderStatus.Dispatched)
+                {
+                    isValid = true;
+                }
+                else if (fromStatus == OrderStatus.Dispatched && toStatus == OrderStatus.Delivered)
+                {
+                    isValid = true;
+                }
+                else if (toStatus == OrderStatus.StockOut)
+                {
+                    isValid = fromStatus == OrderStatus.Confirmed || fromStatus == OrderStatus.Packed;
+                }
+
+                if (!isValid)
+                {
+                    skippedReasons.Add($"Invoice {order.InvoiceNumber}: Cannot transition from {fromStatus} to {toStatus}.");
+                    continue;
+                }
+
+                // If moving to Dispatched, deduct stock
+                if (fromStatus == OrderStatus.Packed && toStatus == OrderStatus.Dispatched)
+                {
+                    foreach (var orderItem in order.Items)
+                    {
+                        var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == orderItem.ItemId && !i.IsDeleted, ct);
+                        if (item != null && item.StorageStatus == StorageStatus.InStock)
+                        {
+                            int oldQty = item.StockQty;
+                            item.StockQty -= orderItem.Quantity;
+                            if (item.StockQty < 0) item.StockQty = 0;
+                            item.UpdatedAt = DateTime.UtcNow;
+
+                            var log = new StockLog
+                            {
+                                Id = Guid.NewGuid(),
+                                ItemId = item.Id,
+                                OldQty = oldQty,
+                                NewQty = item.StockQty,
+                                ChangedBy = changedBy,
+                                Reason = "Bulk Order Dispatched",
+                                Note = $"Bulk dispatch: {order.InvoiceNumber}",
+                                CreatedAt = DateTime.UtcNow
+                            };
+
+                            _db.Items.Update(item);
+                            _db.StockLogs.Add(log);
+                        }
+                    }
+                }
+
+                order.Status = toStatus;
+                order.UpdatedAt = DateTime.UtcNow;
+
+                var history = new OrderStatusHistory
+                {
+                    OrderId = order.Id,
+                    FromStatus = fromStatus,
+                    ToStatus = toStatus,
+                    ChangedBy = changedBy,
+                    Note = request.Note ?? $"Bulk update to {toStatus}",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _orderRepo.Update(order);
+                _orderRepo.AddStatusHistory(history);
+                updatedInvoices.Add(order.InvoiceNumber);
+            }
+
+            await _unitOfWork.CommitTransactionAsync(ct);
+
+            var result = new BulkOrderStatusResultDto(
+                updatedInvoices.Count,
+                skippedReasons.Count,
+                updatedInvoices,
+                skippedReasons
+            );
+
+            return JsonModel<BulkOrderStatusResultDto>.Success(
+                result, 
+                $"Successfully updated {updatedInvoices.Count} order(s). {skippedReasons.Count} skipped."
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to bulk update order statuses to {ToStatus}", toStatus);
+            await _unitOfWork.RollbackTransactionAsync(ct);
+            return JsonModel<BulkOrderStatusResultDto>.Error($"Bulk status update failed: {ex.Message}", 500);
+        }
     }
 
     public async Task<JsonModel<bool>> AddOrderNoteAsync(Guid id, AddOrderNoteRequest request, string changedBy, CancellationToken ct = default)
@@ -862,8 +1003,9 @@ public class OrderService : IOrderService
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Payment confirmation failed for OrderId {OrderId} with TransactionId {TransactionId}", orderId, transactionId);
             await transaction.RollbackAsync(ct);
-            return JsonModel<bool>.Error($"Payment confirmation failed: {ex.Message}");
+            return JsonModel<bool>.Error("Payment confirmation failed due to an internal server error.", 500);
         }
     }
 
