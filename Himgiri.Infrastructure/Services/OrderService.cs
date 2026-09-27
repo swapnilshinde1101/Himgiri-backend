@@ -451,6 +451,20 @@ public class OrderService : IOrderService
         var toStatus = request.ToStatus;
 
         // Validation mapping rules
+        if (toStatus == OrderStatus.Refunded)
+        {
+            // Both the dedicated refund endpoint and the generic status-update endpoint funnel
+            // through here, so these guards apply regardless of which path triggered the change.
+            if (fromStatus == OrderStatus.Refunded)
+            {
+                return JsonModel<bool>.Error("This order has already been refunded.", 400);
+            }
+            if (order.PaymentStatus != PaymentStatus.Success)
+            {
+                return JsonModel<bool>.Error("Only orders with a successful payment can be refunded.", 400);
+            }
+        }
+
         bool isValid = false;
         if (toStatus == OrderStatus.StockOut || toStatus == OrderStatus.Refunded)
         {
