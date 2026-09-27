@@ -136,6 +136,7 @@ public class OrdersController : BaseController
 
     [HttpGet("{id:guid}/invoice")]
     [AllowAnonymous]
+    [EnableRateLimiting("LookupPolicy")]
     public async Task<IActionResult> DownloadInvoice(
         Guid id, 
         [FromQuery] string? token,
@@ -170,6 +171,7 @@ public class OrdersController : BaseController
 
     [HttpGet("{id:guid}/delivery-challan")]
     [AllowAnonymous]
+    [EnableRateLimiting("LookupPolicy")]
     public async Task<IActionResult> DownloadDeliveryChallan(
         Guid id, 
         [FromQuery] string? token,
