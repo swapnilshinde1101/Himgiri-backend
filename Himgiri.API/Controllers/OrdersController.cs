@@ -168,6 +168,40 @@ public class OrdersController : BaseController
         return File(result.Data.PdfContent, result.Data.ContentType, $"Invoice_{result.Data.InvoiceNumber}.pdf");
     }
 
+    [HttpGet("{id:guid}/delivery-challan")]
+    [AllowAnonymous]
+    public async Task<IActionResult> DownloadDeliveryChallan(
+        Guid id, 
+        [FromQuery] string? token,
+        [FromQuery] string? mobile, 
+        [FromQuery] string? pincode, 
+        [FromServices] IInvoiceService invoiceService, 
+        CancellationToken ct)
+    {
+        // Verify access: Admin or Owner (via token OR mobile & pincode validation)
+        bool isAuthorized = User.Identity?.IsAuthenticated == true;
+        
+        if (!isAuthorized)
+        {
+            bool hasValidToken = !string.IsNullOrWhiteSpace(token) && _orderService.VerifyOrderAccessToken(id, token);
+            bool hasValidCredentials = !string.IsNullOrWhiteSpace(mobile) && 
+                                       !string.IsNullOrWhiteSpace(pincode) && 
+                                       await _orderService.VerifyOrderAccessAsync(id, mobile, pincode, ct);
+
+            if (!hasValidToken && !hasValidCredentials)
+            {
+                return Unauthorized(JsonModel<object>.Error("Unauthorized: A valid access token or matching mobile and pincode are required for anonymous downloads."));
+            }
+        }
+
+        var result = await invoiceService.GenerateDeliveryChallanAsync(id, ct);
+        if (result.StatusCode != 200 || result.Data == null)
+        {
+            return StatusCode(result.StatusCode, result);
+        }
+        return File(result.Data.PdfContent, result.Data.ContentType, $"Challan_{result.Data.ChallanNumber}.pdf");
+    }
+
     [HttpGet("customers")]
     [Authorize(Policy = "OrderOrAdmin")]
     public async Task<IActionResult> GetCustomers(CancellationToken ct)

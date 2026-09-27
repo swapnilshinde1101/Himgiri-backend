@@ -8,6 +8,8 @@ namespace Himgiri.Core.Interfaces.Services;
 public interface IInvoiceService
 {
     Task<JsonModel<InvoicePdfDto>> GenerateInvoiceAsync(Guid orderId, CancellationToken ct = default);
+    Task<JsonModel<DeliveryChallanPdfDto>> GenerateDeliveryChallanAsync(Guid orderId, CancellationToken ct = default);
 }
 
 public record InvoicePdfDto(string InvoiceNumber, byte[] PdfContent, string ContentType);
+public record DeliveryChallanPdfDto(string ChallanNumber, byte[] PdfContent, string ContentType);
