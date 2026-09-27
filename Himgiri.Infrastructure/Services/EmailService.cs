@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Himgiri.Core.Interfaces.Services;
+using Himgiri.Core.Security;
 using Himgiri.Infrastructure.Data;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +27,10 @@ public class EmailService : IEmailService
         _db = db;
         _config = config;
         _logger = logger;
-        _protector = dataProtectionProvider.CreateProtector("Himgiri.EmailSettings.SmtpPassword");
+        _protector = dataProtectionProvider.CreateProtector(DataProtectionPurposes.EmailSmtpPassword);
     }
 
-    private async Task<(string Host, int Port, string SenderEmail, string SenderName, string Password, bool EnableSsl, bool IsConfigured)> ResolveSettingsAsync(CancellationToken ct = default)
+    private async Task<(string Host, int Port, string? Username, string SenderEmail, string SenderName, string Password, bool EnableSsl, bool IsConfigured)> ResolveSettingsAsync(CancellationToken ct = default)
     {
         // 1. Try DB configuration first
         try
@@ -40,6 +41,7 @@ public class EmailService : IEmailService
                 return (
                     dbConfig.SmtpHost,
                     dbConfig.SmtpPort,
+                    dbConfig.SmtpUsername,
                     dbConfig.SenderEmail,
                     dbConfig.SenderName,
                     DecryptPassword(dbConfig.SmtpPassword),
@@ -56,6 +58,7 @@ public class EmailService : IEmailService
         // 2. Fallback to appsettings.json
         var host = _config["Email:SmtpHost"] ?? "smtp.gmail.com";
         var portStr = _config["Email:SmtpPort"];
+        var username = _config["Email:SmtpUsername"];
         var senderEmail = _config["Email:SenderEmail"] ?? "noreply@himgirigoods.com";
         var senderName = _config["Email:SenderName"] ?? "Himgiri Goods & Uniforms";
         var password = _config["Email:Password"] ?? string.Empty;
@@ -66,7 +69,7 @@ public class EmailService : IEmailService
                             !password.Contains("YOUR_SMTP") &&
                             !password.Contains("PASSWORD");
 
-        return (host, port, senderEmail, senderName, password, enableSsl, isConfigured);
+        return (host, port, username, senderEmail, senderName, password, enableSsl, isConfigured);
     }
 
     // The SMTP password is stored encrypted at rest (Data Protection API) since it's a
@@ -176,7 +179,7 @@ public class EmailService : IEmailService
             return false;
         }
 
-        var (host, port, senderEmail, senderName, password, enableSsl, isConfigured) = await ResolveSettingsAsync(ct);
+        var (host, port, username, senderEmail, senderName, password, enableSsl, isConfigured) = await ResolveSettingsAsync(ct);
 
         bool isPlaceholder = !isConfigured ||
                              string.IsNullOrWhiteSpace(host) ||
@@ -221,7 +224,7 @@ public class EmailService : IEmailService
             using var client = new SmtpClient(host, port)
             {
                 EnableSsl = enableSsl,
-                Credentials = new NetworkCredential(senderEmail, password),
+                Credentials = new NetworkCredential(string.IsNullOrWhiteSpace(username) ? senderEmail : username, password),
                 Timeout = 15000 // 15 seconds timeout
             };
 
@@ -247,6 +250,7 @@ public class EmailService : IEmailService
         string? senderName = null,
         string? smtpPassword = null,
         bool? enableSsl = null,
+        string? smtpUsername = null,
         CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(toEmail))
@@ -258,6 +262,7 @@ public class EmailService : IEmailService
 
         var finalHost = !string.IsNullOrWhiteSpace(smtpHost) ? smtpHost : resolved.Host;
         var finalPort = smtpPort.HasValue && smtpPort.Value > 0 ? smtpPort.Value : resolved.Port;
+        var finalUsername = !string.IsNullOrWhiteSpace(smtpUsername) ? smtpUsername : resolved.Username;
         var finalSenderEmail = !string.IsNullOrWhiteSpace(senderEmail) ? senderEmail : resolved.SenderEmail;
         var finalSenderName = !string.IsNullOrWhiteSpace(senderName) ? senderName : resolved.SenderName;
         var finalSsl = enableSsl ?? resolved.EnableSsl;
@@ -317,6 +322,7 @@ public class EmailService : IEmailService
       <strong>Host:</strong> {finalHost}<br/>
       <strong>Port:</strong> {finalPort}<br/>
       <strong>Sender:</strong> {finalSenderEmail} ({finalSenderName})<br/>
+      <strong>Auth Username:</strong> {(string.IsNullOrWhiteSpace(finalUsername) ? finalSenderEmail : finalUsername)}<br/>
       <strong>SSL/TLS:</strong> {(finalSsl ? "Enabled" : "Disabled")}<br/>
       <strong>Timestamp:</strong> {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
     </div>
@@ -330,7 +336,7 @@ public class EmailService : IEmailService
             using var client = new SmtpClient(finalHost, finalPort)
             {
                 EnableSsl = finalSsl,
-                Credentials = new NetworkCredential(finalSenderEmail, finalPassword),
+                Credentials = new NetworkCredential(string.IsNullOrWhiteSpace(finalUsername) ? finalSenderEmail : finalUsername, finalPassword),
                 Timeout = 12000
             };
 

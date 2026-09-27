@@ -418,6 +418,7 @@ public record EmailSettingsDto(
     Guid Id,
     string SmtpHost,
     int SmtpPort,
+    string? SmtpUsername,
     string SenderEmail,
     string SenderName,
     bool EnableSsl,
@@ -432,7 +433,8 @@ public record UpdateEmailSettingsRequest(
     string SenderName,
     string? SmtpPassword,
     bool EnableSsl,
-    bool IsConfigured
+    bool IsConfigured,
+    string? SmtpUsername = null
 );
 
 public record TestEmailRequest(
@@ -442,5 +444,6 @@ public record TestEmailRequest(
     string? SenderEmail = null,
     string? SenderName = null,
     string? SmtpPassword = null,
-    bool? EnableSsl = null
+    bool? EnableSsl = null,
+    string? SmtpUsername = null
 );

@@ -125,6 +125,9 @@ public class EmailConfiguration : BaseEntity
 {
     public string SmtpHost { get; set; } = "smtp.gmail.com";
     public int SmtpPort { get; set; } = 587;
+    // Null/empty means "authenticate as SenderEmail" (the common case, e.g. Gmail).
+    // Some providers (SendGrid, Amazon SES) require a distinct SMTP auth username.
+    public string? SmtpUsername { get; set; }
     public string SenderEmail { get; set; } = "noreply@himgirigoods.com";
     public string SenderName { get; set; } = "Himgiri Goods & Uniforms";
     public string SmtpPassword { get; set; } = string.Empty;

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,11 @@ public class OrderNotificationService : IOrderNotificationService
         _config = config;
         _logger = logger;
     }
+
+    // These templates interpolate customer-supplied free text (name, address, cancellation reason)
+    // straight into HTML sent from our own domain — encode it so a crafted name/address can't
+    // inject markup into an email a recipient might view, forward, or reply-all on.
+    private static string Enc(string? value) => WebUtility.HtmlEncode(value ?? string.Empty);
 
     private string GetApiBaseUrl()
     {
@@ -196,9 +202,9 @@ public class OrderNotificationService : IOrderNotificationService
         string emailBody = $@"
         <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E2E8F0; border-radius: 8px;"">
             <h2 style=""color: #DC2626;"">Order Cancellation Notice</h2>
-            <p>Dear {order.CustomerName},</p>
+            <p>Dear {Enc(order.CustomerName)},</p>
             <p>Your order <strong>{order.InvoiceNumber}</strong> has been cancelled.</p>
-            <p><strong>Reason:</strong> {reason}</p>
+            <p><strong>Reason:</strong> {Enc(reason)}</p>
             <p>If you have already paid, your refund will be processed in accordance with our refund policy.</p>
             <p>For assistance, please contact Himgiri support.</p>
         </div>";
@@ -226,7 +232,7 @@ public class OrderNotificationService : IOrderNotificationService
         {
             itemsRows.Append($@"
                 <tr>
-                    <td style=""padding: 8px 12px; border-bottom: 1px solid #E2E8F0;"">{item.ItemName}</td>
+                    <td style=""padding: 8px 12px; border-bottom: 1px solid #E2E8F0;"">{Enc(item.ItemName)}</td>
                     <td style=""padding: 8px 12px; border-bottom: 1px solid #E2E8F0; text-align: center;"">{item.Quantity}</td>
                     <td style=""padding: 8px 12px; border-bottom: 1px solid #E2E8F0; text-align: right;"">₹{item.UnitPrice:0.00}</td>
                     <td style=""padding: 8px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: bold;"">₹{item.LineTotal:0.00}</td>
@@ -262,14 +268,14 @@ public class OrderNotificationService : IOrderNotificationService
                         <p style=""color: #64748B; font-size: 14px; margin: 0;"">Order Reference: <strong>{order.InvoiceNumber}</strong></p>
                     </div>
 
-                    <p>Dear <strong>{order.CustomerName}</strong>,</p>
-                    <p>We are pleased to confirm your order for <strong>Grade {order.GradeName}</strong>. Your payment of <strong>₹{order.GrandTotal:0.00}</strong> has been received successfully.</p>
+                    <p>Dear <strong>{Enc(order.CustomerName)}</strong>,</p>
+                    <p>We are pleased to confirm your order for <strong>Grade {Enc(order.GradeName)}</strong>. Your payment of <strong>₹{order.GrandTotal:0.00}</strong> has been received successfully.</p>
 
                     <div class=""card"">
                         <div style=""font-size: 12px; color: #64748B; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;"">Order & Fulfillment Summary</div>
                         <div><strong>Fulfillment Mode:</strong> {(order.IsHomeDelivery ? "🏠 Home Delivery (Courier)" : "🏫 School Classroom Handover")}</div>
-                        <div><strong>Contact Phone:</strong> {order.Mobile}</div>
-                        {(order.IsHomeDelivery ? $"<div><strong>Shipping Address:</strong> {order.AddressLine1}, {order.City} - {order.Pincode}</div>" : $"<div><strong>Campus:</strong> DPS Hinjawadi (Classroom Handover to Student)</div>")}
+                        <div><strong>Contact Phone:</strong> {Enc(order.Mobile)}</div>
+                        {(order.IsHomeDelivery ? $"<div><strong>Shipping Address:</strong> {Enc(order.AddressLine1)}, {Enc(order.City)} - {Enc(order.Pincode)}</div>" : $"<div><strong>Campus:</strong> DPS Hinjawadi (Classroom Handover to Student)</div>")}
                     </div>
 
                     <table>
@@ -335,14 +341,14 @@ public class OrderNotificationService : IOrderNotificationService
                         <p style=""color: #64748B; font-size: 14px; margin: 0;"">Order Reference: <strong>{order.InvoiceNumber}</strong></p>
                     </div>
 
-                    <p>Dear <strong>{order.CustomerName}</strong>,</p>
-                    <p>Great news! Your school kit and uniform package for <strong>Grade {order.GradeName}</strong> has been packaged and dispatched.</p>
+                    <p>Dear <strong>{Enc(order.CustomerName)}</strong>,</p>
+                    <p>Great news! Your school kit and uniform package for <strong>Grade {Enc(order.GradeName)}</strong> has been packaged and dispatched.</p>
 
                     <div class=""card"">
                         <div style=""font-size: 12px; color: #0369A1; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;"">Dispatch Details</div>
                         <div><strong>Fulfillment Mode:</strong> {(order.IsHomeDelivery ? "🏠 Courier Home Delivery" : "🏫 Classroom Handover (DPS Hinjawadi)")}</div>
                         <div><strong>Total Units:</strong> {order.Items.Sum(i => i.Quantity)} items</div>
-                        {(order.IsHomeDelivery ? $"<div><strong>Delivery Destination:</strong> {order.AddressLine1}, {order.City} - {order.Pincode}</div>" : $"<div><strong>Handover Location:</strong> Directly inside student's classroom (Grade {order.GradeName})</div>")}
+                        {(order.IsHomeDelivery ? $"<div><strong>Delivery Destination:</strong> {Enc(order.AddressLine1)}, {Enc(order.City)} - {Enc(order.Pincode)}</div>" : $"<div><strong>Handover Location:</strong> Directly inside student's classroom (Grade {Enc(order.GradeName)})</div>")}
                     </div>
 
                     <div style=""text-align: center; margin: 24px 0;"">

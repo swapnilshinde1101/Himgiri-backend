@@ -327,7 +327,7 @@ public class NotificationServiceTests : IDisposable
 
         // ...but it must decrypt back to the original value via the same protector EmailService uses.
         var decrypted = _dataProtectionProvider
-            .CreateProtector("Himgiri.EmailSettings.SmtpPassword")
+            .CreateProtector(Himgiri.Core.Security.DataProtectionPurposes.EmailSmtpPassword)
             .Unprotect(stored.SmtpPassword);
         Assert.Equal("MySuperSecretPassword123", decrypted);
     }

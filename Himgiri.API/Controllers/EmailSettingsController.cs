@@ -6,6 +6,7 @@ using Himgiri.Core.DTOs;
 using Himgiri.Core.Entities;
 using Himgiri.Core.Interfaces.Services;
 using Himgiri.Core.Models;
+using Himgiri.Core.Security;
 using Himgiri.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -26,8 +27,7 @@ public class EmailSettingsController : BaseController
     {
         _db = db;
         _emailService = emailService;
-        // Same purpose string as EmailService — protectors must match to decrypt what's encrypted here.
-        _protector = dataProtectionProvider.CreateProtector("Himgiri.EmailSettings.SmtpPassword");
+        _protector = dataProtectionProvider.CreateProtector(DataProtectionPurposes.EmailSmtpPassword);
     }
 
     [HttpGet]
@@ -57,6 +57,7 @@ public class EmailSettingsController : BaseController
             config.Id,
             config.SmtpHost,
             config.SmtpPort,
+            config.SmtpUsername,
             config.SenderEmail,
             config.SenderName,
             config.EnableSsl,
@@ -104,6 +105,7 @@ public class EmailSettingsController : BaseController
 
         config.SmtpHost = request.SmtpHost.Trim();
         config.SmtpPort = request.SmtpPort;
+        config.SmtpUsername = string.IsNullOrWhiteSpace(request.SmtpUsername) ? null : request.SmtpUsername.Trim();
         config.SenderEmail = request.SenderEmail.Trim();
         config.SenderName = string.IsNullOrWhiteSpace(request.SenderName) ? "Himgiri Goods & Uniforms" : request.SenderName.Trim();
         config.EnableSsl = request.EnableSsl;
@@ -130,6 +132,7 @@ public class EmailSettingsController : BaseController
             config.Id,
             config.SmtpHost,
             config.SmtpPort,
+            config.SmtpUsername,
             config.SenderEmail,
             config.SenderName,
             config.EnableSsl,
@@ -162,6 +165,7 @@ public class EmailSettingsController : BaseController
             request.SenderName,
             request.SmtpPassword,
             request.EnableSsl,
+            request.SmtpUsername,
             ct);
 
         if (!success)

@@ -21,5 +21,6 @@ public interface IEmailService
         string? senderName = null,
         string? smtpPassword = null,
         bool? enableSsl = null,
+        string? smtpUsername = null,
         CancellationToken ct = default);
 }

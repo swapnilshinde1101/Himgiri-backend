@@ -96,6 +96,7 @@ public class HimgiriDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.SmtpHost).IsRequired().HasMaxLength(255);
+            e.Property(x => x.SmtpUsername).HasMaxLength(255);
             e.Property(x => x.SenderEmail).IsRequired().HasMaxLength(255);
             e.Property(x => x.SenderName).IsRequired().HasMaxLength(255);
             e.Property(x => x.SmtpPassword).HasMaxLength(500);
