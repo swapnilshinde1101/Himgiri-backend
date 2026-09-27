@@ -92,6 +92,41 @@ public class StaffServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task CreateStaffAsync_EmailMatchesSoftDeletedUser_ReturnsFriendlyErrorInsteadOfCrashing()
+    {
+        // The DB's unique index on Email isn't filtered by IsDeleted, so a soft-deleted user's row
+        // still occupies that email at the constraint level even though the AnyAsync duplicate-check
+        // above (which does filter !IsDeleted) says it's free. This must surface as a clean 400,
+        // not an unhandled DbUpdateException.
+        var deletedUser = new AdminUser
+        {
+            Id = Guid.NewGuid(),
+            Name = "Former Staff",
+            Email = "reused@himgirigoods.com",
+            PasswordHash = "hash",
+            Role = AdminRole.OrderManager,
+            IsActive = false,
+            IsDeleted = true
+        };
+        _db.AdminUsers.Add(deletedUser);
+        await _db.SaveChangesAsync();
+
+        var request = new CreateStaffRequest(
+            Name: "New Hire",
+            Email: "reused@himgirigoods.com",
+            Password: "SecurePassword123!",
+            Role: AdminRole.OrderManager
+        );
+
+        // Act
+        var result = await _staffService.CreateStaffAsync(request);
+
+        // Assert
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("already exists", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task UpdateStaffRoleAsync_PreventsSelfDemotion_WhenUserIsSuperAdmin()
     {
         // Arrange

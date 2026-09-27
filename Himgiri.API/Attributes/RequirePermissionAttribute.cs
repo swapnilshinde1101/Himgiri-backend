@@ -30,19 +30,25 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
             return Task.CompletedTask;
         }
 
-        // 1. Direct permission claim check in JWT
-        bool hasPermission = user.Claims.Any(c => 
-            (c.Type == "permission" || c.Type == "permissions") && 
-            string.Equals(c.Value, _permission, StringComparison.OrdinalIgnoreCase));
+        // The token's permission claims (when present) already reflect GetEffectivePermissions() —
+        // i.e. any CustomPermissions narrowing/widening applied at issuance — so they're authoritative.
+        // Only fall back to the role's default permissions for a legacy/degenerate token that carries
+        // NO permission claims at all; otherwise a staff member deliberately restricted below their
+        // role's defaults would silently have that restriction ignored for every permission their
+        // role happens to grant by default.
+        var permissionClaims = user.Claims
+            .Where(c => c.Type == "permission" || c.Type == "permissions")
+            .ToList();
 
-        // 2. Fallback to Role Permission Mapping
-        if (!hasPermission)
+        bool hasPermission;
+        if (permissionClaims.Count > 0)
+        {
+            hasPermission = permissionClaims.Any(c => string.Equals(c.Value, _permission, StringComparison.OrdinalIgnoreCase));
+        }
+        else
         {
             var roleClaim = user.FindFirst(ClaimTypes.Role)?.Value ?? user.FindFirst("role")?.Value;
-            if (Enum.TryParse<AdminRole>(roleClaim, true, out var role))
-            {
-                hasPermission = RolePermissionMapping.HasPermission(role, _permission);
-            }
+            hasPermission = Enum.TryParse<AdminRole>(roleClaim, true, out var role) && RolePermissionMapping.HasPermission(role, _permission);
         }
 
         if (!hasPermission)

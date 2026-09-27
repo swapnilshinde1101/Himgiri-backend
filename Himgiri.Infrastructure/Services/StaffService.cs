@@ -71,9 +71,9 @@ public class StaffService : IStaffService
             return JsonModel<StaffMemberDto>.Error("A valid email address is required.", 400);
         }
 
-        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Trim().Length < 6)
+        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Trim().Length < 8)
         {
-            return JsonModel<StaffMemberDto>.Error("Password must be at least 6 characters.", 400);
+            return JsonModel<StaffMemberDto>.Error("Password must be at least 8 characters.", 400);
         }
 
         var emailExists = await _db.AdminUsers
@@ -102,7 +102,17 @@ public class StaffService : IStaffService
         };
 
         _db.AdminUsers.Add(newUser);
-        await _db.SaveChangesAsync(ct);
+
+        try
+        {
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException)
+        {
+            // Narrow race window between the AnyAsync check above and this insert — Email is the
+            // only unique constraint this insert could violate, so treat any failure here as that.
+            return JsonModel<StaffMemberDto>.Error("A staff member with this email already exists.", 400);
+        }
 
         _logger?.LogInformation("New staff user created: {Email} with role {Role}", newUser.Email, newUser.Role);
 
@@ -213,9 +223,9 @@ public class StaffService : IStaffService
             return JsonModel<bool>.Error("Staff member not found.", 404);
         }
 
-        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Trim().Length < 6)
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Trim().Length < 8)
         {
-            return JsonModel<bool>.Error("New password must be at least 6 characters.", 400);
+            return JsonModel<bool>.Error("New password must be at least 8 characters.", 400);
         }
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword.Trim(), 11);
