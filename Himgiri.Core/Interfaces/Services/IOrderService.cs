@@ -22,7 +22,7 @@ public interface IOrderService
     Task<bool> VerifyOrderAccessAsync(Guid id, string mobile, string pincode, CancellationToken ct = default);
     Task<Himgiri.Core.Entities.Order?> GetOrderForPaymentAsync(Guid orderId, CancellationToken ct = default);
     Task SaveJodoOrderIdAsync(Guid orderId, string jodoOrderId, CancellationToken ct = default);
-    Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(string invoiceNumber, string jodoOrderId, CancellationToken ct = default);
+    Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(string invoiceNumber, string jodoOrderId, decimal paidAmount, CancellationToken ct = default);
     Task<JsonModel<OrderLookupDto>> GetOrderLookupAsync(Guid orderId, CancellationToken ct = default);
     Task<JsonModel<BulkOrderStatusResultDto>> BulkUpdateOrderStatusAsync(BulkOrderStatusRequest request, string changedBy, CancellationToken ct = default);
     string GenerateOrderAccessToken(Guid orderId);

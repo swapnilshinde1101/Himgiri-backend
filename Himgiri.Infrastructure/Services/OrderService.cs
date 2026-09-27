@@ -1092,6 +1092,7 @@ public class OrderService : IOrderService
     public async Task<JsonModel<bool>> ConfirmPaymentByInvoiceAsync(
         string invoiceNumber,
         string jodoOrderId,
+        decimal paidAmount,
         CancellationToken ct = default)
     {
         var order = await _db.Orders
@@ -1104,6 +1105,31 @@ public class OrderService : IOrderService
 
         if (order.PaymentStatus == PaymentStatus.Success)
             return JsonModel<bool>.Success(true, "Already processed.");
+
+        // Never confirm a payment without verifying the gateway actually collected what's owed —
+        // protects against gateway-side bugs or the order's total drifting after payment was
+        // initiated. A 1-paisa tolerance absorbs harmless decimal serialization noise.
+        if (Math.Abs(paidAmount - order.GrandTotal) > 0.01m)
+        {
+            _logger?.LogWarning(
+                "Payment amount mismatch for order {InvoiceNumber}: expected {Expected}, gateway reported {Actual}. Held for manual review.",
+                invoiceNumber, order.GrandTotal, paidAmount);
+
+            _db.OrderStatusHistories.Add(new OrderStatusHistory
+            {
+                OrderId = order.Id,
+                FromStatus = order.Status,
+                ToStatus = order.Status,
+                ChangedBy = "Payment Gateway Webhook",
+                Note = $"Payment amount mismatch: expected ₹{order.GrandTotal:0.00}, gateway reported ₹{paidAmount:0.00}. NOT confirmed — requires manual review.",
+                CreatedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync(ct);
+
+            return JsonModel<bool>.Error(
+                $"Payment amount mismatch: expected {order.GrandTotal:0.00}, received {paidAmount:0.00}. Order held for manual review.",
+                409);
+        }
 
         return await ConfirmPaymentAsync(order.Id, jodoOrderId, ct);
     }

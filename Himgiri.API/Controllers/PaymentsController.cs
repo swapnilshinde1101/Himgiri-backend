@@ -119,9 +119,10 @@ public class PaymentsController : BaseController
             return BadRequest(JsonModel<bool>.Error("Missing erp_reference_id in notes.", 400));
 
         var jodoOrderId = payload.Payload.OrderId;
+        var paidAmount = payload.Payload.Order.Details?.Sum(d => d.Amount) ?? 0m;
 
         var result = await _orderService.ConfirmPaymentByInvoiceAsync(
-            invoiceNumber, jodoOrderId, ct);
+            invoiceNumber, jodoOrderId, paidAmount, ct);
 
         return StatusCode(result.StatusCode, result);
     }

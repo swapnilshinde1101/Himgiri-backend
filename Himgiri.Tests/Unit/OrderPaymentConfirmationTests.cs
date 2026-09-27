@@ -134,6 +134,52 @@ public class OrderPaymentConfirmationTests : IDisposable
         Assert.Equal(PaymentStatus.Pending, reloaded.PaymentStatus);
     }
 
+    [Fact]
+    public async Task ConfirmPaymentByInvoiceAsync_AmountMatches_ConfirmsPayment()
+    {
+        var order = await SeedPendingOrderAsync(); // GrandTotal = 1180
+
+        var result = await _orderService.ConfirmPaymentByInvoiceAsync(order.InvoiceNumber, "JODO-1", 1180m);
+
+        Assert.Equal(200, result.StatusCode);
+
+        await using var verifyContext = SqliteDbContextFactory.CreateContext(_connection);
+        var reloaded = await verifyContext.Orders.FirstAsync(o => o.Id == order.Id);
+        Assert.Equal(PaymentStatus.Success, reloaded.PaymentStatus);
+    }
+
+    [Fact]
+    public async Task ConfirmPaymentByInvoiceAsync_AmountMismatch_DoesNotConfirmAndFlagsForReview()
+    {
+        // Regression test: never trust a webhook's "payment.debited" event without verifying the
+        // gateway actually collected what's owed — protects against gateway-side bugs or the
+        // order's total drifting after payment was initiated.
+        var order = await SeedPendingOrderAsync(); // GrandTotal = 1180
+
+        var result = await _orderService.ConfirmPaymentByInvoiceAsync(order.InvoiceNumber, "JODO-2", 999m);
+
+        Assert.Equal(409, result.StatusCode);
+        Assert.Contains("mismatch", result.Message, StringComparison.OrdinalIgnoreCase);
+
+        var reloaded = await _db.Orders.FirstAsync(o => o.Id == order.Id);
+        Assert.Equal(PaymentStatus.Pending, reloaded.PaymentStatus); // NOT confirmed
+        Assert.Equal(OrderStatus.Pending, reloaded.Status);
+
+        var history = await _db.OrderStatusHistories.FirstOrDefaultAsync(h => h.OrderId == order.Id);
+        Assert.NotNull(history);
+        Assert.Contains("mismatch", history!.Note, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ConfirmPaymentByInvoiceAsync_AmountWithinPaisaTolerance_StillConfirms()
+    {
+        var order = await SeedPendingOrderAsync(); // GrandTotal = 1180
+
+        var result = await _orderService.ConfirmPaymentByInvoiceAsync(order.InvoiceNumber, "JODO-3", 1180.005m);
+
+        Assert.Equal(200, result.StatusCode);
+    }
+
     public void Dispose()
     {
         _db.Dispose();
