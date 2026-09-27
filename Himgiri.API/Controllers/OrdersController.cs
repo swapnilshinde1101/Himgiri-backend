@@ -202,6 +202,26 @@ public class OrdersController : BaseController
         return File(result.Data.PdfContent, result.Data.ContentType, $"Challan_{result.Data.ChallanNumber}.pdf");
     }
 
+    [HttpPost("{id:guid}/notify")]
+    [Authorize(Policy = "OrderOrAdmin")]
+    public async Task<IActionResult> SendOrderNotification(
+        Guid id,
+        [FromQuery] string? type,
+        [FromServices] IOrderNotificationService notificationService,
+        CancellationToken ct)
+    {
+        if (type?.ToLowerInvariant() == "dispatch")
+        {
+            var res = await notificationService.SendOrderDispatchedAsync(id, ct);
+            return StatusCode(res.StatusCode, res);
+        }
+        else
+        {
+            var res = await notificationService.SendOrderConfirmationAsync(id, ct);
+            return StatusCode(res.StatusCode, res);
+        }
+    }
+
     [HttpGet("customers")]
     [Authorize(Policy = "OrderOrAdmin")]
     public async Task<IActionResult> GetCustomers(CancellationToken ct)

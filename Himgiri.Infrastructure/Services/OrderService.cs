@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Hangfire;
 
 namespace Himgiri.Infrastructure.Services;
 
@@ -27,6 +28,7 @@ public class OrderService : IOrderService
     private readonly ICsvService _csvService;
     private readonly IConfiguration? _config;
     private readonly ILogger<OrderService>? _logger;
+    private readonly IBackgroundJobClient? _backgroundJobClient;
 
     public OrderService(
         IOrderRepository orderRepo,
@@ -38,7 +40,8 @@ public class OrderService : IOrderService
         IExcelService excelService,
         ICsvService csvService,
         IConfiguration? config = null,
-        ILogger<OrderService>? logger = null)
+        ILogger<OrderService>? logger = null,
+        IBackgroundJobClient? backgroundJobClient = null)
     {
         _orderRepo = orderRepo;
         _itemRepo = itemRepo;
@@ -50,6 +53,7 @@ public class OrderService : IOrderService
         _csvService = csvService;
         _config = config;
         _logger = logger;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     public async Task<JsonModel<OrderSummaryDto>> CreateOrderAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -533,6 +537,30 @@ public class OrderService : IOrderService
             return JsonModel<bool>.Error("Stock levels changed concurrently while dispatching this order. Please retry.", 409);
         }
 
+        // Enqueue automated notifications in background
+        if (toStatus == OrderStatus.Dispatched)
+        {
+            try
+            {
+                _backgroundJobClient?.Enqueue<IOrderNotificationService>(s => s.SendOrderDispatchedAsync(order.Id, CancellationToken.None));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to enqueue dispatch notification for order {OrderId}", order.Id);
+            }
+        }
+        else if (toStatus == OrderStatus.Cancelled)
+        {
+            try
+            {
+                _backgroundJobClient?.Enqueue<IOrderNotificationService>(s => s.SendOrderCancelledAsync(order.Id, request.Note ?? "Order Cancelled", CancellationToken.None));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to enqueue cancellation notification for order {OrderId}", order.Id);
+            }
+        }
+
         return JsonModel<bool>.Success(true, "Order status updated successfully.");
     }
 
@@ -998,6 +1026,16 @@ public class OrderService : IOrderService
 
             await _db.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
+
+            // Enqueue automated order confirmation & invoice notification in background
+            try
+            {
+                _backgroundJobClient?.Enqueue<IOrderNotificationService>(s => s.SendOrderConfirmationAsync(orderId, CancellationToken.None));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to enqueue order confirmation notification for order {OrderId}", orderId);
+            }
 
             return JsonModel<bool>.Success(true, "Payment processed. Order Confirmed.");
         }

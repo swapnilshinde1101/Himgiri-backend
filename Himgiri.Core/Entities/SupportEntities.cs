@@ -120,3 +120,14 @@ public class OrderStatusHistory : BaseEntity
     public string ChangedBy { get; set; } = string.Empty;
     public string? Note { get; set; }
 }
+
+public class EmailConfiguration : BaseEntity
+{
+    public string SmtpHost { get; set; } = "smtp.gmail.com";
+    public int SmtpPort { get; set; } = 587;
+    public string SenderEmail { get; set; } = "noreply@himgirigoods.com";
+    public string SenderName { get; set; } = "Himgiri Goods & Uniforms";
+    public string SmtpPassword { get; set; } = string.Empty;
+    public bool EnableSsl { get; set; } = true;
+    public bool IsConfigured { get; set; } = false;
+}

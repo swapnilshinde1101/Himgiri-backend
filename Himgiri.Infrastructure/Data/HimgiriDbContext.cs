@@ -28,6 +28,7 @@ public class HimgiriDbContext : DbContext
     public DbSet<OrderStatusHistory> OrderStatusHistories => Set<OrderStatusHistory>();
     public DbSet<SchoolKit> SchoolKits => Set<SchoolKit>();
     public DbSet<SchoolKitItem> SchoolKitItems => Set<SchoolKitItem>();
+    public DbSet<EmailConfiguration> EmailConfigurations => Set<EmailConfiguration>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult> SpGetItemsPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetItemsPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult> SpGetGradesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetGradesPagedResult>();
     public DbSet<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult> SpGetCategoriesPagedResults => Set<Himgiri.Infrastructure.Data.Models.SpGetCategoriesPagedResult>();
@@ -88,6 +89,16 @@ public class HimgiriDbContext : DbContext
             e.Property(x => x.Url).HasMaxLength(2000);
             e.Property(x => x.Payload).HasColumnType("text");
             e.Property(x => x.Response).HasColumnType("text");
+        });
+
+        // ── EmailConfiguration ──
+        modelBuilder.Entity<EmailConfiguration>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.SmtpHost).IsRequired().HasMaxLength(255);
+            e.Property(x => x.SenderEmail).IsRequired().HasMaxLength(255);
+            e.Property(x => x.SenderName).IsRequired().HasMaxLength(255);
+            e.Property(x => x.SmtpPassword).HasMaxLength(500);
         });
 
         // ── Item ──
@@ -381,6 +392,23 @@ public class HimgiriDbContext : DbContext
                 LastInvoiceNumber = 0, 
                 StateId = Guid.Parse("00000000-0000-0000-0008-000000000027"),
                 CreatedAt = DateTime.UtcNow 
+            }
+        );
+
+        // Email Configuration Seed
+        modelBuilder.Entity<EmailConfiguration>().HasData(
+            new EmailConfiguration
+            {
+                Id = Guid.Parse("00000000-0000-0000-0003-000000000002"),
+                SmtpHost = "smtp.gmail.com",
+                SmtpPort = 587,
+                SenderEmail = "noreply@himgirigoods.com",
+                SenderName = "Himgiri Goods & Uniforms",
+                SmtpPassword = "",
+                EnableSsl = true,
+                IsConfigured = false,
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false
             }
         );
 

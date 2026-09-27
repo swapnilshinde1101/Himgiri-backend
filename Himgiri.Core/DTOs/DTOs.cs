@@ -413,6 +413,34 @@ public record OrderLookupItemDto(
     bool IsKitItem
 );
 
+// Email Configuration DTOs
+public record EmailSettingsDto(
+    Guid Id,
+    string SmtpHost,
+    int SmtpPort,
+    string SenderEmail,
+    string SenderName,
+    bool EnableSsl,
+    bool IsConfigured,
+    bool HasPassword
+);
 
+public record UpdateEmailSettingsRequest(
+    string SmtpHost,
+    int SmtpPort,
+    string SenderEmail,
+    string SenderName,
+    string? SmtpPassword,
+    bool EnableSsl,
+    bool IsConfigured
+);
 
-
+public record TestEmailRequest(
+    string ToEmail,
+    string? SmtpHost = null,
+    int? SmtpPort = null,
+    string? SenderEmail = null,
+    string? SenderName = null,
+    string? SmtpPassword = null,
+    bool? EnableSsl = null
+);

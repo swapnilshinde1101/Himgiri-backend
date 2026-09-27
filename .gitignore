@@ -7,6 +7,7 @@ obj/
 .env
 appsettings.Production.json
 appsettings.*.local.json
+App_Data/
 
 # Logs — you already have a log file that will get committed
 Logs/

@@ -1,6 +1,7 @@
 using Himgiri.API.Extensions;
 using Himgiri.API.Middleware;
 using Himgiri.Infrastructure.Data;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Hangfire;
@@ -29,6 +30,11 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddSwagger();
 builder.Services.AddAppServices(builder.Configuration); // Pass config for Hangfire
+
+// ── Data Protection (used to encrypt secrets stored in the DB, e.g. SMTP password) ──
+builder.Services.AddDataProtection()
+    .SetApplicationName("HimgiriGoods")
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")));
 
 builder.Services.AddCors(options =>
 {
