@@ -1,9 +1,11 @@
 using Himgiri.API.Extensions;
 using Himgiri.API.Middleware;
+using Himgiri.Core.Models;
 using Himgiri.Infrastructure.Data;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Threading.RateLimiting;
 using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +54,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Without this, a rejected request gets an empty body, so the frontend can't extract any
+    // message and falls back to a generic "Something went wrong" — misleading for what's
+    // actually a transient, self-resolving "slow down" condition.
+    options.OnRejected = async (context, ct) =>
+    {
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
+        }
+
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            JsonModel<object>.Error("Too many requests. Please wait a moment and try again.", StatusCodes.Status429TooManyRequests),
+            ct);
+    };
 
     options.AddPolicy("AuthPolicy", httpContext =>
         System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
