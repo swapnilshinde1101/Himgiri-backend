@@ -116,6 +116,12 @@ public class OrderService : IOrderService
 
         // Start Transaction
         await _unitOfWork.BeginTransactionAsync(ct);
+        // GetVendorSettingsAsync below takes a `FOR UPDATE` row lock that serializes concurrent
+        // order creation (so invoice numbers can't collide) — every exit path below MUST release
+        // it. The many early `return`s for validation failures don't call RollbackTransactionAsync
+        // themselves, so without this flag+finally the lock would sit held until this request's
+        // whole DbContext eventually disposes, needlessly blocking every other order in flight.
+        bool committed = false;
         try
         {
             // Lock VendorSettings atomically
@@ -340,6 +346,7 @@ public class OrderService : IOrderService
 
             // Save changes and Commit transaction
             await _unitOfWork.CommitTransactionAsync(ct);
+            committed = true;
 
             var summary = new OrderSummaryDto(
                 order.Id,
@@ -360,8 +367,17 @@ public class OrderService : IOrderService
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Unexpected error creating order for customer {CustomerName} ({Mobile})", request.CustomerName, request.Mobile);
-            await _unitOfWork.RollbackTransactionAsync(ct);
             return JsonModel<OrderSummaryDto>.Error("Failed to create order due to an internal server error. Please try again.", 500);
+        }
+        finally
+        {
+            // Covers every early-return validation failure above (which don't roll back
+            // themselves) as well as the exception path — RollbackTransactionAsync is a safe
+            // no-op if there's nothing left to roll back (already committed, or never began).
+            if (!committed)
+            {
+                await _unitOfWork.RollbackTransactionAsync(ct);
+            }
         }
     }
 
