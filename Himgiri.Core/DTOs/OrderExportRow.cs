@@ -19,6 +19,21 @@ public class OrderExportRow
     [DisplayName("Grade Name")]
     public string Grade { get; set; } = string.Empty;
 
+    [DisplayName("Taxable Amount (INR)")]
+    public decimal SubTotal { get; set; }
+
+    [DisplayName("Total GST (INR)")]
+    public decimal TotalGst { get; set; }
+
+    [DisplayName("CGST (INR)")]
+    public decimal Cgst { get; set; }
+
+    [DisplayName("SGST (INR)")]
+    public decimal Sgst { get; set; }
+
+    [DisplayName("IGST (INR)")]
+    public decimal Igst { get; set; }
+
     [DisplayName("Grand Total (INR)")]
     public decimal GrandTotal { get; set; }
 

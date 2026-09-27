@@ -817,6 +817,21 @@ public class OrderService : IOrderService
             ct);
     }
 
+    // Splits an order's TotalGst by its own SupplyType — intra-state orders split evenly into
+    // CGST+SGST, inter-state orders are entirely IGST. Mirrors the fix applied to the accounting
+    // report: an order is either intra-state or inter-state, never a mix, so blindly halving every
+    // order's GST into CGST+SGST would misattribute IGST collected on inter-state orders.
+    private static (decimal Cgst, decimal Sgst, decimal Igst) SplitGstBySupplyType(Order order)
+    {
+        if (order.SupplyType == SupplyType.IntraState)
+        {
+            var cgst = Math.Round(order.TotalGst / 2m, 2);
+            return (cgst, order.TotalGst - cgst, 0m);
+        }
+
+        return (0m, 0m, order.TotalGst);
+    }
+
     public async Task<byte[]> ExportOrdersToCsvAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken ct = default)
     {
         var query = _db.Orders
@@ -840,17 +855,26 @@ public class OrderService : IOrderService
             .Take(5000) // Safety cap: prevents an unbounded full-table export when no date range is given
             .ToListAsync(ct);
 
-        var exportData = orders.Select(o => new OrderExportRow
+        var exportData = orders.Select(o =>
         {
-            InvoiceNumber = o.InvoiceNumber,
-            CustomerName = o.CustomerName,
-            Mobile = o.Mobile,
-            Email = o.Email,
-            Grade = o.GradeName,
-            GrandTotal = o.GrandTotal,
-            Status = o.Status.ToString(),
-            CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
-            Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+            var (cgst, sgst, igst) = SplitGstBySupplyType(o);
+            return new OrderExportRow
+            {
+                InvoiceNumber = o.InvoiceNumber,
+                CustomerName = o.CustomerName,
+                Mobile = o.Mobile,
+                Email = o.Email,
+                Grade = o.GradeName,
+                SubTotal = o.SubTotal,
+                TotalGst = o.TotalGst,
+                Cgst = cgst,
+                Sgst = sgst,
+                Igst = igst,
+                GrandTotal = o.GrandTotal,
+                Status = o.Status.ToString(),
+                CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+            };
         }).ToList();
 
         return _csvService.ExportToCsv(exportData);
@@ -879,17 +903,26 @@ public class OrderService : IOrderService
             .Take(5000) // Safety cap: prevents an unbounded full-table export when no date range is given
             .ToListAsync(ct);
 
-        var exportData = orders.Select(o => new OrderExportRow
+        var exportData = orders.Select(o =>
         {
-            InvoiceNumber = o.InvoiceNumber,
-            CustomerName = o.CustomerName,
-            Mobile = o.Mobile,
-            Email = o.Email,
-            Grade = o.GradeName,
-            GrandTotal = o.GrandTotal,
-            Status = o.Status.ToString(),
-            CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
-            Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+            var (cgst, sgst, igst) = SplitGstBySupplyType(o);
+            return new OrderExportRow
+            {
+                InvoiceNumber = o.InvoiceNumber,
+                CustomerName = o.CustomerName,
+                Mobile = o.Mobile,
+                Email = o.Email,
+                Grade = o.GradeName,
+                SubTotal = o.SubTotal,
+                TotalGst = o.TotalGst,
+                Cgst = cgst,
+                Sgst = sgst,
+                Igst = igst,
+                GrandTotal = o.GrandTotal,
+                Status = o.Status.ToString(),
+                CreatedAt = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                Address = $"{o.AddressLine1} {o.AddressLine2}, {o.City} - {o.Pincode}"
+            };
         }).ToList();
 
         return _excelService.ExportToExcel(exportData, "Orders");
