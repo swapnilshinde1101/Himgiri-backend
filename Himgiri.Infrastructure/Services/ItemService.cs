@@ -224,9 +224,6 @@ public class ItemService : IItemService
         }
 
         var wasInitialized = item.IsStockInitialized;
-        
-        int oldQty = item.StockQty;
-        int newQty = request.StockQty;
 
         decimal oldPrice = item.Price;
         decimal newPrice = request.Price;
@@ -240,30 +237,19 @@ public class ItemService : IItemService
         item.PurchasePrice = request.PurchasePrice;
         item.Mrp = request.Mrp;
         item.StorageStatus = request.StorageStatus;
-        item.StockQty = request.StockQty;
+        // StockQty is deliberately NOT touched here. request.StockQty is often a stale snapshot
+        // from whenever the admin's item list was last fetched (the Edit Item form doesn't let
+        // stock be typed in directly) — blindly applying it would silently revert real stock
+        // changes (sales, inward, adjustments) made since. The dedicated StockService endpoints
+        // are the only safe path for stock changes: they require a LastSeenStockQty match against
+        // the current DB value before applying an adjustment.
         item.TargetQty = request.TargetQty;
         item.Unit = request.Unit ?? "Pieces (Pcs)";
         item.CategoryId = request.CategoryId;
         item.GstRateId = request.GstRateId;
         item.IsActive = request.IsActive;
-        item.IsStockInitialized = request.IsStockInitialized || request.StockQty > 0;
+        item.IsStockInitialized = request.IsStockInitialized || item.StockQty > 0;
         item.LowStockThreshold = request.LowStockThreshold;
-
-        // Log manual stock update if changed on Edit form
-        if (oldQty != newQty)
-        {
-            var log = new StockLog
-            {
-                Id = Guid.NewGuid(),
-                ItemId = item.Id,
-                OldQty = oldQty,
-                NewQty = newQty,
-                ChangedBy = "System / Item Edit Form",
-                Reason = newQty > oldQty ? "Manual Inward" : "Manual Correction",
-                CreatedAt = DateTime.UtcNow
-            };
-            _itemRepo.AddStockLog(log);
-        }
 
         // Log manual price update if changed
         if (oldPrice != newPrice || oldMrp != newMrp)
