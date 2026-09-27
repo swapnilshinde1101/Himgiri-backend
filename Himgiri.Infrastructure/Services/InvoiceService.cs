@@ -41,13 +41,34 @@ public class InvoiceService : IInvoiceService
             return JsonModel<InvoicePdfDto>.Error("Order not found.", 404);
         }
 
-        // Validate Vendor GSTIN
+        // Validate Vendor GSTIN (with auto-recovery from active VendorSettings if snapshot was pending)
         if (string.IsNullOrWhiteSpace(order.SellerGstin) || 
             order.SellerGstin.Contains("PENDING") || 
             order.SellerGstin.Contains("GSTIN_") || 
             order.SellerGstin.Length != 15)
         {
-            return JsonModel<InvoicePdfDto>.Error("Invoice generation blocked. Vendor GSTIN is in a pending or invalid state.", 503);
+            var vendorSettings = await _db.VendorSettings.FirstOrDefaultAsync(ct);
+            if (vendorSettings != null && 
+                !string.IsNullOrWhiteSpace(vendorSettings.Gstin) && 
+                !vendorSettings.Gstin.Contains("PENDING") && 
+                !vendorSettings.Gstin.Contains("GSTIN_") && 
+                vendorSettings.Gstin.Length == 15)
+            {
+                order.SellerGstin = vendorSettings.Gstin;
+                if (string.IsNullOrWhiteSpace(order.SellerCompanyName) && !string.IsNullOrWhiteSpace(vendorSettings.CompanyName))
+                {
+                    order.SellerCompanyName = vendorSettings.CompanyName;
+                }
+                if (string.IsNullOrWhiteSpace(order.SellerAddress) && !string.IsNullOrWhiteSpace(vendorSettings.Address))
+                {
+                    order.SellerAddress = vendorSettings.Address;
+                }
+                await _db.SaveChangesAsync(ct);
+            }
+            else
+            {
+                return JsonModel<InvoicePdfDto>.Error("Invoice generation blocked. Vendor GSTIN is in a pending or invalid state.", 503);
+            }
         }
 
         // Generate QuestPDF Document
@@ -295,6 +316,32 @@ public class InvoiceService : IInvoiceService
         string challanNumber = !string.IsNullOrWhiteSpace(order.InvoiceNumber)
             ? $"DC-{order.InvoiceNumber}"
             : $"DC-{order.Id.ToString()[..8].ToUpper()}";
+
+        // Auto-recover valid SellerGstin if snapshot was pending
+        if (string.IsNullOrWhiteSpace(order.SellerGstin) || 
+            order.SellerGstin.Contains("PENDING") || 
+            order.SellerGstin.Contains("GSTIN_") || 
+            order.SellerGstin.Length != 15)
+        {
+            var vendorSettings = await _db.VendorSettings.FirstOrDefaultAsync(ct);
+            if (vendorSettings != null && 
+                !string.IsNullOrWhiteSpace(vendorSettings.Gstin) && 
+                !vendorSettings.Gstin.Contains("PENDING") && 
+                !vendorSettings.Gstin.Contains("GSTIN_") && 
+                vendorSettings.Gstin.Length == 15)
+            {
+                order.SellerGstin = vendorSettings.Gstin;
+                if (string.IsNullOrWhiteSpace(order.SellerCompanyName) && !string.IsNullOrWhiteSpace(vendorSettings.CompanyName))
+                {
+                    order.SellerCompanyName = vendorSettings.CompanyName;
+                }
+                if (string.IsNullOrWhiteSpace(order.SellerAddress) && !string.IsNullOrWhiteSpace(vendorSettings.Address))
+                {
+                    order.SellerAddress = vendorSettings.Address;
+                }
+                await _db.SaveChangesAsync(ct);
+            }
+        }
 
         // Generate QuestPDF Document for Delivery Challan (Rule 55 CGST)
         byte[] pdfBytes;
