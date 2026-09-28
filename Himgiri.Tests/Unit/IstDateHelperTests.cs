@@ -52,4 +52,42 @@ public class IstDateHelperTests
         Assert.Equal(18, startUtc.Hour);
         Assert.Equal(30, startUtc.Minute);
     }
+
+    [Fact]
+    public void ToIstDayStartUtc_ConvertsCalendarDateToPreviousDay1830Utc()
+    {
+        // A bare "15 March" date from an admin's date-range picker means 15 March 00:00 IST,
+        // which is 14 March 18:30 UTC — not 15 March 00:00 UTC (what naive SpecifyKind gave).
+        var calendarDate = new DateTime(2026, 3, 15);
+
+        var startUtc = IstDateHelper.ToIstDayStartUtc(calendarDate);
+
+        Assert.Equal(new DateTime(2026, 3, 14, 18, 30, 0), startUtc);
+    }
+
+    [Fact]
+    public void ToIstDayStartUtc_IgnoresAnyTimeComponentOnTheInputDate()
+    {
+        // Only the calendar date matters — any time-of-day on the input (e.g. from a DateTime
+        // that wasn't a clean midnight) must not leak into the result.
+        var calendarDateWithTime = new DateTime(2026, 3, 15, 14, 45, 30);
+
+        var startUtc = IstDateHelper.ToIstDayStartUtc(calendarDateWithTime);
+
+        Assert.Equal(new DateTime(2026, 3, 14, 18, 30, 0), startUtc);
+    }
+
+    [Fact]
+    public void ToIstDayStartUtc_ExclusiveEndBound_CoversTheFullEndDate()
+    {
+        // The correct pattern for an inclusive "through end date" filter is
+        // CreatedAt < ToIstDayStartUtc(endDate.AddDays(1)) — verify that instant is exactly
+        // 24 hours after the end date's own IST midnight, i.e. the full day is covered.
+        var endDate = new DateTime(2026, 3, 15);
+
+        var endDateStartUtc = IstDateHelper.ToIstDayStartUtc(endDate);
+        var exclusiveUpperBoundUtc = IstDateHelper.ToIstDayStartUtc(endDate.AddDays(1));
+
+        Assert.Equal(endDateStartUtc.AddDays(1), exclusiveUpperBoundUtc);
+    }
 }

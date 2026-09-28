@@ -17,4 +17,15 @@ public static class IstDateHelper
         var startUtc = todayIst.Subtract(IstOffset);
         return (startUtc, startUtc.AddDays(1));
     }
+
+    // Converts a bare calendar date (e.g. from an admin's <input type="date"> date-range picker,
+    // which carries no timezone info and is meant as an IST calendar day) into the UTC instant of
+    // that day's IST midnight. Without this, DateTime.SpecifyKind(date, DateTimeKind.Utc) would
+    // treat "15 March" as 15 March 00:00 UTC (= 15 March 5:30 AM IST) instead of what the admin
+    // actually picked (15 March 00:00 IST = 14 March 18:30 UTC) — shifting the reported date
+    // range by 5.5 hours at both ends.
+    public static DateTime ToIstDayStartUtc(DateTime calendarDate)
+    {
+        return calendarDate.Date.Subtract(IstOffset);
+    }
 }

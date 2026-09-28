@@ -838,16 +838,21 @@ public class OrderService : IOrderService
             .Include(o => o.Grade)
             .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted);
 
+        // startDate/endDate are bare calendar dates from an admin's date-range picker (IST, this
+        // business's only timezone). Two bugs fixed here: (1) SpecifyKind(date, Utc) treated the
+        // date's clock time as if it were already UTC instead of converting from IST, shifting the
+        // effective range by 5.5 hours; (2) the end bound used "<= endDate" where endDate is
+        // midnight, which excluded virtually every order actually placed on that end date.
         if (startDate.HasValue)
         {
-            var utcStart = DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc);
+            var utcStart = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(startDate.Value);
             query = query.Where(o => o.CreatedAt >= utcStart);
         }
 
         if (endDate.HasValue)
         {
-            var utcEnd = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
-            query = query.Where(o => o.CreatedAt <= utcEnd);
+            var utcEnd = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(endDate.Value.AddDays(1));
+            query = query.Where(o => o.CreatedAt < utcEnd);
         }
 
         var orders = await query
@@ -888,14 +893,14 @@ public class OrderService : IOrderService
 
         if (startDate.HasValue)
         {
-            var utcStart = DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc);
+            var utcStart = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(startDate.Value);
             query = query.Where(o => o.CreatedAt >= utcStart);
         }
 
         if (endDate.HasValue)
         {
-            var utcEnd = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
-            query = query.Where(o => o.CreatedAt <= utcEnd);
+            var utcEnd = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(endDate.Value.AddDays(1));
+            query = query.Where(o => o.CreatedAt < utcEnd);
         }
 
         var orders = await query

@@ -34,15 +34,18 @@ public class ReportService : IReportService
         {
             var query = _db.Orders.Where(o => !o.IsDeleted);
 
+            // startDate/endDate are bare calendar dates from an admin's date-range picker (IST,
+            // this business's only timezone) — convert to the actual UTC instants of those IST
+            // calendar days rather than treating the date's clock time as if it were already UTC.
             if (startDate.HasValue)
             {
-                var utcStart = DateTime.SpecifyKind(startDate.Value.Date, DateTimeKind.Utc);
+                var utcStart = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(startDate.Value);
                 query = query.Where(o => o.CreatedAt >= utcStart);
             }
 
             if (endDate.HasValue)
             {
-                var utcEnd = DateTime.SpecifyKind(endDate.Value.Date.AddDays(1), DateTimeKind.Utc);
+                var utcEnd = Himgiri.Core.Helpers.IstDateHelper.ToIstDayStartUtc(endDate.Value.AddDays(1));
                 query = query.Where(o => o.CreatedAt < utcEnd);
             }
 
