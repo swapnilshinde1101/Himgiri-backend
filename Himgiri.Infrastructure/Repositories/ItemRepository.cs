@@ -187,8 +187,10 @@ public class ItemRepository : IItemRepository
 
         var totalOrders = await _db.Orders.CountAsync(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted, ct);
 
-        var todayStart = DateTime.UtcNow.Date;
-        var todayEnd = todayStart.AddDays(1);
+        // "Today" must mean the current calendar day in India, not the UTC calendar day —
+        // Order.CreatedAt is stored in UTC, so using DateTime.UtcNow.Date directly would roll
+        // "today" over at 5:30 AM IST instead of midnight IST.
+        var (todayStart, todayEnd) = Himgiri.Core.Helpers.IstDateHelper.GetTodayBoundariesUtc();
         var revenueToday = await _db.Orders
             .Where(o => o.PaymentStatus == PaymentStatus.Success && !o.IsDeleted && o.CreatedAt >= todayStart && o.CreatedAt < todayEnd)
             .SumAsync(o => (decimal?)o.GrandTotal, ct) ?? 0.00m;
